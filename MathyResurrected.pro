@@ -1,6 +1,6 @@
 TARGET = mathyresurrected
 TEMPLATE = lib
-VERSION = 0.0.9
+VERSION = 0.1.0
 
 CONFIG += plugin \
 	warn_on \
@@ -25,7 +25,6 @@ DISTFILES += $$PWD/AUTHORS \
 	$$PWD/COPYING \
 	$$PWD/HISTORY \
 	$$PWD/INSTALL \
-	$$PWD/MathyResurrected.incl \
 	$$PWD/README \
 	$$PWD/TODO \
 	$$PWD/src/antlr/ComplexEval.g \
@@ -54,6 +53,8 @@ CONFIG(release, debug|release) {
 	DESTDIR = $$PWD/bin/release
 	OBJECTS_DIR = $$PWD/build/release
 }
+
+LIBS += -lantlr3c
 
 # Plugin main sources
 SOURCES += $$PWD/src/MathyResurrectedOptionsDialog.cpp \
@@ -84,4 +85,4 @@ HEADERS += $$PWD/src/antlr/ComplexEval.h \
 	$$PWD/src/antlr/ComplexLexer.h \
 	$$PWD/src/antlr/ComplexParser.h
 INCLUDEPATH += $$PWD/src/antlr
-LIBS += -lantlr3c
+

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathyresurrected", "mathyresurrected.vcproj", "{A5244BA0-EBB8-338F-9A97-40969B2C4214}"
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathyresurrected", "mathyresurrected.vcproj", "{D51C7605-B227-3581-A999-00FE56444336}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A5244BA0-EBB8-338F-9A97-40969B2C4214}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A5244BA0-EBB8-338F-9A97-40969B2C4214}.Debug|Win32.Build.0 = Debug|Win32
-		{A5244BA0-EBB8-338F-9A97-40969B2C4214}.Release|Win32.ActiveCfg = Release|Win32
-		{A5244BA0-EBB8-338F-9A97-40969B2C4214}.Release|Win32.Build.0 = Release|Win32
+		{D51C7605-B227-3581-A999-00FE56444336}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D51C7605-B227-3581-A999-00FE56444336}.Debug|Win32.Build.0 = Debug|Win32
+		{D51C7605-B227-3581-A999-00FE56444336}.Release|Win32.ActiveCfg = Release|Win32
+		{D51C7605-B227-3581-A999-00FE56444336}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

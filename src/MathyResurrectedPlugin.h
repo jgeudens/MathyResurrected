@@ -44,6 +44,7 @@ public:
 	void getID(uint*);
 	void getName(QString*);
 	void getResults(QList<InputData>* id, QList<CatItem>* results);
+	void launchItem(QList<InputData>* inputData, CatItem* item);
 	void doDialog(QWidget* parent, QWidget**);
 	void endDialog(bool accept);
 	void init();
@@ -55,6 +56,9 @@ private:
 	boost::shared_ptr<mathy_resurrected::MathyResurrectedOptionsDialog> itsGUI;
 	QString itsName;
 	QString libPath;
+
+	bool itsSimpleMatching;
+	bool itsUseEnterKey;
 };
 
 extern MathyResurrectedPlugin* gmathyresurrectedInstance;

@@ -158,6 +158,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsArgSeparator = defaultArgSeparator();
 		itsOutputFormat = defaultOutputFormat();
 		itsPrecision = defaultOutputPrecision();
+		itsShowGroupChar = defaultShowDigitGrouping();
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
@@ -170,6 +171,10 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsPrecision = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNamePrecision(),
 			defaultOutputPrecision()).toInt();
+
+		itsShowGroupChar = app_settings->value(
+			MathyResurrectedOptionsDialog::keyNameShowDigitGrouping(), 
+			defaultShowDigitGrouping()).toBool();
 	}
 
 	if (itsArgSeparator == systemDecimalPoint()) {
@@ -333,6 +338,10 @@ void MathEvaluator::numberToString(mrNumeric_t val, QString& retv) const {
 		retv = loc.toString(val, 'e', itsPrecision);
 	} else if (itsOutputFormat == 'f') {
 		retv = loc.toString(val, 'f', itsPrecision);		
+	}
+
+	if (!itsShowGroupChar) {
+		retv.remove(loc.groupSeparator());
 	}
 }
 

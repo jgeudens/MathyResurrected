@@ -45,6 +45,7 @@ public:
 	static QChar defaultArgSeparator() { return QChar(':'); }
 	static QChar defaultOutputFormat() { return QChar('f'); }
 	static int defaultOutputPrecision() { return 2; }
+	static bool defaultShowDigitGrouping() { return true; }
 
 	/*! Sets expression to be evaluated. */
 	void setExpression (const QString& expression);
@@ -100,6 +101,7 @@ private:
 	QChar itsArgSeparator;
 	QChar itsOutputFormat;
 	int itsPrecision;
+	bool itsShowGroupChar;
 	
 	/*! This should return same character that was used in grammar */
 	QChar internalDecimalPoint() const;

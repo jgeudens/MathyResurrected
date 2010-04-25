@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QRegExp>
 #include <QTextCodec>
+#include <QClipboard>
 
 #ifdef Q_WS_WIN
 #include <windows.h>
@@ -59,30 +60,39 @@ void MathyResurrectedPlugin::init() {
 
 	QChar argSep = sett->value(
 		MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
-		MathEvaluator::defaultArgSeparator()).toChar();
+		MathEvaluator::defaultArgSeparator()
+	).toChar();
 
 	QChar decPoint = MathEvaluator::systemDecimalPoint();
 
+	// If this is first time ever that user launches MathyResurrected, there are
+	// no settings set up for the plugin. Because of that, we must try to guess 
+	// settings vital for MathEvaluator before we initialize it.
 	if (decPoint == ',' && argSep == ',') {
 		sett->setValue(MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
 			MathEvaluator::defaultArgSeparator());
 	}
-
 	itsCalculator->changeEvaluatorSettings(*settings);
+
+	itsSimpleMatching = sett->value(
+			MathyResurrectedOptionsDialog::keyNameSimpleInputMatching(),
+			MathyResurrectedOptionsDialog::defaultSimpleInputMatching()
+		).toBool();
+	itsUseEnterKey = sett->value(
+			MathyResurrectedOptionsDialog::keyNameUseEnterKey(), 
+			MathyResurrectedOptionsDialog::defaultUseEnterKey()
+		).toBool();
+
 	itsGUI.reset();
 }
 
 void MathyResurrectedPlugin::getLabels(QList<InputData>* id) {
 	if (id->count() > 1) return;
 
-	QSettings* sett = *settings;
-	bool simpleMatching = sett->
-			value(MathyResurrectedOptionsDialog::keyNameSimpleInputMatching(), false).toBool();
-
 	const QString & text = id->last().getText();
 
 	bool shouldLabl;
-	if (simpleMatching) {
+	if (itsSimpleMatching) {
 		QString tmp_expr = text;
 		if (tmp_expr.startsWith('=')) {
 			tmp_expr.remove(0, 1);
@@ -104,6 +114,7 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 	if (id->last().hasLabel(HASH_MATHYRESURRECTED)) {
 		itsCalculator->evaluate();
 		QString result = itsCalculator->toString();
+
 		results->push_front(CatItem(result + ".mathyresurrected", 
 			result, HASH_MATHYRESURRECTED, getIcon()));
 	}
@@ -133,6 +144,13 @@ void MathyResurrectedPlugin::setPath(QString * path) {
 	libPath = *path;
 }
 
+void MathyResurrectedPlugin::launchItem(QList<InputData>* inputData, CatItem* item) {
+	if (itsUseEnterKey) {
+		QClipboard *clipboard = QApplication::clipboard();
+		clipboard->setText(item->shortName);
+	}
+}	
+
 int MathyResurrectedPlugin::msg(int msgId, void* wParam, void* lParam) {
 	bool handled = false;
 	switch (msgId) 	{		
@@ -156,6 +174,10 @@ int MathyResurrectedPlugin::msg(int msgId, void* wParam, void* lParam) {
 			getResults((QList<InputData>*) wParam, (QList<CatItem>*) lParam);
 			handled = true;
 			break;
+		case MSG_LAUNCH_ITEM:
+			launchItem((QList<InputData>*) wParam, (CatItem*) lParam);
+			handled = true;
+		break;
 		case MSG_HAS_DIALOG:
 			// Set to true if you provide a gui
 			handled = true;
