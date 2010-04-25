@@ -1,3 +1,8 @@
+v 0.1.0
+=======
+* Added option to use Enter key for clipboard copy of results
+* Add option for show/hide digit grouping in output
+
 v 0.0.9
 =======
 * Updated plugin dependencies to ANTLR v3.2 and Qt 4.6.0
