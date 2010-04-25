@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8,00"
+	Name="mathyresurrected"
+	ProjectGUID="{A5244BA0-EBB8-338F-9A97-40969B2C4214}"
+	RootNamespace="mathyresurrected"
+	Keyword="Qt4VSv1.0"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)bin\debug\"
+			IntermediateDirectory="$(SolutionDir)build\debug\"
+			ConfigurationType="0"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="qmake &amp;&amp; nmake debug"
+				ReBuildCommandLine="qmake &amp;&amp; nmake /f Makefile.Debug distclean &amp;&amp; qmake &amp;&amp; nmake debug"
+				CleanCommandLine="qmake &amp;&amp; nmake /f Makefile.Debug clean"
+				Output=""
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)bin\release\"
+			IntermediateDirectory="$(SolutionDir)build\release\"
+			ConfigurationType="0"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="qmake &amp;&amp; nmake release"
+				ReBuildCommandLine="qmake &amp;&amp; nmake /f Makefile.Release distclean &amp;&amp; qmake &amp;&amp; nmake release"
+				CleanCommandLine="qmake &amp;&amp; nmake /f Makefile.Release clean"
+				Output=""
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
+			<File
+				RelativePath="src\evaluator\math_bridge_API.cpp"
+				>
+			</File>
+			<File
+				RelativePath="src\evaluator\MathEvaluator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="src\evaluator\MathyResurrectedExceptions.cpp"
+				>
+			</File>
+			<File
+				RelativePath="src\MathyResurrectedOptionsDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath="src\MathyResurrectedPlugin.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
+			<File
+				RelativePath="src\evaluator\math_bridge_API.h"
+				>
+			</File>
+			<File
+				RelativePath="src\evaluator\math_bridge_API_types.h"
+				>
+			</File>
+			<File
+				RelativePath="src\evaluator\MathEvaluator.h"
+				>
+			</File>
+			<File
+				RelativePath="src\evaluator\MathyResurrectedExceptions.h"
+				>
+			</File>
+			<File
+				RelativePath="src\MathyResurrectedOptionsDialog.h"
+				>
+			</File>
+			<File
+				RelativePath="src\MathyResurrectedPlugin.h"
+				>
+			</File>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

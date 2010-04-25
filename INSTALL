@@ -1,0 +1,52 @@
+
+Building MathyResurrected from source
+====================================
+
+Prerequisites:
+--------------
+
+	- Qt v4.6.0
+		- http://qt.nokia.com/
+		- IMPORTANT NOTE!!!!
+		- plugin will build with any 4.x.x version of Qt but it will fail 
+		  to load in Launchy unless it was built with exactly the same 
+		  version of Qt that Launchy was built with. This means that you
+		  absolutely must use Qt v4.6.0 for Launchy v2.5 and Qt must be 
+		  compiled with Visual Studio 2005. Taken from Launchy BUILD.txt
+		  you must use Qt's configure like this:
+		  
+			configure -opensource -no-webkit
+		
+		- to understand better this issue see:
+			http://qt.nokia.com/doc/4.6/deployment-plugins.html
+			http://qt.nokia.com/doc/4.6/plugins-howto.html
+			(section: Loading and Verifying Plugins Dynamically)
+		- You can find older versions of Qt on Qt's FTP server accessible 
+		  from Qt site, in /src directory.
+	
+	- ANTLR C runtime v3.2 or higher (libantlr3c)
+		- http://www.antlr.org/download/C
+		
+	- Boost v1.34 or higher
+		- http://www.boost.org/
+		
+Build process
+-------------
+
+	Make sure that Qt and libantlr3c are on your build path then run:
+	
+		$ qmake 
+		$ make release
+	
+	If you're using Visual Studio Compiler start Visual Studio Command
+prompt and type:
+
+		$ qmake 
+		$ nmake release
+
+Visual Studio 2005 Solution
+===========================
+
+	There is Visual Studio 2005 solution ready available. Before you can 
+build project you must setup Visual Studio so that it has Qt and 
+libantlr3c in it's include and lib path. 

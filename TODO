@@ -1,0 +1,22 @@
+
+- better error control and reporting (currently almost none)
+	- find unmatched braces in expresion
+	- find things that look like function but are not defined
+	- detect border conditions for functions and return "NaN", 
+	  "Domain error", "Inf" and stuff like that...
+	- detect overflow, underflow and similar numeric problems with results
+	- put error messages into translatable resources
+	- this can been done using already installed lexer error collector
+	  (lexer gramar needs to be updated to report more errors and then these
+	  errors should be checked before parser is run)
+	- parser and tree parser can also be checked for errors using custom 
+	  displayRecognitionError:
+	    
+	@parser::apifuncs {
+		// Install custom error message display: 
+		RECOGNIZER->displayRecognitionError = throwParserException;
+		// after this add implementation of throwParserException into 
+		// bridge API
+	}
+	
+	
