@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2009
+* Copyright (C) 2009, 2010
 * Tomislav Adamic <tomislav.adamic@gmail.com>
 * 
 * This file is part of MathyResurrected - Launchy advanced calculator plugin
