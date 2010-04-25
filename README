@@ -101,7 +101,7 @@ separator following are examples of supported numeric input:
     /        divide              4/4, 2/i
     ^        to the power of     4^4, 2^i
     %        modulo              456%45        
-                                 NOTE: a%b=Re(a)%Reb) if (Im{a}!=0 || Im{b}!=0)
+                                 NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
     
     ()        brackets
     
