@@ -115,7 +115,7 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 		itsCalculator->evaluate();
 		QString result = itsCalculator->toString();
 
-		results->push_front(CatItem(result + ".mathyresurrected", 
+		results->push_front(CatItem(result + ".math", 
 			result, HASH_MATHYRESURRECTED, getIcon()));
 	}
 }
@@ -135,8 +135,7 @@ void MathyResurrectedPlugin::endDialog(bool accept) {
 	itsGUI.reset();
 }
 
-QString MathyResurrectedPlugin::getIcon()
-{
+QString MathyResurrectedPlugin::getIcon() {
 	return libPath + "/icons/mathyresurrected.ico";
 }
 
