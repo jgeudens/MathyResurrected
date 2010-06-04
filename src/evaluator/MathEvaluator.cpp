@@ -159,6 +159,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsOutputFormat = defaultOutputFormat();
 		itsPrecision = defaultOutputPrecision();
 		itsShowGroupChar = defaultShowDigitGrouping();
+		itsZeroTreshold = pow (10.0, defaultZeroTresholdExp());
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
@@ -175,6 +176,19 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsShowGroupChar = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameShowDigitGrouping(), 
 			defaultShowDigitGrouping()).toBool();
+
+		bool shouldUse = app_settings->value(
+			MathyResurrectedOptionsDialog::keyNameShouldUseZeroTreshold(), 
+			defaultShouldUseZeroTreshold()).toBool();
+
+		if (shouldUse) {
+			itsZeroTreshold = app_settings->value(
+				MathyResurrectedOptionsDialog::keyNameZeroTresholdExp(), 
+				defaultZeroTresholdExp()).toInt();
+			itsZeroTreshold = pow (10.0, itsZeroTreshold);
+		} else {
+			itsZeroTreshold = 0;
+		}
 	}
 
 	if (itsArgSeparator == systemDecimalPoint()) {
@@ -303,18 +317,28 @@ const QString& MathEvaluator::toString() {
 			QString re_str, im_str;
 			bool add_i = false;
 
-			if ((boost::math::fpclassify)(imag) != FP_ZERO) {
-				if (imag > 0) {
+			// If number is close enough to zero, we make it zero 
+			// explicitly (but for display purposes only)
+			mrNumeric_t im_disp = imag, re_disp = real;
+			if (abs(im_disp) < abs(itsZeroTreshold)) {
+				im_disp = 0;
+			}
+			if (abs(re_disp) < abs(itsZeroTreshold)) {
+				re_disp = 0;
+			}
+
+			if ((boost::math::fpclassify)(im_disp) != FP_ZERO) {
+				if (im_disp > 0) {
 					sign = " + ";
 				} else { // if (imag < 0) {
 					sign = " - ";
 				}
 
-				mrNumeric_t tmp = abs(imag);
+				mrNumeric_t tmp = abs(im_disp);
 				numberToString(tmp, im_str);
 				add_i = true;
 			}
-			numberToString(real, re_str);
+			numberToString(re_disp, re_str);
 			itsResult = re_str;
 			if (add_i) {
 				itsResult +=  sign + im_str + "i";

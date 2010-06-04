@@ -46,6 +46,8 @@ public:
 	static QChar defaultOutputFormat() { return QChar('f'); }
 	static int defaultOutputPrecision() { return 2; }
 	static bool defaultShowDigitGrouping() { return true; }
+	static int defaultZeroTresholdExp() { return -15; }
+	static bool defaultShouldUseZeroTreshold() { return true; }
 
 	/*! Sets expression to be evaluated. */
 	void setExpression (const QString& expression);
@@ -102,6 +104,7 @@ private:
 	QChar itsOutputFormat;
 	int itsPrecision;
 	bool itsShowGroupChar;
+	double itsZeroTreshold;
 	
 	/*! This should return same character that was used in grammar */
 	QChar internalDecimalPoint() const;

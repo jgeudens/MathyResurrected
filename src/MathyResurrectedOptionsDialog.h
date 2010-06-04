@@ -43,6 +43,8 @@ private slots:
 	void setPrecision(int prec) { itsPrecision = prec;}
 	void setShowDigitGrouping(bool flag) { itsShowDigitGrouping = flag;}
 	void setUseEnterKey(bool flag) { itsUseEnterKey = flag;}
+	void setZeroTresholdExp(int treshold) { itsZeroTresholdExp = treshold; }
+	void setShouldUseZeroTreshold(bool flag) { itsZeroTresholdFlag = flag; }
 	void setAllDefaults();
 
 public:
@@ -55,6 +57,8 @@ public:
 	static QString keyNamePrecision() { return QString("MathyResurrected/Precision"); }
 	static QString keyNameUseEnterKey() { return QString("MathyResurrected/CopyToClipboardWithEnterKey"); }
 	static QString keyNameShowDigitGrouping() { return QString("MathyResurrected/ShowDigitGroupChar"); }
+	static QString keyNameShouldUseZeroTreshold() { return QString("MathyResurrected/ShouldUseZeroZresjold"); }
+	static QString keyNameZeroTresholdExp() { return QString("MathyResurrected/ZeroTresholdExponent"); }
 	
 	void writeSettings();
 
@@ -68,6 +72,8 @@ private:
 	bool itsSimpleInputFlag;
 	bool itsShowDigitGrouping;
 	bool itsUseEnterKey;
+	bool itsZeroTresholdFlag;
+	int itsZeroTresholdExp;
 	
 	void connectAll();
 	void setupUiByAppSettings();

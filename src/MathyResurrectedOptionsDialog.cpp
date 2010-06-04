@@ -51,6 +51,11 @@ void MathyResurrectedOptionsDialog::connectAll() {
 	connect(spinBox_OutputPrecision, 
 		SIGNAL(valueChanged(int)), this, SLOT(setPrecision(int)));
 
+	connect(checkBox_ZeroTreshold, 
+		SIGNAL(toggled(bool)), this, SLOT(setShouldUseZeroTreshold(bool)));
+	connect(spinBox_zeroTreshold, 
+		SIGNAL(valueChanged(int)), this, SLOT(setZeroTresholdExp(int)));
+
 	connect(pushButton_setDefaults, 
 		SIGNAL(clicked(bool)), this, SLOT(setAllDefaults(void)));
 }
@@ -63,6 +68,8 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsSimpleInputFlag = defaultSimpleInputMatching();
 	itsShowDigitGrouping = MathEvaluator::defaultShowDigitGrouping();
 	itsUseEnterKey = defaultUseEnterKey();
+	itsZeroTresholdExp = MathEvaluator::defaultZeroTresholdExp();
+	itsZeroTresholdFlag = MathEvaluator::defaultShouldUseZeroTreshold();
 	
 	setupUiByAppSettings();
 }
@@ -99,6 +106,9 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 	}
 
 	spinBox_OutputPrecision->setValue(itsPrecision);
+
+	checkBox_ZeroTreshold->setChecked(itsZeroTresholdFlag);
+	spinBox_zeroTreshold->setValue(itsZeroTresholdExp);
 }
 
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
@@ -122,6 +132,12 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 	itsShowDigitGrouping = app_settings->value(
 		keyNameShowDigitGrouping(), MathEvaluator::defaultShowDigitGrouping()
 		).toBool();
+	itsZeroTresholdExp = app_settings->value(
+		keyNameZeroTresholdExp(), MathEvaluator::defaultZeroTresholdExp()
+		).toInt();
+	itsZeroTresholdFlag = app_settings->value(
+		keyNameShouldUseZeroTreshold(), MathEvaluator::defaultShouldUseZeroTreshold()
+		).toBool();
 
 	setupUiByAppSettings();
 	connectAll();
@@ -140,6 +156,8 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameSimpleInputMatching(), itsSimpleInputFlag);
 	app_settings->setValue(keyNameUseEnterKey(), itsUseEnterKey);
 	app_settings->setValue(keyNameShowDigitGrouping(), itsShowDigitGrouping);
+	app_settings->setValue(keyNameZeroTresholdExp(), itsZeroTresholdExp);
+	app_settings->setValue(keyNameShouldUseZeroTreshold(), itsZeroTresholdFlag);
 }
 
 } // namespace mathy_resurrected
