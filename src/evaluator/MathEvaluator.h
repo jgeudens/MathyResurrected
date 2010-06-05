@@ -52,8 +52,9 @@ public:
 
 	static QChar defaultArgSeparator() { return QChar(':'); } // Must never be '.' or ',' 
 	static QString defaultDecimalPointTag();
-	
-	static QChar defaultOutputFormat() { return QChar('f'); }
+	static QString defaultGroupingCharTag();
+	//itsGroupimgCharacter
+	static QChar defaultOutputFormat() { return QChar('d'); }
 	static int defaultOutputPrecision() { return 2; }
 	static bool defaultShowDigitGrouping() { return true; }
 	static int defaultZeroTresholdExp() { return -15; }
@@ -129,6 +130,7 @@ private:
 	int itsPrecision;
 	bool itsShowGroupChar;
 	double itsZeroTreshold;
+	QChar itsGroupimgCharacter;
 
 	QString m_tempExpr;
 	

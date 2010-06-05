@@ -150,6 +150,10 @@ QString MathEvaluator::defaultDecimalPointTag() {
 	return MathyResurrectedOptionsDialog::systemDecPointTag(); 
 }
 
+QString MathEvaluator::defaultGroupingCharTag()  {
+	return MathyResurrectedOptionsDialog::systemGroupingCharTag(); 
+}
+
 MathEvaluator::MathEvaluator(QSettings* app_settings) : 
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false),
 	itsExprLen(0)
@@ -167,6 +171,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsShowGroupChar = defaultShowDigitGrouping();
 		itsZeroTreshold = pow (10.0, defaultZeroTresholdExp());
 		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(defaultDecimalPointTag());
+		itsGroupimgCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
@@ -174,6 +179,10 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 
 		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(
 			app_settings->value(MathyResurrectedOptionsDialog::keyNameDecimalPoint(), "").toString()
+			);
+
+		itsGroupimgCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(
+			app_settings->value(MathyResurrectedOptionsDialog::keyNameGroupingChar(), "").toString()
 			);
 			
 		itsOutputFormat = app_settings->value(
@@ -375,7 +384,7 @@ void MathEvaluator::numberToString(mrNumeric_t val, QString& retv) const {
 	if (!itsShowGroupChar) {
 		retv.remove(loc.groupSeparator());
 	} else {
-		retv.replace(loc.groupSeparator(), QLocale::system().groupSeparator());
+		retv.replace(loc.groupSeparator(), itsGroupimgCharacter);
 	}
 
 	// Postprocessing decimal point. 

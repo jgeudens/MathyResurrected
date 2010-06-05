@@ -39,6 +39,9 @@ private slots:
 	void setDecPointDot();
 	void setDecPointSystem();
 	void setDecPointComa();
+	void setThousandSepDot() { itsThousandsSepTag = "dot"; }
+	void setThousandSepSystem() { itsThousandsSepTag = "sys"; }
+	void setThousandSepComa() { itsThousandsSepTag = "com"; }
 	void setSimpleInputMatching(bool flag) { itsSimpleInputFlag = flag; }
 	void setOutputFormatDefault() { itsOutputFormat = 'd'; }
 	void setOutputFormatScientiffic() { itsOutputFormat = 's'; }
@@ -63,13 +66,16 @@ public:
 	static QString keyNameShouldUseZeroTreshold() { return QString("MathyResurrected/ShouldUseZeroTreshold"); }
 	static QString keyNameZeroTresholdExp() { return QString("MathyResurrected/ZeroTresholdExponent"); }
 	static QString keyNameDecimalPoint() { return QString("MathyResurrected/DecimalPoint"); }
+	static QString keyNameGroupingChar() { return QString("MathyResurrected/ThousandSeparator"); }
 	
 	void writeSettings();
 
 	static bool defaultUseEnterKey() { return true; }
 	static bool defaultSimpleInputMatching() { return false; }
 	static QChar decPointTag2Char(const QString& tag);
+	static QChar digitGroupTag2Char (const QString& tag);
 	static QString systemDecPointTag() { return QString("sys"); }
+	static QString systemGroupingCharTag() { return QString("sys"); }
 
 private:
 	QChar itsArgSeparator;
@@ -81,6 +87,7 @@ private:
 	bool itsZeroTresholdFlag;
 	int itsZeroTresholdExp;
 	QString itsDecPointTag;
+	QString itsThousandsSepTag;
 	
 	void connectAll();
 	void setupUiByAppSettings();

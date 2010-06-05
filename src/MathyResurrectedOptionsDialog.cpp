@@ -40,6 +40,21 @@ QChar MathyResurrectedOptionsDialog::decPointTag2Char(const QString& tag) {
 	return retv;
 }
 
+QChar MathyResurrectedOptionsDialog::digitGroupTag2Char (const QString& tag) {
+	QChar retv;
+
+	if (tag == "sys") {
+		retv = MathEvaluator::systemThousandSep();
+	} else if (tag == "dot") {
+		retv = QChar('.');
+	} else if (tag == "com") {
+		retv = QChar(',');
+	} else {
+		retv = MathEvaluator::systemThousandSep();
+	}
+	return retv;
+}
+
 void MathyResurrectedOptionsDialog::setFunArgSeparatorComa() {
 	if (decPointTag2Char(itsDecPointTag) == ',') {
 		setFunArgSeparatorColon();
@@ -80,6 +95,13 @@ void MathyResurrectedOptionsDialog::connectAll() {
 		SIGNAL(clicked(bool)), this, SLOT(setFunArgSeparatorSemicolon(void)));
 	connect(radioButton_ArgSeparatorComa, 
 		SIGNAL(clicked(bool)), this, SLOT(setFunArgSeparatorComa(void)));
+
+	connect(radioButton_ThSepSys, 
+		SIGNAL(clicked(bool)), this, SLOT(setThousandSepSystem(void)));
+	connect(radioButton_ThSepCom, 
+		SIGNAL(clicked(bool)), this, SLOT(setThousandSepComa(void)));
+	connect(radioButton_ThSepDot, 
+		SIGNAL(clicked(bool)), this, SLOT(setThousandSepDot(void)));
 
 	connect(radioButton_DecSepSystem, 
 		SIGNAL(clicked(bool)), this, SLOT(setDecPointSystem(void)));
@@ -126,6 +148,7 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsZeroTresholdExp = MathEvaluator::defaultZeroTresholdExp();
 	itsZeroTresholdFlag = MathEvaluator::defaultShouldUseZeroTreshold();
 	itsDecPointTag = MathEvaluator::defaultDecimalPointTag();
+	itsThousandsSepTag = MathEvaluator::defaultGroupingCharTag();
 	
 	setupUiByAppSettings();
 }
@@ -138,6 +161,14 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 		}
 	} else {
 		radioButton_ArgSeparatorComa->setEnabled(true);
+	}
+
+	if (itsThousandsSepTag == "sys") {
+		radioButton_ThSepSys->setChecked(true);
+	} else if (itsThousandsSepTag == "com") {
+		radioButton_ThSepCom->setChecked(true);
+	} else if (itsThousandsSepTag == "dot") {
+		radioButton_ThSepDot->setChecked(true);
 	}
 
 	if (itsDecPointTag == "sys") {
@@ -204,6 +235,9 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 	itsDecPointTag = app_settings->value(
 		keyNameDecimalPoint(), MathEvaluator::defaultDecimalPointTag()
 		).toString();
+	itsThousandsSepTag = app_settings->value(
+		keyNameGroupingChar(), MathEvaluator::defaultGroupingCharTag()
+		).toString();
 
 	setupUiByAppSettings();
 	connectAll();
@@ -225,6 +259,7 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameZeroTresholdExp(), itsZeroTresholdExp);
 	app_settings->setValue(keyNameShouldUseZeroTreshold(), itsZeroTresholdFlag);
 	app_settings->setValue(keyNameDecimalPoint(), itsDecPointTag);
+	app_settings->setValue(keyNameGroupingChar(), itsThousandsSepTag);
 }
 
 } // namespace mathy_resurrected
