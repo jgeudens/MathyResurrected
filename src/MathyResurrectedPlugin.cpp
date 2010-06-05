@@ -134,6 +134,7 @@ void MathyResurrectedPlugin::launchItem(QList<InputData>* inputData, CatItem* it
 		QClipboard *clipboard = QApplication::clipboard();
 		clipboard->setText(item->shortName);
 	}
+	itsCalculator->storeAns();
 }	
 
 int MathyResurrectedPlugin::msg(int msgId, void* wParam, void* lParam) {

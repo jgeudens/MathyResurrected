@@ -274,9 +274,6 @@ bool MathEvaluator::evaluate() {
 	if (!itsIsEvaluated) {
 		if (validate()) {
 
-			// Starting new evaluation, storing result of previous.
-			itsAns.real = real; itsAns.imag = imag;
-
 			LexerParser lpr (itsExprString, itsExprLen);
 
 			if (!lpr.malloc_error) {
@@ -315,6 +312,10 @@ bool MathEvaluator::evaluate() {
 		itsIsEvaluated = true;
 	}
 	return itsIsValid;
+}
+
+void MathEvaluator::storeAns() {
+	itsAns.real = real; itsAns.imag = imag;
 }
 
 const QString& MathEvaluator::toString() {

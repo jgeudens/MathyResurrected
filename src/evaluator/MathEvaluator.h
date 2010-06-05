@@ -69,6 +69,8 @@ public:
 	can be read using Re() and Im() methods. */
 	bool evaluate ();
 
+	void storeAns();
+
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
 	mrNumeric_t Re() const { return real; }
