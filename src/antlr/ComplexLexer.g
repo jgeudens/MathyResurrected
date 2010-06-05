@@ -100,6 +100,7 @@ FN_POLAR  : (('p'|'P')('o'|'O')('l'|'L')('a'|'A')('r'|'R'));
 
 CONSTANTS_PI  : 'pi';
 CONSTANTS_E : 'e';
+CONSTANTS_ANS : 'ans';
 
 COMPLEX_UNIT  : 'i' | 'j';
 

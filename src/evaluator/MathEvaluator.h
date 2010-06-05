@@ -34,7 +34,13 @@ namespace mathy_resurrected {
 
 /*! Main class for mathematical expression evaluation. Can be used
 to validate expression string or to fully evaluate it. Internally 
-uses ANTLR generated lexer / parser for its job. */
+uses ANTLR generated lexer / parser for its job. 
+@note
+Current implementation relies on globally accessible factories and 
+variables for communication between this class and ANTLR generated 
+evaluator. Because of that, it only single instance of MathEvaluator
+should exist at any time in program. If this is not ensured, evaluation
+will result in unspecified behavior. */
 class MathEvaluator : private mrComplex_t {
 public:
 	MathEvaluator(QSettings* app_settings = 0);
@@ -67,9 +73,15 @@ public:
 
 	const QString& toString();
 
-	/*! mrComplex_t factory method used my math bridge API */
+	/*! mrComplex_t factory method used my math bridge API 
+	@note Shouldn't be static in normal circumstances but there is no
+	other way to communicate with antlr generated code.*/
 	static mrComplex_ptr getNewBridgeComplex();
+	/*! @note Shouldn't be static in normal circumstances but there is no
+	other way to communicate with antlr generated code. */
 	static void addNewLexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err);
+	/*! Result of previous calculation. */
+	static const mrComplex_t& Ans() { return itsAns; }
 
 #ifdef _DEBUG
 	void printLexerErrors() const;
@@ -85,6 +97,10 @@ private:
 
 	/*! Result as string, or error as string. Handled by toString methods. */
 	QString itsResult;
+	/*! Result of previous calculation.
+	@note Shouldn't be static in normal circumstances but there is no
+	other way to communicate with antlr generated code. */
+	static mrComplex_t itsAns;
 
 	/*! Type to hold expression that will be passed to lexer and parser. */
 	typedef boost::shared_array < unsigned char > antlr8BitString_t;

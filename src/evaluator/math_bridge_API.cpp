@@ -57,6 +57,13 @@ mrNumeric_t mr_e() {
 	return eVal;
 }
 
+mrComplex_ptr mr_ans() {
+	mrComplex_ptr retv = newMrComplex();
+	retv->real = MathEvaluator::Ans().real;
+	retv->imag = MathEvaluator::Ans().imag;
+	return retv;
+}
+
 typedef const mrComplex_t* const mrComplex_const_ptr;
 
 /*! Converts between tree parser return value and std::complex<T> */

@@ -39,6 +39,7 @@ namespace mathy_resurrected {
 
 MathEvaluator::lexer_errors_collection_t MathEvaluator::lexerErrorsCollection;
 std::vector< boost::shared_ptr< mrComplex_t > > MathEvaluator::mr_ComplexFactoryData;
+mrComplex_t MathEvaluator::itsAns;
 
 mrComplex_ptr MathEvaluator::getNewBridgeComplex() {
 	 mrComplex_ptr p = new mrComplex_t;
@@ -150,6 +151,7 @@ MathEvaluator::MathEvaluator(QSettings* app_settings) :
 	itsExprLen(0)
 {
 	real = imag = 0;
+	itsAns.real = itsAns.imag = 0;
 	changeEvaluatorSettings(app_settings);
 }
 
@@ -248,12 +250,12 @@ bool MathEvaluator::validate() {
 
 		if (!lpr.malloc_error) {
 			lpr.expressionAST = lpr.parser->prog(lpr.parser);
-			/*! Currently just counting errors. In the future we could 
-			could use collection of lexer errors provided by bridge API
-			to analyze things before invoking parser. */
 #ifdef _DEBUG
 			printLexerErrors();
 #endif // _DEBUG
+			/* Currently just counting errors. In the future we could 
+			could use collection of lexer errors provided by bridge API
+			to analyze things before invoking parser. */
 			if (lpr.parser->pParser->rec->state->errorCount > 0) {
 				itsIsValid = false;
 				itsResult = "Malformed expression";
@@ -269,6 +271,9 @@ bool MathEvaluator::validate() {
 bool MathEvaluator::evaluate() {
 	if (!itsIsEvaluated) {
 		if (validate()) {
+
+			// Starting new evaluation, storing result of previous.
+			itsAns.real = real; itsAns.imag = imag;
 
 			LexerParser lpr (itsExprString, itsExprLen);
 

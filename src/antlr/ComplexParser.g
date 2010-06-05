@@ -81,6 +81,7 @@ funct_ref2
 constant_ref
   : CONSTANTS_PI -> ^(CONSTANT_REF CONSTANTS_PI)
   | CONSTANTS_E -> ^(CONSTANT_REF CONSTANTS_E)
+  | CONSTANTS_ANS -> ^(CONSTANT_REF CONSTANTS_ANS)
   ;
 
 si_unit_ref
