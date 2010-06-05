@@ -1,3 +1,19 @@
+v 0.1.1
+=======
+* Changed the way "ans" variable is calculated. Now enter key has to be pressed
+  for it to be remeber (similar to classic calculator where '=' has to be 
+  presed for the "Ans" to work. 
++ Implemented configurable thousand separator.
++ Implemented manually configurable decimal point. Before two characters were 
+  allowed as decimal point: dot ans anything system locale defined. Now, only 
+  one is allowed and it is posible to configure which one. Also, this 
+  configuration has been made safe, so it is not possible for example to use 
+  same character as decimal separator and function arguments separator.
++ Introduced new keyword allowed in expressions: "ans". It retrieves result of 
+  prevoius calculation.
++ Small enoug numbers are now by default shown as zero. Configurable.
+* Changed tag on Launchy's dropdown list
+
 v 0.1.0
 =======
 * Added option to use Enter key for clipboard copy of results
