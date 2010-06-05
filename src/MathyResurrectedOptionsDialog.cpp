@@ -25,6 +25,54 @@
 
 namespace mathy_resurrected {
 
+QChar MathyResurrectedOptionsDialog::decPointTag2Char(const QString& tag) {
+	QChar retv;
+
+	if (tag == "sys") {
+		retv = MathEvaluator::systemDecimalPoint();
+	} else if (tag == "dot") {
+		retv = QChar('.');
+	} else if (tag == "com") {
+		retv = QChar(',');
+	} else {
+		retv = MathEvaluator::systemDecimalPoint();
+	}
+	return retv;
+}
+
+void MathyResurrectedOptionsDialog::setFunArgSeparatorComa() {
+	if (decPointTag2Char(itsDecPointTag) == ',') {
+		setFunArgSeparatorColon();
+	} else {
+		itsArgSeparator = ','; 
+	}
+}
+
+void MathyResurrectedOptionsDialog::setDecPointSystem() { 
+	itsDecPointTag = "sys";
+	if (MathEvaluator::systemDecimalPoint() == itsArgSeparator) {
+		setFunArgSeparatorColon();
+		radioButton_ArgSeparatorColon->setChecked(true);
+	}
+	if (MathEvaluator::systemDecimalPoint() == ',') {
+		radioButton_ArgSeparatorComa->setEnabled(false);
+	}
+}
+
+void MathyResurrectedOptionsDialog::setDecPointComa() { 
+	itsDecPointTag = "com";
+	if (itsArgSeparator == ',') {
+		setFunArgSeparatorColon();
+		radioButton_ArgSeparatorColon->setChecked(true);
+	}
+	radioButton_ArgSeparatorComa->setEnabled(false);
+}
+
+void MathyResurrectedOptionsDialog::setDecPointDot() { 
+	itsDecPointTag = "dot";
+	radioButton_ArgSeparatorComa->setEnabled(true);
+}
+
 void MathyResurrectedOptionsDialog::connectAll() {
 	connect(radioButton_ArgSeparatorColon, 
 		SIGNAL(clicked(bool)), this, SLOT(setFunArgSeparatorColon(void)));
@@ -33,6 +81,13 @@ void MathyResurrectedOptionsDialog::connectAll() {
 	connect(radioButton_ArgSeparatorComa, 
 		SIGNAL(clicked(bool)), this, SLOT(setFunArgSeparatorComa(void)));
 
+	connect(radioButton_DecSepSystem, 
+		SIGNAL(clicked(bool)), this, SLOT(setDecPointSystem(void)));
+	connect(radioButton_DecSepComa, 
+		SIGNAL(clicked(bool)), this, SLOT(setDecPointComa(void)));
+	connect(radioButton_DecSepDot, 
+		SIGNAL(clicked(bool)), this, SLOT(setDecPointDot(void)));
+	
 	connect(checkBox_InputMatching, 
 		SIGNAL(toggled(bool)), this, SLOT(setSimpleInputMatching(bool)));
 
@@ -70,19 +125,27 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsUseEnterKey = defaultUseEnterKey();
 	itsZeroTresholdExp = MathEvaluator::defaultZeroTresholdExp();
 	itsZeroTresholdFlag = MathEvaluator::defaultShouldUseZeroTreshold();
+	itsDecPointTag = MathEvaluator::defaultDecimalPointTag();
 	
 	setupUiByAppSettings();
 }
 
 void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
-	if (MathEvaluator::systemDecimalPoint() == ',') {
+	if (decPointTag2Char(itsDecPointTag) == ',') {
 		radioButton_ArgSeparatorComa->setDisabled(true);
 		if (itsArgSeparator == ',') {
 			itsArgSeparator = MathEvaluator::defaultArgSeparator();
-			writeSettings();
 		}
 	} else {
 		radioButton_ArgSeparatorComa->setEnabled(true);
+	}
+
+	if (itsDecPointTag == "sys") {
+		radioButton_DecSepSystem->setChecked(true);
+	} else if (itsDecPointTag == "com") {
+		radioButton_DecSepComa->setChecked(true);
+	} else if (itsDecPointTag == "dot") {
+		radioButton_DecSepDot->setChecked(true);
 	}
 
 	if (itsArgSeparator == ':') {
@@ -138,6 +201,9 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 	itsZeroTresholdFlag = app_settings->value(
 		keyNameShouldUseZeroTreshold(), MathEvaluator::defaultShouldUseZeroTreshold()
 		).toBool();
+	itsDecPointTag = app_settings->value(
+		keyNameDecimalPoint(), MathEvaluator::defaultDecimalPointTag()
+		).toString();
 
 	setupUiByAppSettings();
 	connectAll();
@@ -158,6 +224,7 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameShowDigitGrouping(), itsShowDigitGrouping);
 	app_settings->setValue(keyNameZeroTresholdExp(), itsZeroTresholdExp);
 	app_settings->setValue(keyNameShouldUseZeroTreshold(), itsZeroTresholdFlag);
+	app_settings->setValue(keyNameDecimalPoint(), itsDecPointTag);
 }
 
 } // namespace mathy_resurrected

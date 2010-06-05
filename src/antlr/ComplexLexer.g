@@ -25,7 +25,7 @@ DIV : '/';
 MOD : '%';
 POW  : '^';
 ARG_SEPARATOR : '#';
-DECIMAL_POINT : '.';
+DECIMAL_POINT : '@';
 LEFT_PAREN : '(';
 RIGHT_PAREN : ')';
 

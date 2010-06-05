@@ -534,14 +534,22 @@ mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
 	This replacement will occur somewhere high in application so that
 	parser and lexer will always get clear string expressions in which
 	decimal separator will always be '.' */
+
+	char removeCh = MathEvaluator::internalDecimalPoint().toAscii();
+	char current;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));
+		current = static_cast<char>(strin->charAt(strin, i));
+		if (current == removeCh) {
+			str += '.';
+		} else {
+			str += current;
+		}
 	}
 
 	mrNumeric_t retv;
 	try {
 		retv = numeric_cast<mrNumeric_t>(lexical_cast<mrNumeric_t, string>(str));
-	} 
+	}
 	catch (bad_lexical_cast&) {
 		throw NumericConversionError("Range error: " + str);
 	}

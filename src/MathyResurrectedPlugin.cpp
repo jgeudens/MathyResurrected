@@ -58,21 +58,7 @@ void MathyResurrectedPlugin::init() {
 
 	QSettings* sett = *(this->settings);
 
-	QChar argSep = sett->value(
-		MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
-		MathEvaluator::defaultArgSeparator()
-	).toChar();
-
-	QChar decPoint = MathEvaluator::systemDecimalPoint();
-
-	// If this is first time ever that user launches MathyResurrected, there are
-	// no settings set up for the plugin. Because of that, we must try to guess 
-	// settings vital for MathEvaluator before we initialize it.
-	if (decPoint == ',' && argSep == ',') {
-		sett->setValue(MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
-			MathEvaluator::defaultArgSeparator());
-	}
-	itsCalculator->changeEvaluatorSettings(*settings);
+ 	itsCalculator->changeEvaluatorSettings(sett);
 
 	itsSimpleMatching = sett->value(
 			MathyResurrectedOptionsDialog::keyNameSimpleInputMatching(),

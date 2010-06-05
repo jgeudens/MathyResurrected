@@ -35,7 +35,10 @@ class MathyResurrectedOptionsDialog : public QFrame, private Ui::MathyResurrecte
 private slots:
 	void setFunArgSeparatorColon() { itsArgSeparator = ':'; }
 	void setFunArgSeparatorSemicolon() { itsArgSeparator = ';'; }
-	void setFunArgSeparatorComa() { itsArgSeparator = ','; }
+	void setFunArgSeparatorComa();
+	void setDecPointDot();
+	void setDecPointSystem();
+	void setDecPointComa();
 	void setSimpleInputMatching(bool flag) { itsSimpleInputFlag = flag; }
 	void setOutputFormatDefault() { itsOutputFormat = 'd'; }
 	void setOutputFormatScientiffic() { itsOutputFormat = 's'; }
@@ -57,13 +60,16 @@ public:
 	static QString keyNamePrecision() { return QString("MathyResurrected/Precision"); }
 	static QString keyNameUseEnterKey() { return QString("MathyResurrected/CopyToClipboardWithEnterKey"); }
 	static QString keyNameShowDigitGrouping() { return QString("MathyResurrected/ShowDigitGroupChar"); }
-	static QString keyNameShouldUseZeroTreshold() { return QString("MathyResurrected/ShouldUseZeroZresjold"); }
+	static QString keyNameShouldUseZeroTreshold() { return QString("MathyResurrected/ShouldUseZeroTreshold"); }
 	static QString keyNameZeroTresholdExp() { return QString("MathyResurrected/ZeroTresholdExponent"); }
+	static QString keyNameDecimalPoint() { return QString("MathyResurrected/DecimalPoint"); }
 	
 	void writeSettings();
 
 	static bool defaultUseEnterKey() { return true; }
 	static bool defaultSimpleInputMatching() { return false; }
+	static QChar decPointTag2Char(const QString& tag);
+	static QString systemDecPointTag() { return QString("sys"); }
 
 private:
 	QChar itsArgSeparator;
@@ -74,6 +80,7 @@ private:
 	bool itsUseEnterKey;
 	bool itsZeroTresholdFlag;
 	int itsZeroTresholdExp;
+	QString itsDecPointTag;
 	
 	void connectAll();
 	void setupUiByAppSettings();

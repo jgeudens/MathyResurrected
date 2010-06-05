@@ -48,7 +48,11 @@ public:
 	// Input / output settings
 	void changeEvaluatorSettings(QSettings* app_settings = 0);
 	static QChar systemDecimalPoint() { return QLocale::system().decimalPoint(); }
-	static QChar defaultArgSeparator() { return QChar(':'); }
+	static QChar systemThousandSep() { return QLocale::system().groupSeparator(); }
+
+	static QChar defaultArgSeparator() { return QChar(':'); } // Must never be '.' or ',' 
+	static QString defaultDecimalPointTag();
+	
 	static QChar defaultOutputFormat() { return QChar('f'); }
 	static int defaultOutputPrecision() { return 2; }
 	static bool defaultShowDigitGrouping() { return true; }
@@ -87,6 +91,9 @@ public:
 	void printLexerErrors() const;
 #endif // _DEBUG
 
+	/*! This should return same character that was used in grammar */
+	static QChar internalDecimalPoint() { return QChar('@'); }
+
 private:
 	/*! true if expression has been validated */
 	bool itsIsValidated;
@@ -117,16 +124,17 @@ private:
 
 	// Input / output settings
 	QChar itsArgSeparator;
+	QChar itsDecimalPoint;
 	QChar itsOutputFormat;
 	int itsPrecision;
 	bool itsShowGroupChar;
 	double itsZeroTreshold;
+
+	QString m_tempExpr;
 	
 	/*! This should return same character that was used in grammar */
-	QChar internalDecimalPoint() const;
-	/*! This should return same character that was used in grammar */
-	QChar internalArgSeparator() const;
-	
+	static QChar internalArgSeparator() { return QChar('#'); }
+
 	void numberToString(mrNumeric_t val, QString& retv) const;
 
 	typedef std::vector < std::pair<unsigned int, MR_LEXER_ERROR_TYPES> > lexer_errors_collection_t;
