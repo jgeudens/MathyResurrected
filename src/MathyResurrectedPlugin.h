@@ -22,6 +22,7 @@
 #define MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
 
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <QString>
 #include "MathyResurrectedOptionsDialog.h"
 #include "MathEvaluator.h"
 #include "plugin_interface.h"
@@ -57,8 +58,12 @@ private:
 	QString itsName;
 	QString libPath;
 
+	void put_item_by_tag(const QString& baseTag, QList<CatItem>* results);
+
 	bool itsSimpleMatching;
 	bool itsUseEnterKey;
+	bool itsShowAllBases;
+	QString itsOutputBaseTag;
 };
 
 extern MathyResurrectedPlugin* gmathyresurrectedInstance;

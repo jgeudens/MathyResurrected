@@ -1,4 +1,8 @@
 
+- implement number to string conversion for hex, bin and octal nubers
+- add new section in readme that explains usage of new features related to bin. hex and oct numbers.
+
+
 - better error control and reporting (currently almost none)
 	- find unmatched braces in expresion
 	- find things that look like function but are not defined

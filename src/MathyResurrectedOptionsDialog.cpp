@@ -109,6 +109,17 @@ void MathyResurrectedOptionsDialog::connectAll() {
 		SIGNAL(clicked(bool)), this, SLOT(setDecPointComa(void)));
 	connect(radioButton_DecSepDot, 
 		SIGNAL(clicked(bool)), this, SLOT(setDecPointDot(void)));
+
+	connect(radioButton_BinOutput, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseBin(void)));
+	connect(radioButton_DecOutput, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseDec(void)));
+	connect(radioButton_HexOutput, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseHex(void)));
+	connect(radioButton_OctOutput, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseOct(void)));
+	connect(checkBox_ShowAllBases, 
+		SIGNAL(toggled(bool)), this, SLOT(setOutputBasesShowAll(bool)));
 	
 	connect(checkBox_InputMatching, 
 		SIGNAL(toggled(bool)), this, SLOT(setSimpleInputMatching(bool)));
@@ -149,6 +160,9 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsZeroTresholdFlag = MathEvaluator::defaultShouldUseZeroTreshold();
 	itsDecPointTag = MathEvaluator::defaultDecimalPointTag();
 	itsThousandsSepTag = MathEvaluator::defaultGroupingCharTag();
+
+	itsShowAllBases = defaultOutputAllBases();
+	itsOutputBaseTag = defaultOutputBaseTag();
 	
 	setupUiByAppSettings();
 }
@@ -203,6 +217,18 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 
 	checkBox_ZeroTreshold->setChecked(itsZeroTresholdFlag);
 	spinBox_zeroTreshold->setValue(itsZeroTresholdExp);
+
+	checkBox_ShowAllBases->setChecked(itsShowAllBases);
+
+	if (itsOutputBaseTag == "dec") {
+		radioButton_DecOutput->setChecked(true);
+	} else if (itsOutputBaseTag == "bin") {
+		radioButton_BinOutput->setChecked(true);
+	} else if (itsOutputBaseTag == "hex") {
+		radioButton_HexOutput->setChecked(true);
+	} else if (itsOutputBaseTag == "oct") {
+		radioButton_OctOutput->setChecked(true);
+	} 
 }
 
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
@@ -239,6 +265,13 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 		keyNameGroupingChar(), MathEvaluator::defaultGroupingCharTag()
 		).toString();
 
+	itsShowAllBases = app_settings->value(
+		keyNameOutputShowAllBases(), defaultOutputAllBases()
+		).toBool();
+	itsOutputBaseTag = app_settings->value(
+		keyNameOutputBaseTag(), defaultOutputBaseTag()
+		).toString();
+
 	setupUiByAppSettings();
 	connectAll();
 }
@@ -260,6 +293,8 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameShouldUseZeroTreshold(), itsZeroTresholdFlag);
 	app_settings->setValue(keyNameDecimalPoint(), itsDecPointTag);
 	app_settings->setValue(keyNameGroupingChar(), itsThousandsSepTag);
+	app_settings->setValue(keyNameOutputShowAllBases(), itsShowAllBases);
+	app_settings->setValue(keyNameOutputBaseTag(), itsOutputBaseTag);
 }
 
 } // namespace mathy_resurrected

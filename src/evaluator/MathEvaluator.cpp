@@ -319,6 +319,29 @@ void MathEvaluator::storeAns() {
 }
 
 const QString& MathEvaluator::toString() {
+	toString('d', itsResult);
+	return itsResult;
+}
+
+QString MathEvaluator::toStringBin() {
+	QString retv;
+	toString('b', retv);
+	return retv;
+}
+
+QString MathEvaluator::toStringHex() {
+	QString retv;
+	toString('h', retv);
+	return retv;
+}
+
+QString MathEvaluator::toStringOct() {
+	QString retv;
+	toString('o', retv);
+	return retv;
+}
+
+void MathEvaluator::toString(char baseTag, QString& dest) {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
 			QString sign;
@@ -343,33 +366,45 @@ const QString& MathEvaluator::toString() {
 				}
 
 				mrNumeric_t tmp = abs(im_disp);
-				numberToString(tmp, im_str);
+				numberToString(tmp, im_str, baseTag);
 				add_i = true;
 			}
-			numberToString(re_disp, re_str);
-			itsResult = re_str;
+			numberToString(re_disp, re_str, baseTag);
+			dest = re_str;
 			if (add_i) {
-				itsResult +=  sign + im_str + "i";
+				dest +=  sign + im_str + "i";
 			}
 		} else {
-			itsResult = "Not evaluated!!!";
+			dest = "Not evaluated!!!";
 		}
 	} // else {
 	// result has been set to some error message during evaluation 
 	// so don't touch it.
-
-	return itsResult;
 }
 
-void MathEvaluator::numberToString(mrNumeric_t val, QString& retv) const {
+void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag) const {
 	QLocale loc = QLocale::c();
 
-	if (itsOutputFormat == 'd') { 
-		retv = loc.toString(val, 'g', itsPrecision);
-	} else if (itsOutputFormat == 's') {
-		retv = loc.toString(val, 'e', itsPrecision);
-	} else if (itsOutputFormat == 'f') {
-		retv = loc.toString(val, 'f', itsPrecision);		
+	switch (baseTag) {
+		case 'b':
+			retv = "binary";
+			break;
+		case 'h':
+			retv = "hexadecimal";
+			break;
+		case 'o':
+			retv = "octal";
+			break;
+		case 'd':
+		default:
+			if (itsOutputFormat == 'd') { 
+				retv = loc.toString(val, 'g', itsPrecision);
+			} else if (itsOutputFormat == 's') {
+				retv = loc.toString(val, 'e', itsPrecision);
+			} else if (itsOutputFormat == 'f') {
+				retv = loc.toString(val, 'f', itsPrecision);		
+			}
+			break;
 	}
 	
 	// Post processing

@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>516</width>
-    <height>305</height>
+    <height>338</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,13 +21,6 @@
    <enum>QFrame::Raised</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="1" column="1">
-    <widget class="QPushButton" name="pushButton_setDefaults">
-     <property name="text">
-      <string>Defaults</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0" colspan="2">
     <layout class="QFormLayout" name="formLayout_3">
      <item row="0" column="0">
@@ -406,10 +399,65 @@ p, li { white-space: pre-wrap; }
           </item>
          </layout>
         </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="title">
+           <string>Output base</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QRadioButton" name="radioButton_HexOutput">
+               <property name="text">
+                <string>Hex</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioButton_DecOutput">
+               <property name="text">
+                <string>Dec</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioButton_OctOutput">
+               <property name="text">
+                <string>Oct</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioButton_BinOutput">
+               <property name="text">
+                <string>Bin</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_ShowAllBases">
+             <property name="text">
+              <string>Show all in dop down box</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
        <zorder>groupBox</zorder>
        <zorder>checkBox_ShowGrouping</zorder>
        <zorder></zorder>
+       <zorder>groupBox_3</zorder>
       </widget>
      </item>
     </layout>
@@ -427,10 +475,14 @@ p, li { white-space: pre-wrap; }
      </property>
     </spacer>
    </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="pushButton_setDefaults">
+     <property name="text">
+      <string>Defaults</string>
+     </property>
+    </widget>
+   </item>
   </layout>
-  <zorder>pushButton_setDefaults</zorder>
-  <zorder></zorder>
-  <zorder>horizontalSpacer</zorder>
  </widget>
  <resources/>
  <connections>

@@ -69,6 +69,15 @@ void MathyResurrectedPlugin::init() {
 			MathyResurrectedOptionsDialog::defaultUseEnterKey()
 		).toBool();
 
+	itsShowAllBases = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowAllBases(), 
+		MathyResurrectedOptionsDialog::defaultOutputAllBases()
+		).toBool();
+	itsOutputBaseTag = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputBaseTag(), 
+		MathyResurrectedOptionsDialog::defaultOutputBaseTag()
+		).toString();
+
 	itsGUI.reset();
 }
 
@@ -99,11 +108,50 @@ void MathyResurrectedPlugin::getLabels(QList<InputData>* id) {
 void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* results) {
 	if (id->last().hasLabel(HASH_MATHYRESURRECTED)) {
 		itsCalculator->evaluate();
-		QString result = itsCalculator->toString();
 
-		results->push_front(CatItem(result + ".math", 
-			result, HASH_MATHYRESURRECTED, getIcon()));
+		if (itsShowAllBases) {
+			if (itsOutputBaseTag == "dec") {
+				put_item_by_tag("dec", results);
+				put_item_by_tag("hex", results);
+				put_item_by_tag("bin", results);
+				put_item_by_tag("oct", results);
+			} else if (itsOutputBaseTag == "oct") {
+				put_item_by_tag("oct", results);
+				put_item_by_tag("dec", results);
+				put_item_by_tag("hex", results);
+				put_item_by_tag("bin", results);
+			} else if (itsOutputBaseTag == "bin") {
+				put_item_by_tag("bin", results);
+				put_item_by_tag("oct", results);
+				put_item_by_tag("dec", results);
+				put_item_by_tag("hex", results);
+			} else if (itsOutputBaseTag == "hex") {
+				put_item_by_tag("hex", results);
+				put_item_by_tag("bin", results);
+				put_item_by_tag("oct", results);
+				put_item_by_tag("dec", results);
+			}
+		} else {
+			put_item_by_tag(itsOutputBaseTag, results);
+		}
 	}
+}
+
+void MathyResurrectedPlugin::put_item_by_tag(const QString& baseTag, QList<CatItem>* results) {
+	QString result;
+
+	if (baseTag == "dec") {
+		result = itsCalculator->toString();
+	} else if (baseTag == "bin") {
+		result = itsCalculator->toStringBin();
+	} else if (baseTag == "hex") {
+		result = itsCalculator->toStringHex();
+	} else if (baseTag == "oct") {
+		result = itsCalculator->toStringOct();
+	}
+
+	results->push_front(CatItem(result + ".math", 
+		result, HASH_MATHYRESURRECTED, getIcon()));
 }
 
 void MathyResurrectedPlugin::doDialog(QWidget* parent, QWidget** newDlg) {

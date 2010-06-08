@@ -79,6 +79,9 @@ public:
 	mrNumeric_t Im() const { return imag; }
 
 	const QString& toString();
+	QString toStringBin();
+	QString toStringHex();
+	QString toStringOct();
 
 	/*! mrComplex_t factory method used my math bridge API 
 	@note Shouldn't be static in normal circumstances but there is no
@@ -139,7 +142,8 @@ private:
 	/*! This should return same character that was used in grammar */
 	static QChar internalArgSeparator() { return QChar('#'); }
 
-	void numberToString(mrNumeric_t val, QString& retv) const;
+	void numberToString(mrNumeric_t val, QString& retv, char baseTag) const;
+	void toString(char baseTag, QString& dest);
 
 	typedef std::vector < std::pair<unsigned int, MR_LEXER_ERROR_TYPES> > lexer_errors_collection_t;
 	/*! All lexer errors are collected here during lexing phase.
