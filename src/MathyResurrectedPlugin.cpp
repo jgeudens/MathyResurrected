@@ -68,16 +68,27 @@ void MathyResurrectedPlugin::init() {
 			MathyResurrectedOptionsDialog::keyNameUseEnterKey(), 
 			MathyResurrectedOptionsDialog::defaultUseEnterKey()
 		).toBool();
-
-	itsShowAllBases = sett->value(
-		MathyResurrectedOptionsDialog::keyNameOutputShowAllBases(), 
-		MathyResurrectedOptionsDialog::defaultOutputAllBases()
+	
+	itsShowDec = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowDec(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowDec()
 		).toBool();
-	itsOutputBaseTag = sett->value(
-		MathyResurrectedOptionsDialog::keyNameOutputBaseTag(), 
-		MathyResurrectedOptionsDialog::defaultOutputBaseTag()
-		).toString();
 
+	itsShowBin = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowBin(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowBin()
+		).toBool();
+
+	itsShowHex = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowHex(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowHex()
+		).toBool();
+
+	itsShowOct = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowOct(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowOct()
+		).toBool();
+	
 	itsGUI.reset();
 }
 
@@ -109,53 +120,31 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 	if (id->last().hasLabel(HASH_MATHYRESURRECTED)) {
 		itsCalculator->evaluate();
 
-		if (itsShowAllBases) {
-			if (itsOutputBaseTag == "dec") {
-				put_item_by_tag("dec", results);
-				put_item_by_tag("hex", results);
-				put_item_by_tag("bin", results);
-				put_item_by_tag("oct", results);
-			} else if (itsOutputBaseTag == "oct") {
-				put_item_by_tag("oct", results);
-				put_item_by_tag("dec", results);
-				put_item_by_tag("hex", results);
-				put_item_by_tag("bin", results);
-			} else if (itsOutputBaseTag == "bin") {
-				put_item_by_tag("bin", results);
-				put_item_by_tag("oct", results);
-				put_item_by_tag("dec", results);
-				put_item_by_tag("hex", results);
-			} else if (itsOutputBaseTag == "hex") {
-				put_item_by_tag("hex", results);
-				put_item_by_tag("bin", results);
-				put_item_by_tag("oct", results);
-				put_item_by_tag("dec", results);
-			}
-		} else {
-			put_item_by_tag(itsOutputBaseTag, results);
+		QString result;
+
+		if (itsShowDec) {
+			result = itsCalculator->toString();
+			results->push_back(CatItem(result + ".math.dec", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
 		}
-	}
-}
 
-void MathyResurrectedPlugin::put_item_by_tag(const QString& baseTag, QList<CatItem>* results) {
-	QString result;
+		if (itsShowOct) {
+			result = itsCalculator->toStringOct();
+			results->push_back(CatItem(result + ".math.oct", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
+		}
 
-	if (baseTag == "dec") {
-		result = itsCalculator->toString();
-		results->push_front(CatItem(result + ".math.dec", 
-			result, HASH_MATHYRESURRECTED, getIcon()));
-	} else if (baseTag == "bin") {
-		result = itsCalculator->toStringBin();
-		results->push_front(CatItem(result + ".math.bin", 
-			result, HASH_MATHYRESURRECTED, getIcon()));
-	} else if (baseTag == "hex") {
-		result = itsCalculator->toStringHex();
-		results->push_front(CatItem(result + ".math.hex", 
-			result, HASH_MATHYRESURRECTED, getIcon()));
-	} else if (baseTag == "oct") {
-		result = itsCalculator->toStringOct();
-		results->push_front(CatItem(result + ".math.oct", 
-			result, HASH_MATHYRESURRECTED, getIcon()));
+		if (itsShowBin) {
+			result = itsCalculator->toStringBin();
+			results->push_back(CatItem(result + ".math.bin", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
+		}
+
+		if (itsShowHex) {
+			result = itsCalculator->toStringHex();
+			results->push_back(CatItem(result + ".math.hex", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
+		}
 	}
 }
 

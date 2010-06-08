@@ -51,11 +51,10 @@ private slots:
 	void setUseEnterKey(bool flag) { itsUseEnterKey = flag;}
 	void setZeroTresholdExp(int treshold) { itsZeroTresholdExp = treshold; }
 	void setShouldUseZeroTreshold(bool flag) { itsZeroTresholdFlag = flag; }
-	void setOutputBaseDec() { itsOutputBaseTag = QString("dec"); }
-	void setOutputBaseHex() { itsOutputBaseTag = QString("hex"); }
-	void setOutputBaseOct() { itsOutputBaseTag = QString("oct"); }
-	void setOutputBaseBin() { itsOutputBaseTag = QString("bin"); }
-	void setOutputBasesShowAll(bool showFlag) { itsShowAllBases = showFlag; }
+	void setOutputBaseDec(bool flag) { itsShowDec = flag; }
+	void setOutputBaseHex(bool flag) { itsShowHex = flag; }
+	void setOutputBaseOct(bool flag) { itsShowOct = flag; }
+	void setOutputBaseBin(bool flag) { itsShowBin = flag; }
 	void setAllDefaults();
 
 public:
@@ -72,8 +71,10 @@ public:
 	static QString keyNameZeroTresholdExp() { return QString("MathyResurrected/ZeroTresholdExponent"); }
 	static QString keyNameDecimalPoint() { return QString("MathyResurrected/DecimalPoint"); }
 	static QString keyNameGroupingChar() { return QString("MathyResurrected/ThousandSeparator"); }
-	static QString keyNameOutputBaseTag() { return QString("MathyResurrected/OutputBase"); }
-	static QString keyNameOutputShowAllBases() { return QString("MathyResurrected/ShowAllBasesInOutput"); }
+	static QString keyNameOutputShowDec() { return QString("MathyResurrected/OutputDecimal"); }
+	static QString keyNameOutputShowBin() { return QString("MathyResurrected/OutputHexadecimal"); }
+	static QString keyNameOutputShowHex() { return QString("MathyResurrected/OutputOctal"); }
+	static QString keyNameOutputShowOct() { return QString("MathyResurrected/OutputBinary"); }
 	
 	void writeSettings();
 
@@ -83,8 +84,10 @@ public:
 	static QChar digitGroupTag2Char (const QString& tag);
 	static QString systemDecPointTag() { return QString("sys"); }
 	static QString systemGroupingCharTag() { return QString("sys"); }
-	static QString defaultOutputBaseTag() { return QString("dec"); }
-	static bool defaultOutputAllBases() { return true; }
+	static bool defaultOutputShowDec() { return true; }
+	static bool defaultOutputShowBin() { return false; }
+	static bool defaultOutputShowHex() { return false; }
+	static bool defaultOutputShowOct() { return false; }
 
 private:
 	QChar itsArgSeparator;
@@ -97,8 +100,10 @@ private:
 	int itsZeroTresholdExp;
 	QString itsDecPointTag;
 	QString itsThousandsSepTag;
-	bool itsShowAllBases;
-	QString itsOutputBaseTag;
+	bool itsShowDec;
+	bool itsShowBin;
+	bool itsShowHex;
+	bool itsShowOct;
 	
 	void connectAll();
 	void setupUiByAppSettings();

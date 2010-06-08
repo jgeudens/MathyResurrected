@@ -49,11 +49,9 @@ public:
 	void changeEvaluatorSettings(QSettings* app_settings = 0);
 	static QChar systemDecimalPoint() { return QLocale::system().decimalPoint(); }
 	static QChar systemThousandSep() { return QLocale::system().groupSeparator(); }
-
-	static QChar defaultArgSeparator() { return QChar(':'); } // Must never be '.' or ',' 
+	static QChar defaultArgSeparator() { return QChar(':'); } // Must never be '.' or ','
 	static QString defaultDecimalPointTag();
 	static QString defaultGroupingCharTag();
-	//itsGroupimgCharacter
 	static QChar defaultOutputFormat() { return QChar('d'); }
 	static int defaultOutputPrecision() { return 2; }
 	static bool defaultShowDigitGrouping() { return true; }
@@ -68,7 +66,8 @@ public:
 	evaluates it. @returns true if expression is valid. Results
 	can be read using Re() and Im() methods. */
 	bool evaluate ();
-
+	/** Stores current state of calculation for future use by "ans" 
+	variable in expression. */
 	void storeAns();
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
@@ -83,14 +82,18 @@ public:
 	QString toStringHex();
 	QString toStringOct();
 
-	/*! mrComplex_t factory method used my math bridge API 
+	/*! mrComplex_t factory method used by math bridge API 
 	@note Shouldn't be static in normal circumstances but there is no
-	other way to communicate with antlr generated code.*/
+	other way to communicate with antlr generated code. Having
+	this static means every instance of evaluator uses and clears 
+	same factory storage. This could lead to disastrous consequences 
+	so this should be redesigned or there should be no more than one 
+	instance of evaluator in application. */
 	static mrComplex_ptr getNewBridgeComplex();
-	/*! @note Shouldn't be static in normal circumstances but there is no
-	other way to communicate with antlr generated code. */
+	/*! @see getNewBridgeComplex */
 	static void addNewLexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err);
-	/*! Result of previous calculation. */
+	/*! Result of previous calculation.
+	@see getNewBridgeComplex */
 	static const mrComplex_t& Ans() { return itsAns; }
 
 #ifdef _DEBUG
@@ -111,8 +114,7 @@ private:
 	/*! Result as string, or error as string. Handled by toString methods. */
 	QString itsResult;
 	/*! Result of previous calculation.
-	@note Shouldn't be static in normal circumstances but there is no
-	other way to communicate with antlr generated code. */
+	@see getNewBridgeComplex  */
 	static mrComplex_t itsAns;
 
 	/*! Type to hold expression that will be passed to lexer and parser. */
@@ -151,10 +153,12 @@ private:
 	to generate error message.
 	@todo All this data is currently ignored by MathEvaluator and
 	no detailed errors are produced (it is only checked if there are
-	errors or not and itsIsValid is set properly. */
+	errors or not and itsIsValid is set properly. 
+	@see getNewBridgeComplex */
 	static lexer_errors_collection_t lexerErrorsCollection;
 
-	/*! Data storage for factory produced objects. */
+	/*! Data storage for factory produced objects. 
+	@see getNewBridgeComplex */
 	static std::vector< boost::shared_ptr<mrComplex_t> > mr_ComplexFactoryData;
 
 	struct LexerParser;

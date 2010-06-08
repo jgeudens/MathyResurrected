@@ -110,16 +110,14 @@ void MathyResurrectedOptionsDialog::connectAll() {
 	connect(radioButton_DecSepDot, 
 		SIGNAL(clicked(bool)), this, SLOT(setDecPointDot(void)));
 
-	connect(radioButton_BinOutput, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseBin(void)));
-	connect(radioButton_DecOutput, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseDec(void)));
-	connect(radioButton_HexOutput, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseHex(void)));
-	connect(radioButton_OctOutput, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseOct(void)));
-	connect(checkBox_ShowAllBases, 
-		SIGNAL(toggled(bool)), this, SLOT(setOutputBasesShowAll(bool)));
+	connect(checkBox_BinOut, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseBin(bool)));
+	connect(checkBox_DecOut, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseDec(bool)));
+	connect(checkBox_HexOut, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseHex(bool)));
+	connect(checkBox_OctOut, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseOct(bool)));
 	
 	connect(checkBox_InputMatching, 
 		SIGNAL(toggled(bool)), this, SLOT(setSimpleInputMatching(bool)));
@@ -161,8 +159,10 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsDecPointTag = MathEvaluator::defaultDecimalPointTag();
 	itsThousandsSepTag = MathEvaluator::defaultGroupingCharTag();
 
-	itsShowAllBases = defaultOutputAllBases();
-	itsOutputBaseTag = defaultOutputBaseTag();
+	itsShowDec = defaultOutputShowDec();
+	itsShowBin = defaultOutputShowBin();
+	itsShowHex = defaultOutputShowHex();
+	itsShowOct = defaultOutputShowOct();
 	
 	setupUiByAppSettings();
 }
@@ -218,17 +218,10 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 	checkBox_ZeroTreshold->setChecked(itsZeroTresholdFlag);
 	spinBox_zeroTreshold->setValue(itsZeroTresholdExp);
 
-	checkBox_ShowAllBases->setChecked(itsShowAllBases);
-
-	if (itsOutputBaseTag == "dec") {
-		radioButton_DecOutput->setChecked(true);
-	} else if (itsOutputBaseTag == "bin") {
-		radioButton_BinOutput->setChecked(true);
-	} else if (itsOutputBaseTag == "hex") {
-		radioButton_HexOutput->setChecked(true);
-	} else if (itsOutputBaseTag == "oct") {
-		radioButton_OctOutput->setChecked(true);
-	} 
+	checkBox_BinOut->setChecked(itsShowBin);
+	checkBox_DecOut->setChecked(itsShowDec);
+	checkBox_HexOut->setChecked(itsShowHex);
+	checkBox_OctOut->setChecked(itsShowOct);
 }
 
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
@@ -265,12 +258,21 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 		keyNameGroupingChar(), MathEvaluator::defaultGroupingCharTag()
 		).toString();
 
-	itsShowAllBases = app_settings->value(
-		keyNameOutputShowAllBases(), defaultOutputAllBases()
+	itsShowDec = app_settings->value(
+		keyNameOutputShowDec(), defaultOutputShowDec()
 		).toBool();
-	itsOutputBaseTag = app_settings->value(
-		keyNameOutputBaseTag(), defaultOutputBaseTag()
-		).toString();
+
+	itsShowBin = app_settings->value(
+		keyNameOutputShowBin(), defaultOutputShowBin()
+		).toBool();
+
+	itsShowHex = app_settings->value(
+		keyNameOutputShowHex(), defaultOutputShowHex()
+		).toBool();
+
+	itsShowOct = app_settings->value(
+		keyNameOutputShowOct(), defaultOutputShowOct()
+		).toBool();
 
 	setupUiByAppSettings();
 	connectAll();
@@ -293,8 +295,11 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameShouldUseZeroTreshold(), itsZeroTresholdFlag);
 	app_settings->setValue(keyNameDecimalPoint(), itsDecPointTag);
 	app_settings->setValue(keyNameGroupingChar(), itsThousandsSepTag);
-	app_settings->setValue(keyNameOutputShowAllBases(), itsShowAllBases);
-	app_settings->setValue(keyNameOutputBaseTag(), itsOutputBaseTag);
+
+	app_settings->setValue(keyNameOutputShowDec(), itsShowDec);
+	app_settings->setValue(keyNameOutputShowBin(), itsShowBin);
+	app_settings->setValue(keyNameOutputShowHex(), itsShowHex);
+	app_settings->setValue(keyNameOutputShowOct(), itsShowOct);
 }
 
 } // namespace mathy_resurrected

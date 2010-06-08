@@ -58,12 +58,13 @@ private:
 	QString itsName;
 	QString libPath;
 
-	void put_item_by_tag(const QString& baseTag, QList<CatItem>* results);
-
 	bool itsSimpleMatching;
 	bool itsUseEnterKey;
-	bool itsShowAllBases;
-	QString itsOutputBaseTag;
+	
+	bool itsShowDec;
+	bool itsShowBin;
+	bool itsShowHex;
+	bool itsShowOct;
 };
 
 extern MathyResurrectedPlugin* gmathyresurrectedInstance;
