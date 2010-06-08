@@ -12,6 +12,9 @@ tokens {
   FUNCTION;
   ATOM;
   UNARY;
+  BIN;
+  HEX;
+  OCT;
 }
 
 @lexer::includes {
@@ -103,6 +106,15 @@ CONSTANTS_E : 'e';
 CONSTANTS_ANS : 'ans';
 
 COMPLEX_UNIT  : 'i' | 'j';
+
+HEX_NUMBER : '0' ('x'|'X') HEX_DIGIT+ ;
+
+fragment
+HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+OCTAL_NUMBER : '0' ('0'..'7')+ ;
+
+BINARY_NUMBER : '0' ('b'|'B') ('0'..'1') ;
 
 FLOAT_NUMBER  
 	: FLOAT_MANTISSA EXPONENT?
