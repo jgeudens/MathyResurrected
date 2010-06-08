@@ -142,16 +142,21 @@ void MathyResurrectedPlugin::put_item_by_tag(const QString& baseTag, QList<CatIt
 
 	if (baseTag == "dec") {
 		result = itsCalculator->toString();
+		results->push_front(CatItem(result + ".math.dec", 
+			result, HASH_MATHYRESURRECTED, getIcon()));
 	} else if (baseTag == "bin") {
 		result = itsCalculator->toStringBin();
+		results->push_front(CatItem(result + ".math.bin", 
+			result, HASH_MATHYRESURRECTED, getIcon()));
 	} else if (baseTag == "hex") {
 		result = itsCalculator->toStringHex();
+		results->push_front(CatItem(result + ".math.hex", 
+			result, HASH_MATHYRESURRECTED, getIcon()));
 	} else if (baseTag == "oct") {
 		result = itsCalculator->toStringOct();
+		results->push_front(CatItem(result + ".math.oct", 
+			result, HASH_MATHYRESURRECTED, getIcon()));
 	}
-
-	results->push_front(CatItem(result + ".math", 
-		result, HASH_MATHYRESURRECTED, getIcon()));
 }
 
 void MathyResurrectedPlugin::doDialog(QWidget* parent, QWidget** newDlg) {

@@ -24,8 +24,8 @@
 #endif // _DEBUG
 #include <exception>
 #include <boost/smart_ptr/shared_ptr.hpp>
-#include <boost/test/floating_point_comparison.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 #include "ComplexLexer.h"
 #include "ComplexParser.h"
 #include "ComplexEval.h"
@@ -385,15 +385,16 @@ void MathEvaluator::toString(char baseTag, QString& dest) {
 void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag) const {
 	QLocale loc = QLocale::c();
 
+	unsigned long tmp = numeric_cast<unsigned long>(val);
 	switch (baseTag) {
 		case 'b':
-			retv = "binary";
+			retv = QString::number(tmp, 2);
 			break;
 		case 'h':
-			retv = "hexadecimal";
+			retv = QString::number(tmp, 16).toUpper();
 			break;
 		case 'o':
-			retv = "octal";
+			retv = QString::number(tmp, 8);
 			break;
 		case 'd':
 		default:
@@ -404,27 +405,28 @@ void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag)
 			} else if (itsOutputFormat == 'f') {
 				retv = loc.toString(val, 'f', itsPrecision);		
 			}
+
+			// Post processing
+
+			// First, "saving" decimal point from modification.
+			// This is relatively safe because internally used 
+			// character for decimal point representation is 
+			// not likely to be used for that purpose in any 
+			// existing locale. 
+			retv.replace(loc.decimalPoint(), internalDecimalPoint());
+
+			// Post processing group separator. 
+			if (!itsShowGroupChar) {
+				retv.remove(loc.groupSeparator());
+			} else {
+				retv.replace(loc.groupSeparator(), itsGroupimgCharacter);
+			}
+
+			// Postprocessing decimal point. 
+			retv.replace(internalDecimalPoint(), itsDecimalPoint);
+
 			break;
 	}
-	
-	// Post processing
-	
-	// First, "saving" decimal point from modification.
-	// This is relatively safe because internally used 
-	// character for decimal point representation is 
-	// not likely to be used for that purpose in any 
-	// existing locale. 
-	retv.replace(loc.decimalPoint(), internalDecimalPoint());
-
-	// Post processing group separator. 
-	if (!itsShowGroupChar) {
-		retv.remove(loc.groupSeparator());
-	} else {
-		retv.replace(loc.groupSeparator(), itsGroupimgCharacter);
-	}
-
-	// Postprocessing decimal point. 
-	retv.replace(internalDecimalPoint(), itsDecimalPoint);
 }
 
 } // mathy_resurrected
