@@ -310,8 +310,8 @@ imaginary_number returns [mrComplex_ptr compl_retv]
 	$compl_retv->real = 0;
 }
 	: ^(IM (
-			FLOAT_NUMBER {
-				 numb = parse_mrNumeric_t ($FLOAT_NUMBER->getText($FLOAT_NUMBER));
+			real_number {
+				 numb = $real_number.compl_retv->real;
 				 num_present = 1;
 			}
 		)? COMPLEX_UNIT)

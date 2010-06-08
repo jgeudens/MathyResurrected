@@ -116,7 +116,7 @@ si_unit_ref
   ;
 
 imaginary_number
-    : FLOAT_NUMBER? COMPLEX_UNIT -> ^(IM FLOAT_NUMBER? COMPLEX_UNIT)
+    : real_number? COMPLEX_UNIT -> ^(IM real_number? COMPLEX_UNIT)
 	;
 
 real_number : FLOAT_NUMBER -> ^(RE FLOAT_NUMBER);
