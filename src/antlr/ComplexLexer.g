@@ -108,15 +108,11 @@ FLOAT_NUMBER
 	: FLOAT_MANTISSA EXPONENT?
 	;
 
-fragment DEC_DIGIT
-    : '0'..'9' 
-    ;
-
 fragment FLOAT_MANTISSA
-    : DEC_DIGIT+ 
+    : ('0'..'9')+ 
 	    ( DECIMAL_POINT
 	    	(
-	    		DEC_DIGIT+
+	    		('0'..'9')+
 	    		|
 	    		{ 
 					$type = LEXER_ERROR;
@@ -125,7 +121,7 @@ fragment FLOAT_MANTISSA
 	    	)
 	    )? 
 	| DECIMAL_POINT (
-		DEC_DIGIT+
+		('0'..'9')+
 		|
 		{ 
 			$type = LEXER_ERROR;
@@ -136,7 +132,7 @@ fragment FLOAT_MANTISSA
 
 fragment EXPONENT
     : ('e' | 'E') (PLUS | MINUS)? (
-		DEC_DIGIT+
+		('0'..'9')+
 		|   
 		{ 
 			$type = LEXER_ERROR;

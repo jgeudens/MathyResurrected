@@ -1,6 +1,6 @@
 TARGET = mathyresurrected
 TEMPLATE = lib
-VERSION = 0.1.1
+VERSION = 0.1.2
 
 CONFIG += plugin \
 	warn_on \
@@ -27,7 +27,7 @@ DISTFILES += $$PWD/AUTHORS \
 	$$PWD/COPYING \
 	$$PWD/HISTORY \
 	$$PWD/INSTALL \
-	$$PWD/README \
+	$$PWD/README.mathyresurrected.txt \
 	$$PWD/TODO \
 	$$PWD/src/antlr/ComplexEval.g \
 	$$PWD/src/antlr/ComplexLexer.g \

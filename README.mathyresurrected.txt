@@ -44,16 +44,16 @@ All questions regarding plugin should be asked at Sourceforge project site:
 Or at Launchy project site, "Plugins 2.0+" subforum:
 
          https://sourceforge.net/projects/launchy/
-		 
+         
 Features
 ========
     - complex number arithemtic
     - many built in math functions and operators (see the list below)
     - some predefined math constants (see the list below)
     - ignores space
-    - uses system decimal point character. Also recognizes '.' as decimal
-	  point so you can use either. 
-    - configurable result format
+    - Configurable decimal point separator and function argument separator
+	- Configurable thousands separator
+    - Configurable result format
     - SI and binary unit prefixes
     
 ===========================================================================
@@ -100,8 +100,8 @@ separator following are examples of supported numeric input:
     *        multiply            6*4, 1*2
     /        divide              4/4, 2/i
     ^        to the power of     4^4, 2^i
-    %        modulo              456%45        
-                                 NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
+    %        modulo              456%45     
+                NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
     
     ()        brackets
     
@@ -188,7 +188,7 @@ Trigonometric functions
     arctan(x)        complex arc tangent of x
     atan2(x, y)    
     arctan2(x, y)    arc tangent of y/x, but uses the sign of both 
-	                 arguments to determine the quadrant.
+                     arguments to determine the quadrant.
                      NOTE: atan2(a,b)=atan2(Re(a), Re(b)) 
                            if (Im{a}!=0 || Im{b}!=0)
 
@@ -264,7 +264,7 @@ There are three predefined constants:
 
     pi    = 3.14159265...
     e     = 2.71828183...
-	ans   = result of previous calculation.
+    ans   = result of previous calculation.
     
 Constants are case sensitive.
 
