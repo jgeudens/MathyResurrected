@@ -118,6 +118,8 @@ void MathyResurrectedOptionsDialog::connectAll() {
 		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseHex(bool)));
 	connect(checkBox_OctOut, 
 		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseOct(bool)));
+	connect(checkBox_ShowBasePrefix, 
+		SIGNAL(clicked(bool)), this, SLOT(setOutputBasePrefix(bool)));
 	
 	connect(checkBox_InputMatching, 
 		SIGNAL(toggled(bool)), this, SLOT(setSimpleInputMatching(bool)));
@@ -163,6 +165,7 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsShowBin = defaultOutputShowBin();
 	itsShowHex = defaultOutputShowHex();
 	itsShowOct = defaultOutputShowOct();
+	itsShowBasePrefix = defaultShowBasePrefix();
 	
 	setupUiByAppSettings();
 }
@@ -222,6 +225,7 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 	checkBox_DecOut->setChecked(itsShowDec);
 	checkBox_HexOut->setChecked(itsShowHex);
 	checkBox_OctOut->setChecked(itsShowOct);
+	checkBox_ShowBasePrefix->setChecked(itsShowBasePrefix);
 }
 
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
@@ -259,20 +263,15 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 		).toString();
 
 	itsShowDec = app_settings->value(
-		keyNameOutputShowDec(), defaultOutputShowDec()
-		).toBool();
-
+		keyNameOutputShowDec(), defaultOutputShowDec()).toBool();
 	itsShowBin = app_settings->value(
-		keyNameOutputShowBin(), defaultOutputShowBin()
-		).toBool();
-
+		keyNameOutputShowBin(), defaultOutputShowBin()).toBool();
 	itsShowHex = app_settings->value(
-		keyNameOutputShowHex(), defaultOutputShowHex()
-		).toBool();
-
+		keyNameOutputShowHex(), defaultOutputShowHex()).toBool();
 	itsShowOct = app_settings->value(
-		keyNameOutputShowOct(), defaultOutputShowOct()
-		).toBool();
+		keyNameOutputShowOct(), defaultOutputShowOct()).toBool();
+	itsShowBasePrefix = app_settings->value(
+		keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
 
 	setupUiByAppSettings();
 	connectAll();
@@ -295,11 +294,11 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameShouldUseZeroTreshold(), itsZeroTresholdFlag);
 	app_settings->setValue(keyNameDecimalPoint(), itsDecPointTag);
 	app_settings->setValue(keyNameGroupingChar(), itsThousandsSepTag);
-
 	app_settings->setValue(keyNameOutputShowDec(), itsShowDec);
 	app_settings->setValue(keyNameOutputShowBin(), itsShowBin);
 	app_settings->setValue(keyNameOutputShowHex(), itsShowHex);
 	app_settings->setValue(keyNameOutputShowOct(), itsShowOct);
+	app_settings->setValue(keyNameShowBasePrefix(), itsShowBasePrefix);
 }
 
 } // namespace mathy_resurrected

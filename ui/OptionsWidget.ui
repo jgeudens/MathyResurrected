@@ -8,7 +8,7 @@
     <x>0</x>
     <y>0</y>
     <width>516</width>
-    <height>313</height>
+    <height>338</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -405,37 +405,54 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="2">
          <widget class="QGroupBox" name="groupBox_3">
           <property name="title">
-           <string>Output base</string>
+           <string>Output number base</string>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QCheckBox" name="checkBox_BinOut">
-             <property name="text">
-              <string>Bin</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QCheckBox" name="checkBox_BinOut">
+               <property name="text">
+                <string>Bin</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBox_OctOut">
+               <property name="text">
+                <string>Oct</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBox_DecOut">
+               <property name="text">
+                <string>Dec</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBox_HexOut">
+               <property name="text">
+                <string>Hex</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_OctOut">
-             <property name="text">
-              <string>Oct</string>
+            <widget class="QCheckBox" name="checkBox_ShowBasePrefix">
+             <property name="toolTip">
+              <string>Show prefix for given number base in results (i.e. &quot;0x&quot; for hexadecimal numbers)</string>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_DecOut">
              <property name="text">
-              <string>Dec</string>
+              <string>Show base prefix in results</string>
              </property>
              <property name="checked">
               <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBox_HexOut">
-             <property name="text">
-              <string>Hex</string>
              </property>
             </widget>
            </item>

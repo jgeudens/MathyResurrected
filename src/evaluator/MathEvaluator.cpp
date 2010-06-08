@@ -209,6 +209,10 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		} else {
 			itsZeroTreshold = 0;
 		}
+
+		itsShowBasePrefix = app_settings->value(
+			MathyResurrectedOptionsDialog::keyNameShowBasePrefix(), 
+			MathyResurrectedOptionsDialog::defaultShowBasePrefix()).toBool();
 	}
 
 	if (itsArgSeparator == itsDecimalPoint) {
@@ -388,13 +392,22 @@ void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag)
 	unsigned long tmp = numeric_cast<unsigned long>(val);
 	switch (baseTag) {
 		case 'b':
-			retv = QString::number(tmp, 2);
+			if (itsShowBasePrefix) {
+				retv = "0b";
+			}
+			retv += QString::number(tmp, 2);
 			break;
 		case 'h':
-			retv = QString::number(tmp, 16).toUpper();
+			if (itsShowBasePrefix) {
+				retv = "0x";
+			}
+			retv += QString::number(tmp, 16).toUpper();
 			break;
 		case 'o':
-			retv = QString::number(tmp, 8);
+			if (itsShowBasePrefix) {
+				retv = "0";
+			}
+			retv += QString::number(tmp, 8);
 			break;
 		case 'd':
 		default:

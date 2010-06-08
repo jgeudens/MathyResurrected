@@ -138,6 +138,7 @@ private:
 	bool itsShowGroupChar;
 	double itsZeroTreshold;
 	QChar itsGroupimgCharacter;
+	bool itsShowBasePrefix;
 
 	QString m_tempExpr;
 	

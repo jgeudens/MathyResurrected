@@ -55,6 +55,7 @@ private slots:
 	void setOutputBaseHex(bool flag) { itsShowHex = flag; }
 	void setOutputBaseOct(bool flag) { itsShowOct = flag; }
 	void setOutputBaseBin(bool flag) { itsShowBin = flag; }
+	void setOutputBasePrefix(bool flag) { itsShowBasePrefix = flag; }
 	void setAllDefaults();
 
 public:
@@ -75,6 +76,7 @@ public:
 	static QString keyNameOutputShowBin() { return QString("MathyResurrected/OutputHexadecimal"); }
 	static QString keyNameOutputShowHex() { return QString("MathyResurrected/OutputOctal"); }
 	static QString keyNameOutputShowOct() { return QString("MathyResurrected/OutputBinary"); }
+	static QString keyNameShowBasePrefix() { return QString("MathyResurrected/OutputBaseShowPrefix"); }
 	
 	void writeSettings();
 
@@ -88,6 +90,7 @@ public:
 	static bool defaultOutputShowBin() { return false; }
 	static bool defaultOutputShowHex() { return false; }
 	static bool defaultOutputShowOct() { return false; }
+	static bool defaultShowBasePrefix() { return true; }
 
 private:
 	QChar itsArgSeparator;
@@ -104,6 +107,7 @@ private:
 	bool itsShowBin;
 	bool itsShowHex;
 	bool itsShowOct;
+	bool itsShowBasePrefix;
 	
 	void connectAll();
 	void setupUiByAppSettings();
