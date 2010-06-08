@@ -559,3 +559,47 @@ mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
  
 	return retv;
 }
+
+mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
+	ANTLR3_UINT32 len = strin->len;
+	string str;
+	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
+		str += static_cast<char>(strin->charAt(strin, i));;
+	}
+
+	mrNumeric_t retv;
+
+	std::stringstream convertor;
+	convertor << str;
+	unsigned long int result;
+	if (!(convertor >> std::hex >> result) || !convertor.eof()) {
+		throw NumericConversionError("Range error: " + str);
+	}
+
+	retv = result;
+	return retv;
+}
+
+mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
+	ANTLR3_UINT32 len = strin->len;
+	string str;
+	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
+		str += static_cast<char>(strin->charAt(strin, i));;
+	}
+
+	mrNumeric_t retv;
+
+	std::stringstream convertor;
+	convertor << str;
+	long int result;
+	if (!(convertor >> std::oct >> result) || !convertor.eof()) {
+		throw NumericConversionError("Range error: " + str);
+	}
+
+	retv = result;
+	return retv;
+}
+
+mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
+	return 0;
+}

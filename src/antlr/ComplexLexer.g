@@ -114,7 +114,7 @@ HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
 
 OCTAL_NUMBER : '0' ('0'..'7')+ ;
 
-BINARY_NUMBER : '0' ('b'|'B') ('0'..'1') ;
+BINARY_NUMBER : '0' ('b'|'B') ('0'..'1')+ ;
 
 FLOAT_NUMBER  
 	: FLOAT_MANTISSA EXPONENT?

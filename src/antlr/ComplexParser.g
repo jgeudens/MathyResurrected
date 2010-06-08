@@ -119,4 +119,21 @@ imaginary_number
     : real_number? COMPLEX_UNIT -> ^(IM real_number? COMPLEX_UNIT)
 	;
 
-real_number : FLOAT_NUMBER -> ^(RE FLOAT_NUMBER);
+real_number 
+	:	 dec_num
+	|	 hex_num
+	|	 oct_num
+	|	 bin_num
+	;
+	
+dec_num
+	:	 FLOAT_NUMBER -> ^(RE FLOAT_NUMBER);
+	
+hex_num 
+	:	 HEX_NUMBER -> ^(HEX HEX_NUMBER);
+	
+oct_num
+	:	OCTAL_NUMBER -> ^(OCT OCTAL_NUMBER);
+	
+bin_num 
+	:	BINARY_NUMBER -> ^(BIN BINARY_NUMBER);

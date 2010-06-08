@@ -325,10 +325,44 @@ imaginary_number returns [mrComplex_ptr compl_retv]
     ;
 
 real_number returns [mrComplex_ptr compl_retv]
+	:	 dec_num { $compl_retv =  $dec_num.compl_retv; }
+	|	 hex_num { $compl_retv =  $hex_num.compl_retv; }
+	|	 oct_num { $compl_retv =  $oct_num.compl_retv; }
+	|	 bin_num { $compl_retv =  $bin_num.compl_retv; }
+	;
+	
+dec_num returns [mrComplex_ptr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
 	$compl_retv->imag = 0.0; 
 }
     : ^(RE FLOAT_NUMBER) {
     	$compl_retv->real = parse_mrNumeric_t ($FLOAT_NUMBER->getText($FLOAT_NUMBER));
+    };
+	
+hex_num returns [mrComplex_ptr compl_retv]
+@init { 
+	$compl_retv = newMrComplex(); 
+	$compl_retv->imag = 0.0; 
+}
+    : ^(HEX HEX_NUMBER) {
+    	$compl_retv->real = parse_hex_mrNumeric_t ($HEX_NUMBER->getText($HEX_NUMBER));
+    };
+	
+oct_num returns [mrComplex_ptr compl_retv]
+@init { 
+	$compl_retv = newMrComplex(); 
+	$compl_retv->imag = 0.0; 
+}
+    : ^(OCT OCTAL_NUMBER) {
+    	$compl_retv->real = parse_oct_mrNumeric_t ($OCTAL_NUMBER->getText($OCTAL_NUMBER));
+    };
+	
+bin_num returns [mrComplex_ptr compl_retv]
+@init { 
+	$compl_retv = newMrComplex(); 
+	$compl_retv->imag = 0.0; 
+}
+    : ^(BIN BINARY_NUMBER) {
+    	$compl_retv->real = parse_bin_mrNumeric_t ($BINARY_NUMBER->getText($BINARY_NUMBER));
     };
