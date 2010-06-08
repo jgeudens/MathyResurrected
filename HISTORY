@@ -1,3 +1,11 @@
+v 0.1.2
+=======
+- added suport for binary, hexadecimal and octal numbers in input and output.
+- added bunch of options related to new number representation.
+- because it became more serious calculator, MathyResurrected got more serious
+  icon. New icon taken from Crystal project, mainly to distinct MathyResurrected
+  from Calcy.
+
 v 0.1.1
 =======
 * Changed the way "ans" variable is calculated. Now enter key has to be pressed

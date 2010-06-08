@@ -52,9 +52,10 @@ Features
     - some predefined math constants (see the list below)
     - ignores space
     - Configurable decimal point separator and function argument separator
-	- Configurable thousands separator
+    - Configurable thousands separator
     - Configurable result format
     - SI and binary unit prefixes
+    - binary, hexadecimal nad octal input and output
     
 ===========================================================================
                              Numeric input
@@ -276,3 +277,16 @@ equal to 12*10^3 or is it 12*e+3? So, say once again with me: there is no
 implicit multiplication with constants. On the other hand, it is allowed to 
 use constant alone instead of multiplying it with one, ie. 34+e, pi+25, 
 (instead of 34+1*e, 1*pi+25) etc...
+
+===========================================================================
+                    Binary, hexadecimal and octal numbers 
+===========================================================================
+
+    All these bases are supported in input, but only as integers. If present 
+in output (which is configurable) these numbers represent cut-off value of 
+actual calculation which is done with floats. When in input, numbers 
+must be prefixed with their base prefix:
+
+    "0b" or "0B"    - for binary numbers.         Example: 0b10001111
+    "0x" or "0X"    - for hexadecimal numbers.    Example: 0x44AFF
+    "0"             - for octal numbers           Example: 01557

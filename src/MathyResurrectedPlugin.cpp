@@ -164,7 +164,7 @@ void MathyResurrectedPlugin::endDialog(bool accept) {
 }
 
 QString MathyResurrectedPlugin::getIcon() {
-	return libPath + "/icons/mathyresurrected.ico";
+	return libPath + "/icons/mathyresurrected.png";
 }
 
 void MathyResurrectedPlugin::setPath(QString * path) {
