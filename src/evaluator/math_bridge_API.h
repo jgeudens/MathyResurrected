@@ -32,6 +32,13 @@ C parser/lexer/evaluator with C++ std::complex */
 extern "C" {
 #endif
 
+/*! Returns pointer to new mrComplex_t. This pointer should never 
+be deleted directly, it is handled automatically. */
+mrComplex_ptr newMrComplex();
+void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
+void setAns(mrNumeric_t real, mrNumeric_t imag);
+mrComplex_ptr getAns();
+
 /*! To avoid passing around ANTLR3_STRING as much as possible
 and to simplify implementation of SI unit conversion, this enum 
 is used. 

@@ -18,6 +18,7 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <antlr3.h>
 #include <cmath>
 #include <complex>
 #include <boost/math/complex.hpp>
@@ -36,6 +37,44 @@ using namespace std;
 using namespace mathy_resurrected;
 
 typedef std::complex<mrNumeric_t> mr_StdComplex_t;
+
+/** Global data used by bridge API. Although this doesn't make this API much
+tread safer than before, at leaset this "unsafety" has been localized and 
+modulatized. */
+BridgeAPIGlobals* globalData = 0;
+
+void init_bridge_API (BridgeAPIGlobals* globs) {
+	if(globs == 0) {
+		throw invalid_argument("Null pointer not allowed!");
+	}
+	globalData = globs;
+}
+
+mrComplex_ptr newMrComplex() {
+	mrComplex_ptr p = new mrComplex_t;
+	p->real = 0; p->imag = 0;
+	boost::shared_ptr< mrComplex_t > sp(p);
+	globalData->complexFactoryData.push_back(sp);
+	return p;
+}
+
+/*! Collects lexer errors during lexing phase so they can be used
+to check for things like unmatched parentheses, illegal input etc... */
+void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_code) {
+	BridgeAPIGlobals::mr_LexerErrorPair p;
+	p.char_index = char_index;
+	p.err_type = err_code;
+	globalData->lexerErrorsCollection.push_back(p);
+}
+
+void setAns(mrNumeric_t real, mrNumeric_t imag) {
+	globalData->ans.real = real;
+	globalData->ans.imag = imag;
+}
+
+mrComplex_ptr getAns() {
+	return &(globalData->ans);
+}
 
 mrNumeric_t mr_pi() {
 	static const mrNumeric_t 

@@ -26,34 +26,35 @@ C parser/lexer/evaluator with C++ std::complex */
 #ifndef MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS
 #define MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS
 
+#include <vector>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include "math_bridge_API_types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/** Structure that holds global variables needed by math bridge API.
+Bridge API is initialized with instance of this struct and then uses
+it's members to store data. This had to be done because ANTLR generates
+C-api which can't be used directly with C++ */
+struct BridgeAPIGlobals {
+	BridgeAPIGlobals() {
+		ans.real = ans.imag = 0;
+	}
 
-/*! Returns pointer to new mrComplex_t. This pointer should never 
-be deleted directly, it is handled automatically. */
-mrComplex_ptr newMrComplex();
+	typedef struct {
+		unsigned int char_index;
+		MR_LEXER_ERROR_TYPES err_type;
+	} mr_LexerErrorPair;
 
-typedef struct {
-	ANTLR3_UINT32 char_index;
-	MR_LEXER_ERROR_TYPES err_type;
-} LexerErrorPair;
+	/*! All lexer errors are collected here during lexing phase. After 
+	that and before parser is invoked, this can be used to generate error 
+	message. */
+	std::vector <mr_LexerErrorPair> lexerErrorsCollection;
 
-void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-unsigned int countLexerErrors();
-LexerErrorPair getLexerError(unsigned int which);
+	/*! Data storage for factory produced objects. */
+	std::vector< boost::shared_ptr< mrComplex_t > > complexFactoryData;
 
-void clear_factories();
-void setAns(mrNumeric_t real, mrNumeric_t imag);
-mrComplex_ptr getAns();
+	mrComplex_t ans;
+};
 
-/*! Return value of previous calculation */
-mrComplex_ptr mr_ans();
-
-#ifdef __cplusplus
-}
-#endif
+void init_bridge_API (BridgeAPIGlobals* globs);
 
 #endif // MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS

@@ -40,12 +40,12 @@ namespace mathy_resurrected {
 #ifdef _DEBUG
 void MathEvaluator::printLexerErrors() const {
 	unsigned int i = 0;
-	unsigned int iend = countLexerErrors();
+	unsigned int iend = itsBAPI.lexerErrorsCollection.size();
 
 	for (; i != iend; ++i) {
-		cout << "Char at: " << getLexerError(i).char_index;
+		cout << "Char at: " << itsBAPI.lexerErrorsCollection[i].char_index;
 		cout << " Error: ";
-		switch (getLexerError(i).err_type) {
+		switch (itsBAPI.lexerErrorsCollection[i].err_type) {
 			case LEX_ERR_MALFORMED_MANTISSA:
 				cout << "LEX_ERR_MALFORMED_MANTISSA";
 				break;
@@ -122,7 +122,6 @@ MathEvaluator::LexerParser::~LexerParser() {
 	if (tokenStream != NULL) { tokenStream->free (tokenStream); tokenStream = NULL; }
 	if (lexer != NULL) { lexer->free (lexer); lexer = NULL; }
 	if (inputStream != NULL) { inputStream->close (inputStream); inputStream = NULL; }
-	clear_factories();
 }
 
 QString MathEvaluator::defaultDecimalPointTag() {
@@ -139,6 +138,7 @@ MathEvaluator::MathEvaluator(QSettings* app_settings) :
 {
 	real = imag = 0;
 	setAns(0, 0);
+	init_bridge_API(&itsBAPI);
 	changeEvaluatorSettings(app_settings);
 }
 
@@ -250,6 +250,9 @@ bool MathEvaluator::validate() {
 		}
 		itsIsValidated = true;
 	}
+
+	itsBAPI.complexFactoryData.clear();
+	itsBAPI.lexerErrorsCollection.clear();
 	return itsIsValid;
 }
 
@@ -294,12 +297,14 @@ bool MathEvaluator::evaluate() {
 		}
 		itsIsEvaluated = true;
 	}
+
+	itsBAPI.complexFactoryData.clear();
+	itsBAPI.lexerErrorsCollection.clear();
 	return itsIsValid;
 }
 
 void MathEvaluator::storeAns() {
-	itsAns.real = real; itsAns.imag = imag;
-	setAns(real, imag);
+	itsBAPI.ans.real = real; itsBAPI.ans.imag = imag;
 }
 
 const QString& MathEvaluator::toString() {

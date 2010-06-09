@@ -29,6 +29,7 @@
 #include <boost/smart_ptr/shared_array.hpp>
 #include "MathyResurrectedExceptions.h"
 #include "math_bridge_API_types.h"
+#include "math_bridge_globals.h"
 
 namespace mathy_resurrected {
 
@@ -69,7 +70,7 @@ public:
 	/** Stores current state of calculation for future use by "ans" 
 	variable in expression. */
 	void storeAns();
-	const mrComplex_t& ans() const { return itsAns; }
+	const mrComplex_t& ans() const { return itsBAPI.ans; }
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
@@ -96,7 +97,7 @@ private:
 	bool itsIsValid;		/*!< true if expression is valid */
 	bool itsIsEvaluated;	/*!< true if expression has been evaluated */
 	QString itsResult;		/*!< Result as string, or error as string. Handled by toString methods. */
-	mrComplex_t itsAns;		/*!< Result of last calculation. */
+	BridgeAPIGlobals itsBAPI;
 
 	// Input expression variables
 	/*! Type to hold expression that will be passed to lexer and parser. */
