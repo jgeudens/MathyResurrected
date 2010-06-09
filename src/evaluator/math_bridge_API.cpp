@@ -25,27 +25,84 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/dynamic_bitset.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <string>
+#include <vector>
 #include "MathyResurrectedExceptions.h"
 #include "math_bridge_API.h"
 #include "MathEvaluator.h"
 
 using namespace boost;
 using namespace boost::math;
-using namespace mathy_resurrected;
 using namespace std;
+using namespace mathy_resurrected;
+
+//////////////////////////////////////////////////////////////////////////
+//
+//                   Global variables section
+//
+//////////////////////////////////////////////////////////////////////////
 
 typedef std::complex<mrNumeric_t> mr_StdComplex_t;
 
+/*! All lexer errors are collected here during lexing phase. After that and before parser is 
+invoked, this can be used to generate error message.
+@todo All this data is currently ignored by MathEvaluator and no detailed errors are produced 
+(it is only checked if there are errors or not and itsIsValid is set properly. */
+vector <LexerErrorPair> lexerErrorsCollection;
+
+/*! Data storage for factory produced objects. */
+vector< boost::shared_ptr< mrComplex_t > > complexFactoryData;
+
 mrComplex_ptr newMrComplex() {
-	return MathEvaluator::getNewBridgeComplex();
+	mrComplex_ptr p = new mrComplex_t;
+	p->real = 0; p->imag = 0;
+	boost::shared_ptr< mrComplex_t > sp(p);
+	complexFactoryData.push_back(sp);
+	return p;
 }
 
 /*! Collects lexer errors during lexing phase so they can be used
 to check for things like unmatched parentheses, illegal input etc... */
-void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type) {
-	MathEvaluator::addNewLexerError(char_index, err_type);
+void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_code) {
+	LexerErrorPair p;
+	p.char_index = char_index;
+	p.err_type = err_code;
+	lexerErrorsCollection.push_back(p);
 }
+
+unsigned int countLexerErrors() {
+	return static_cast<unsigned int>(lexerErrorsCollection.size());
+}
+
+LexerErrorPair getLexerError(unsigned int which) {
+	return lexerErrorsCollection.at(which);
+}
+
+void clear_factories() {
+	lexerErrorsCollection.clear();
+	complexFactoryData.clear();
+}
+
+mrComplex_t ans;
+
+void setAns(mrNumeric_t real, mrNumeric_t imag) {
+	ans.real = real;
+	ans.imag = imag;
+}
+
+mrComplex_ptr mr_ans() {
+	mrComplex_ptr retv = newMrComplex();
+	retv->real = ans.real;
+	retv->imag = ans.imag;
+	return retv;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//
+//               End of global variables section
+//
+//////////////////////////////////////////////////////////////////////////
 
 mrNumeric_t mr_pi() {
 	static const mrNumeric_t 
@@ -56,13 +113,6 @@ mrNumeric_t mr_pi() {
 mrNumeric_t mr_e() {
 	static const mrNumeric_t eVal = exp((mrNumeric_t)(1.0));
 	return eVal;
-}
-
-mrComplex_ptr mr_ans() {
-	mrComplex_ptr retv = newMrComplex();
-	retv->real = MathEvaluator::Ans().real;
-	retv->imag = MathEvaluator::Ans().imag;
-	return retv;
 }
 
 typedef const mrComplex_t* const mrComplex_const_ptr;
