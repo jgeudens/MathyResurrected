@@ -63,11 +63,13 @@ SOURCES += $$PWD/src/MathyResurrectedOptionsDialog.cpp \
 	$$PWD/src/MathyResurrectedPlugin.cpp \
 	$$PWD/src/evaluator/MathEvaluator.cpp \
 	$$PWD/src/evaluator/MathyResurrectedExceptions.cpp \
+	$$PWD/src/evaluator/math_bridge_globals.cpp \
 	$$PWD/src/evaluator/math_bridge_API.cpp
 HEADERS += $$PWD/src/MathyResurrectedOptionsDialog.h \
 	$$PWD/src/MathyResurrectedPlugin.h \
 	$$PWD/src/evaluator/MathEvaluator.h \
 	$$PWD/src/evaluator/MathyResurrectedExceptions.h \
+	$$PWD/src/evaluator/math_bridge_globals.h \
 	$$PWD/src/evaluator/math_bridge_API.h \
 	$$PWD/src/evaluator/math_bridge_API_types.h
 INCLUDEPATH += $$PWD/src \

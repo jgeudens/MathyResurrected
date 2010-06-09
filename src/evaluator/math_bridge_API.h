@@ -53,29 +53,10 @@ typedef enum {
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
 
-/*! Returns pointer to new mrComplex_t. This pointer should never 
-be deleted directly, it is handled automatically. */
-mrComplex_ptr newMrComplex();
-
-typedef struct {
-	ANTLR3_UINT32 char_index;
-	MR_LEXER_ERROR_TYPES err_type;
-} LexerErrorPair;
-
-void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-unsigned int countLexerErrors();
-LexerErrorPair getLexerError(unsigned int which);
-
-void clear_factories();
-void setAns(mrNumeric_t real, mrNumeric_t imag);
-mrComplex_ptr getAns();
-
 /*! Return value of PI */
 mrNumeric_t mr_pi();
 /*! Return value of e */
 mrNumeric_t mr_e();
-/*! Return value of previous calculation */
-mrComplex_ptr mr_ans();
 
 mrComplex_ptr mr_add (mrComplex_ptr lv, mrComplex_ptr rv);
 mrComplex_ptr mr_substract (mrComplex_ptr lv, mrComplex_ptr rv);

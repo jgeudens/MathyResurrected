@@ -21,6 +21,8 @@
 #ifndef MATHY_RESURRECTED_MATH_BRIDGE_TYPES
 #define MATHY_RESURRECTED_MATH_BRIDGE_TYPES
 
+#include <antlr3.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
