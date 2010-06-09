@@ -26,29 +26,17 @@
 
 namespace mathy_resurrected {
 
-/*! Base class for MathyResurrected exceptions. */
-class MathyResurrectedException : public std::exception {
-public:
-	MathyResurrectedException();
-	MathyResurrectedException(const std::string& message);
-};
-
-class NaN : public MathyResurrectedException {
-public:
-	NaN();
-};
-
-class NumericConversionError : public MathyResurrectedException {
+class NumericConversionError : public std::invalid_argument {
 public:
 	NumericConversionError(const std::string& exp);
 };
 
-class DomainError : public MathyResurrectedException {
+class DomainError : public std::invalid_argument {
 public:
 	DomainError();
 };
 
-class IllegalOperand : public MathyResurrectedException {
+class IllegalOperand : public std::invalid_argument {
 public:
 	IllegalOperand();
 };
