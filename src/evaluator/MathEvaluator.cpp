@@ -339,7 +339,7 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 
 			// If number is close enough to zero, we make it zero 
 			// explicitly (but for display purposes only)
-			mrNumeric_t im_disp = imag, re_disp = real;
+			mrReal im_disp = imag, re_disp = real;
 			if (abs(im_disp) < abs(itsZeroTreshold)) {
 				im_disp = 0;
 			}
@@ -354,7 +354,7 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 					sign = " - ";
 				}
 
-				mrNumeric_t tmp = abs(im_disp);
+				mrReal tmp = abs(im_disp);
 				numberToString(tmp, im_str, baseTag);
 				add_i = true;
 			}
@@ -371,7 +371,7 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 	// so don't touch it.
 }
 
-qlonglong MathEvaluator::safe_convert(mrNumeric_t val, bool& ok, QString& error_mess) {
+qlonglong MathEvaluator::safe_convert(mrReal val, bool& ok, QString& error_mess) {
 	qlonglong retv;
 	try {
 		retv = numeric_cast<qlonglong>(val);
@@ -385,7 +385,7 @@ qlonglong MathEvaluator::safe_convert(mrNumeric_t val, bool& ok, QString& error_
 	return retv;
 }
 
-void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag) const {
+void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) const {
 	QLocale loc = QLocale::c();
 
 	qlonglong tmp;

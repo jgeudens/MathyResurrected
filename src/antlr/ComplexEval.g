@@ -325,7 +325,7 @@ si_unit_ref returns [mrComplex_ptr compl_retv]
 
 imaginary_number returns [mrComplex_ptr compl_retv]
 @init {
-	mrNumeric_t numb = 0;
+	mrReal numb = 0;
 	char num_present = 0;
 	$compl_retv = newMrComplex();
 	$compl_retv->real = 0;

@@ -26,12 +26,12 @@ extern "C" {
 #endif
 
 /*! Numeric type used for all math calculations */
-typedef double mrNumeric_t;
+typedef double mrReal;
 
 /*! This is a replacement for std::complex<T>. ANTLR doesn't have C++ API
 so actions inside grammar use this type to pass around complex nnumbers. */
 typedef struct {
-	mrNumeric_t real, imag;
+	mrReal real, imag;
 } mrComplex_t;
 
 /*! Pointer to mrComplex_t */ 

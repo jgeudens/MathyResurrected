@@ -36,13 +36,13 @@ extern "C" {
 be deleted directly, it is handled automatically. */
 mrComplex_ptr newMrComplex();
 void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-void setAns(mrNumeric_t real, mrNumeric_t imag);
+void setAns(mrReal real, mrReal imag);
 mrComplex_ptr getAns();
 
 /*! Return value of PI */
-mrNumeric_t mr_pi();
+mrReal mr_pi();
 /*! Return value of e */
-mrNumeric_t mr_e();
+mrReal mr_e();
 
 /*! To avoid passing around ANTLR3_STRING as much as possible
 and to simplify implementation of SI unit conversion, this enum 
@@ -64,7 +64,7 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
-mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix);
+mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix);
 
 typedef enum {
 	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW,
@@ -97,10 +97,10 @@ typedef enum {
 } MR_MATH_BINARY_FUNCTIONS;
 mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr arg1, mrComplex_ptr arg2);
 
-mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING str);
-mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING str);
-mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING str);
-mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING str);
+mrReal parse_mrNumeric_t (pANTLR3_STRING str);
+mrReal parse_hex_mrNumeric_t (pANTLR3_STRING str);
+mrReal parse_oct_mrNumeric_t (pANTLR3_STRING str);
+mrReal parse_bin_mrNumeric_t (pANTLR3_STRING str);
 
 #ifdef __cplusplus
 }

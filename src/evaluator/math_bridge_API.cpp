@@ -36,7 +36,7 @@ using namespace boost::math;
 using namespace std;
 using namespace mathy_resurrected;
 
-typedef std::complex<mrNumeric_t> mr_StdComplex_t;
+typedef std::complex<mrReal> mr_StdComplex_t;
 typedef const mrComplex_t* const mrComplex_const_ptr;
 
 /*! Converts between tree parser return value and std::complex<T> */
@@ -80,7 +80,7 @@ void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_code) 
 	globalData->lexerErrorsCollection.push_back(p);
 }
 
-void setAns(mrNumeric_t real, mrNumeric_t imag) {
+void setAns(mrReal real, mrReal imag) {
 	globalData->ans.real = real;
 	globalData->ans.imag = imag;
 }
@@ -89,19 +89,19 @@ mrComplex_ptr getAns() {
 	return &(globalData->ans);
 }
 
-mrNumeric_t mr_pi() {
-	static const mrNumeric_t 
-		piVal = atan2((mrNumeric_t)(0.0), static_cast<mrNumeric_t>(-1.0));
+mrReal mr_pi() {
+	static const mrReal 
+		piVal = atan2((mrReal)(0.0), static_cast<mrReal>(-1.0));
 	return piVal;
 }
 
-mrNumeric_t mr_e() {
-	static const mrNumeric_t eVal = exp((mrNumeric_t)(1.0));
+mrReal mr_e() {
+	static const mrReal eVal = exp((mrReal)(1.0));
 	return eVal;
 }
 
-mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix) {
-	mrNumeric_t suff_val, retv;
+mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix) {
+	mrReal suff_val, retv;
 
 	switch (si_prefix) {
 		case MR_MATH_SI_PREFIX_YOTTA:
@@ -216,7 +216,7 @@ mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr 
 			break;
 		case MR_MOD:
 			retv_c.imag(0);
-			retv_c.real(static_cast<mrNumeric_t>(fmod(lv->real, rv->real)));
+			retv_c.real(static_cast<mrReal>(fmod(lv->real, rv->real)));
 			break;
 		case MR_POW:
 			retv_c = std::pow(lv_c, rv_c);
@@ -372,7 +372,7 @@ mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr 
 }
 
 /*! Parsing of numeric types. */
-mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_mrNumeric_t (pANTLR3_STRING strin) {
 	string str;
 	ANTLR3_UINT32 len = strin->len;
 
@@ -402,9 +402,9 @@ mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
 		}
 	}
 
-	mrNumeric_t retv;
+	mrReal retv;
 	try {
-		retv = numeric_cast<mrNumeric_t>(lexical_cast<mrNumeric_t, string>(str));
+		retv = numeric_cast<mrReal>(lexical_cast<mrReal, string>(str));
 	}
 	catch (bad_lexical_cast&) {
 		throw NumericConversionError("Range error: " + str);
@@ -416,14 +416,14 @@ mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	string str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
 		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
-	mrNumeric_t retv;
+	mrReal retv;
 
 	std::stringstream convertor;
 	convertor << str;
@@ -436,14 +436,14 @@ mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	string str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
 		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
-	mrNumeric_t retv;
+	mrReal retv;
 
 	std::stringstream convertor;
 	convertor << str;
@@ -456,7 +456,7 @@ mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	string tmpS;
 	for (ANTLR3_UINT32 i = 2; i < len; ++i) { // Skipping "0b"
@@ -464,7 +464,7 @@ mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
 		tmpS.push_back(digit);
 	}
 
-	mrNumeric_t retv;
+	mrReal retv;
 	long int result;
 	dynamic_bitset<> set(tmpS);
 	result = set.to_ulong();

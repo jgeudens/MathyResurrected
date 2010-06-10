@@ -74,17 +74,17 @@ public:
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
-	mrNumeric_t Re() const { return real; }
+	mrReal Re() const { return real; }
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
-	mrNumeric_t Im() const { return imag; }
+	mrReal Im() const { return imag; }
 
 	const QString& toString();
 	QString toStringBin() const;
 	QString toStringHex() const;
 	QString toStringOct() const;
 
-	static qlonglong safe_convert(mrNumeric_t val, bool& ok, QString& error_mess);
+	static qlonglong safe_convert(mrReal val, bool& ok, QString& error_mess);
 
 #ifdef _DEBUG
 	void printLexerErrors() const;
@@ -127,7 +127,7 @@ private:
 	/*! This should return same character that was used in grammar */
 	static QChar internalArgSeparator() { return QChar('#'); }
 
-	void numberToString(mrNumeric_t val, QString& retv, char baseTag) const;
+	void numberToString(mrReal val, QString& retv, char baseTag) const;
 	void toString(char baseTag, QString& dest) const;
 	
 	struct LexerParser;
