@@ -40,15 +40,15 @@ typedef std::complex<mrNumeric_t> mr_StdComplex_t;
 typedef const mrComplex_t* const mrComplex_const_ptr;
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& compl, mrComplex_const_ptr mrretv) {
-	compl.real(mrretv->real);
-	compl.imag(mrretv->imag);
+inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& dest, mrComplex_const_ptr src) {
+	dest.real(src->real);
+	dest.imag(src->imag);
 }
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr mrretv, const mr_StdComplex_t& compl) {
-	mrretv->real = compl.real();
-	mrretv->imag = compl.imag();
+inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr dest, const mr_StdComplex_t& src) {
+	dest->real = src.real();
+	dest->imag = src.imag();
 }
 
 /** Global data used by bridge API. Although this doesn't make this API much
@@ -191,6 +191,76 @@ mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix) {
 	}
 
 	retv = suff_val * multipl;
+	return retv;
+}
+
+mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv) {
+	mrComplex_ptr retv = newMrComplex();
+	mr_StdComplex_t rv_c, lv_c, retv_c;
+
+	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
+	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
+
+	switch (which) {
+		case MR_PLUS:
+			retv_c = lv_c + rv_c;
+			break;
+		case MR_MINUS:
+			retv_c = lv_c - rv_c;
+			break;
+		case MR_MULTI:
+			retv_c = lv_c * rv_c;;
+			break;
+		case MR_DIV:
+			retv_c = lv_c / rv_c;;
+			break;
+		case MR_MOD:
+			retv_c.imag(0);
+			retv_c.real(static_cast<mrNumeric_t>(fmod(lv->real, rv->real)));
+			break;
+		case MR_POW:
+			retv_c = std::pow(lv_c, rv_c);
+			break;
+		case MR_BITWISE_AND:
+			retv_c.imag(0);
+			//retv->real = x->real & y->real;
+			break;
+		case MR_BITWISE_OR:
+			retv_c.imag(0);
+			//retv->real = x->real | y->real;
+			break;
+		case MR_BITWISE_NAND:
+			retv_c.imag(0);
+			//retv->real = ~(x->real & y->real);
+			break;
+		case MR_BITWISE_NOR:
+			retv_c.imag(0);
+			//retv->real = ~(x->real | y->real);
+			break;
+		case MR_BITWISE_XOR:
+			retv_c.imag(0);
+			//retv->real = x->real ^ y->real;
+			break;
+		case MR_BITWISE_XNOR:
+			retv_c.imag(0);
+			//retv->real = ~(x->real ^ y->real);
+			break;
+	}
+
+	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
+	return retv;
+}
+
+mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val) {
+	mrComplex_ptr retv = newMrComplex();
+
+	switch (which) {
+		case  MR_BITWISE_NOT:
+			retv->imag = 0;
+			//retv->real = ~(x->real);
+			break;
+	}
+
 	return retv;
 }
 
@@ -457,146 +527,6 @@ mrComplex_ptr mr_polar(mrComplex_ptr x) {
 mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y) {
 	mrComplex_ptr retv = newMrComplex();
 	retv->real = std::atan2(x->real, y->real);
-	return retv;
-}
-
-mrComplex_ptr mr_pow (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg1_c, arg2_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg1_c, x);
-	MRCOMPLEX_2_STDCOMPLEX(arg2_c, y);
-
-	retv_c = std::pow(arg1_c, arg2_c);
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_add (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c + rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_substract (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c - rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_multiply (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c * rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_divide (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c / rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_modulo (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t retv_c;
-
-	retv_c.imag(0);
-	retv_c.real(static_cast<mrNumeric_t>(fmod(lv->real, rv->real)));
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_and (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->imag = 0;
-	//retv->real = x->real & y->real;
-
-	return retv;
-}
-
-mrComplex_ptr mr_or (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->imag = 0;
-	//retv->real = x->real | y->real;
-
-	return retv;
-}
-
-mrComplex_ptr mr_not (mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->imag = 0;
-	//retv->real = ~(x->real);
-
-	return retv;
-}
-
-mrComplex_ptr mr_nand (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->imag = 0;
-	//retv->real = !(x->real & y->real);
-
-	return retv;
-}
-
-mrComplex_ptr mr_nor (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->imag = 0;
-	//retv->real = ~(x->real | y->real);
-
-	return retv;
-}
-
-mrComplex_ptr mr_xor (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->imag = 0;
-	//retv->real = x->real ^ y->real;
-
-	return retv;
-}
-
-mrComplex_ptr mr_xnor (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->imag = 0;
-	//retv->real = ~(x->real ^ y->real);
-
 	return retv;
 }
 

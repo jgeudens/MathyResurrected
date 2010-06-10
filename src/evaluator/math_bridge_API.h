@@ -39,6 +39,11 @@ void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
 void setAns(mrNumeric_t real, mrNumeric_t imag);
 mrComplex_ptr getAns();
 
+/*! Return value of PI */
+mrNumeric_t mr_pi();
+/*! Return value of e */
+mrNumeric_t mr_e();
+
 /*! To avoid passing around ANTLR3_STRING as much as possible
 and to simplify implementation of SI unit conversion, this enum 
 is used. 
@@ -59,19 +64,20 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
-
-/*! Return value of PI */
-mrNumeric_t mr_pi();
-/*! Return value of e */
-mrNumeric_t mr_e();
-
-mrComplex_ptr mr_add (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_substract (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_multiply (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_divide (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_modulo (mrComplex_ptr lv, mrComplex_ptr rv);
-
 mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix);
+
+typedef enum {
+	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW,
+	MR_BITWISE_AND, MR_BITWISE_OR, 
+	MR_BITWISE_NAND, MR_BITWISE_NOR, 
+	MR_BITWISE_XOR, MR_BITWISE_XNOR
+} MR_MATH_BINARY_OPERATORS;
+mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv);
+
+typedef enum {
+	MR_BITWISE_NOT
+} MR_MATH_UNARY_OPERATORS;
+mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val);
 
 mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING str);
 mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING str);
@@ -104,16 +110,7 @@ mrComplex_ptr mr_rad(mrComplex_ptr x);
 mrComplex_ptr mr_norm(mrComplex_ptr x);
 mrComplex_ptr mr_polar(mrComplex_ptr x);
 
-mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y); 
-mrComplex_ptr mr_pow (mrComplex_ptr x, mrComplex_ptr y); 
-
-mrComplex_ptr mr_and (mrComplex_ptr x, mrComplex_ptr y); 
-mrComplex_ptr mr_or (mrComplex_ptr x, mrComplex_ptr y); 
-mrComplex_ptr mr_not (mrComplex_ptr x); 
-mrComplex_ptr mr_nand (mrComplex_ptr x, mrComplex_ptr y); 
-mrComplex_ptr mr_nor (mrComplex_ptr x, mrComplex_ptr y); 
-mrComplex_ptr mr_xor (mrComplex_ptr x, mrComplex_ptr y); 
-mrComplex_ptr mr_xnor (mrComplex_ptr x, mrComplex_ptr y); 
+mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y);
 
 #ifdef __cplusplus
 }
