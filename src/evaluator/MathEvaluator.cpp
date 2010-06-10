@@ -136,9 +136,9 @@ MathEvaluator::MathEvaluator(QSettings* app_settings) :
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false),
 	itsExprLen(0)
 {
+	init_bridge_API(&itsBAPI);
 	real = imag = 0;
 	setAns(0, 0);
-	init_bridge_API(&itsBAPI);
 	changeEvaluatorSettings(app_settings);
 }
 
@@ -374,24 +374,27 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag) const {
 	QLocale loc = QLocale::c();
 
-	unsigned long tmp = numeric_cast<unsigned long>(val);
+	qlonglong tmp;
 	switch (baseTag) {
 		case 'b':
 			if (itsShowBasePrefix) {
 				retv = "0b";
 			}
+			tmp = numeric_cast<qlonglong>(val);
 			retv += QString::number(tmp, 2);
 			break;
 		case 'h':
 			if (itsShowBasePrefix) {
 				retv = "0x";
 			}
+			tmp = numeric_cast<qlonglong>(val);
 			retv += QString::number(tmp, 16).toUpper();
 			break;
 		case 'o':
 			if (itsShowBasePrefix) {
 				retv = "0";
 			}
+			tmp = numeric_cast<qlonglong>(val);
 			retv += QString::number(tmp, 8);
 			break;
 		case 'd':

@@ -284,6 +284,10 @@ MathyResurrectedOptionsDialog::~MathyResurrectedOptionsDialog() {
 void MathyResurrectedOptionsDialog::writeSettings() {
 	QSettings* app_settings = *gmathyresurrectedInstance->settings;
 
+	app_settings->beginGroup("MathyResurrected");
+	app_settings->remove("");
+	app_settings->endGroup();
+
 	app_settings->setValue(keyNameArgSeparator(), itsArgSeparator);
 	app_settings->setValue(keyNameOutputFormat(), itsOutputFormat);
 	app_settings->setValue(keyNamePrecision(), itsPrecision);
