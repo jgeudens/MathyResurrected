@@ -371,31 +371,53 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 	// so don't touch it.
 }
 
+qlonglong MathEvaluator::safe_convert(mrNumeric_t val, bool& ok, QString& error_mess) {
+	qlonglong retv;
+	try {
+		retv = numeric_cast<qlonglong>(val);
+		ok = true;
+		error_mess = "";
+	}
+	catch (bad_numeric_cast&) {
+		ok = false;
+		error_mess = "Range error: " + QString::number(val);
+	}
+	return retv;
+}
+
 void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag) const {
 	QLocale loc = QLocale::c();
 
 	qlonglong tmp;
+	bool ok_falg;
+	QString tmpS;
 	switch (baseTag) {
 		case 'b':
-			if (itsShowBasePrefix) {
-				retv = "0b";
+			tmp = safe_convert(val, ok_falg, retv);
+			if (ok_falg) {
+				if (itsShowBasePrefix) {
+					retv = "0b";
+				}
+				retv += QString::number(tmp, 2);
 			}
-			tmp = numeric_cast<qlonglong>(val);
-			retv += QString::number(tmp, 2);
 			break;
 		case 'h':
-			if (itsShowBasePrefix) {
-				retv = "0x";
+			tmp = safe_convert(val, ok_falg, retv);
+			if (ok_falg) {
+				if (itsShowBasePrefix) {
+					retv = "0x";
+				}
+				retv += QString::number(tmp, 16).toUpper();
 			}
-			tmp = numeric_cast<qlonglong>(val);
-			retv += QString::number(tmp, 16).toUpper();
 			break;
 		case 'o':
-			if (itsShowBasePrefix) {
-				retv = "0";
+			tmp = safe_convert(val, ok_falg, retv);
+			if (ok_falg) {
+				if (itsShowBasePrefix) {
+					retv = "0";
+				}
+				retv += QString::number(tmp, 8);
 			}
-			tmp = numeric_cast<qlonglong>(val);
-			retv += QString::number(tmp, 8);
 			break;
 		case 'd':
 		default:

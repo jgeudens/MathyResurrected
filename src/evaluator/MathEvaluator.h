@@ -84,6 +84,8 @@ public:
 	QString toStringHex() const;
 	QString toStringOct() const;
 
+	static qlonglong safe_convert(mrNumeric_t val, bool& ok, QString& error_mess);
+
 #ifdef _DEBUG
 	void printLexerErrors() const;
 #endif // _DEBUG

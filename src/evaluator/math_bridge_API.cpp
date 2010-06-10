@@ -37,6 +37,19 @@ using namespace std;
 using namespace mathy_resurrected;
 
 typedef std::complex<mrNumeric_t> mr_StdComplex_t;
+typedef const mrComplex_t* const mrComplex_const_ptr;
+
+/*! Converts between tree parser return value and std::complex<T> */
+inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& compl, mrComplex_const_ptr mrretv) {
+	compl.real(mrretv->real);
+	compl.imag(mrretv->imag);
+}
+
+/*! Converts between tree parser return value and std::complex<T> */
+inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr mrretv, const mr_StdComplex_t& compl) {
+	mrretv->real = compl.real();
+	mrretv->imag = compl.imag();
+}
 
 /** Global data used by bridge API. Although this doesn't make this API much
 tread safer than before, at leaset this "unsafety" has been localized and 
@@ -85,20 +98,6 @@ mrNumeric_t mr_pi() {
 mrNumeric_t mr_e() {
 	static const mrNumeric_t eVal = exp((mrNumeric_t)(1.0));
 	return eVal;
-}
-
-typedef const mrComplex_t* const mrComplex_const_ptr;
-
-/*! Converts between tree parser return value and std::complex<T> */
-inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& compl, mrComplex_const_ptr mrretv) {
-	compl.real(mrretv->real);
-	compl.imag(mrretv->imag);
-}
-
-/*! Converts between tree parser return value and std::complex<T> */
-inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr mrretv, const mr_StdComplex_t& compl) {
-	mrretv->real = compl.real();
-	mrretv->imag = compl.imag();
 }
 
 mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix) {
@@ -535,6 +534,69 @@ mrComplex_ptr mr_modulo (mrComplex_ptr lv, mrComplex_ptr rv) {
 	retv_c.real(static_cast<mrNumeric_t>(fmod(lv->real, rv->real)));
 
 	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
+	return retv;
+}
+
+mrComplex_ptr mr_and (mrComplex_ptr x, mrComplex_ptr y) {
+	mrComplex_ptr retv = newMrComplex();
+
+	retv->imag = 0;
+	//retv->real = x->real & y->real;
+
+	return retv;
+}
+
+mrComplex_ptr mr_or (mrComplex_ptr x, mrComplex_ptr y) {
+	mrComplex_ptr retv = newMrComplex();
+
+	retv->imag = 0;
+	//retv->real = x->real | y->real;
+
+	return retv;
+}
+
+mrComplex_ptr mr_not (mrComplex_ptr x) {
+	mrComplex_ptr retv = newMrComplex();
+
+	retv->imag = 0;
+	//retv->real = ~(x->real);
+
+	return retv;
+}
+
+mrComplex_ptr mr_nand (mrComplex_ptr x, mrComplex_ptr y) {
+	mrComplex_ptr retv = newMrComplex();
+
+	retv->imag = 0;
+	//retv->real = !(x->real & y->real);
+
+	return retv;
+}
+
+mrComplex_ptr mr_nor (mrComplex_ptr x, mrComplex_ptr y) {
+	mrComplex_ptr retv = newMrComplex();
+
+	retv->imag = 0;
+	//retv->real = ~(x->real | y->real);
+
+	return retv;
+}
+
+mrComplex_ptr mr_xor (mrComplex_ptr x, mrComplex_ptr y) {
+	mrComplex_ptr retv = newMrComplex();
+
+	retv->imag = 0;
+	//retv->real = x->real ^ y->real;
+
+	return retv;
+}
+
+mrComplex_ptr mr_xnor (mrComplex_ptr x, mrComplex_ptr y) {
+	mrComplex_ptr retv = newMrComplex();
+
+	retv->imag = 0;
+	//retv->real = ~(x->real ^ y->real);
+
 	return retv;
 }
 
