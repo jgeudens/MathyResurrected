@@ -625,19 +625,15 @@ mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
 
 mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
-	dynamic_bitset<> set (len - 2);
+	string tmpS;
 	for (ANTLR3_UINT32 i = 2; i < len; ++i) { // Skipping "0b"
 		char digit = static_cast<char>(strin->charAt(strin, i));
-
-		if (digit == '0') {
-			set[i-2] = 0;
-		} else {
-			set[i-2] = 1;
-		}
+		tmpS.push_back(digit);
 	}
 
 	mrNumeric_t retv;
 	long int result;
+	dynamic_bitset<> set(tmpS);
 	result = set.to_ulong();
 	retv = result;
 	return retv;
