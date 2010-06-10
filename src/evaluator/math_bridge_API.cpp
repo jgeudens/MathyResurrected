@@ -264,269 +264,110 @@ mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr va
 	return retv;
 }
 
-mrComplex_ptr mr_sin(mrComplex_ptr x) {
+mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, mrComplex_ptr val) {
 	mrComplex_ptr retv = newMrComplex();
 	mr_StdComplex_t arg_c, retv_c;
+	MRCOMPLEX_2_STDCOMPLEX(arg_c, val);
 
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::sin(arg_c);
+	switch (which) {
+		case MR_FUN_SIN:
+			retv_c = std::sin(arg_c);
+			break;;
+		case MR_FUN_COS:
+			retv_c = std::cos(arg_c);
+			break;;
+		case MR_FUN_TAN:
+			retv_c = std::tan(arg_c);
+			break;;
+		case MR_FUN_ASIN:
+			retv_c = boost::math::asin(arg_c);
+			break;;
+		case MR_FUN_ACOS:
+			retv_c = boost::math::acos(arg_c);
+			break;;
+		case MR_FUN_ATAN:
+			retv_c = boost::math::atan(arg_c);
+			break;;
+		case MR_FUN_SINH:
+			retv_c = std::sinh(arg_c);
+			break;;
+		case MR_FUN_COSH:
+			retv_c = std::cosh(arg_c);
+			break;;
+		case MR_FUN_TANH:
+			retv_c = std::tanh(arg_c);
+			break;;
+		case MR_FUN_ASINH:
+			retv_c = boost::math::asinh(arg_c);
+			break;;
+		case MR_FUN_ACOSH:
+			retv_c = boost::math::acosh(arg_c);
+			break;;
+		case MR_FUN_ATANH:
+			retv_c = boost::math::atanh(arg_c);
+			break;;
+		case MR_FUN_EXP:
+			retv_c = std::exp(arg_c);
+			break;;
+		case MR_FUN_LOG:
+			retv_c = std::log(arg_c);
+			break;;
+		case MR_FUN_LOG10:
+			retv_c = std::log10(arg_c);
+			break;;
+		case MR_FUN_SQRT:
+			retv_c = std::sqrt(arg_c);
+			break;;
+		case MR_FUN_ABS:
+			retv_c = std::abs(arg_c);
+			break;;
+		case MR_FUN_RE:
+			retv_c.real(val->real); retv_c.imag(0.0);
+			break;;
+		case MR_FUN_IM:
+			retv_c.real(0.0); retv_c.imag(val->imag);
+			break;;
+		case MR_FUN_ARG:
+			retv_c = std::arg(arg_c);
+			break;;
+		case MR_FUN_CONJ:
+			retv_c = std::conj(arg_c);
+			break;;
+		case MR_FUN_DEG:
+			retv_c.real(fmod(val->real * 180 / mr_pi(), 360));
+			retv_c.imag(0.0);
+			break;;
+		case MR_FUN_RAD:
+			retv_c.real(fmod(val->real * mr_pi() / 180, 2*mr_pi()));
+			retv_c.imag(0.0);
+			break;;
+		case MR_FUN_NORM:
+			retv_c = std::norm(arg_c);
+			break;;
+		case MR_FUN_POLAR:
+			retv_c = std::polar(val->real, val->imag);
+			break;;
+	}
+
 	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
 	return retv;
 }
 
-mrComplex_ptr mr_cos(mrComplex_ptr x) {
+mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr arg1, mrComplex_ptr arg2) {
 	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
+	mr_StdComplex_t arg1_c, arg2_c, retv_c;
 
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::cos(arg_c);
+	MRCOMPLEX_2_STDCOMPLEX(arg1_c, arg1);
+	MRCOMPLEX_2_STDCOMPLEX(arg2_c, arg2);
+
+	switch (which) {
+		case MR_FUN2_ATAN2:
+			retv_c.real(std::atan2(arg1->real, arg2->real));
+			retv_c.imag(0.0);
+			break;
+	}
+
 	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_tan(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::tan(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_asin(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::asin(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_acos(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::acos(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_atan(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::atan(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_sinh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::sinh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_cosh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::cosh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_tanh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::tanh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_asinh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::asinh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_acosh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::acosh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_atanh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::atanh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_exp(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::exp(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_log(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::log(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_log10(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::log10(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_sqrt(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::sqrt(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_abs(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::abs(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_re(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	retv->real = x->real; retv->imag = 0.0;
-	return retv;
-}
-
-mrComplex_ptr mr_im(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	retv->imag = x->imag; retv->real = 0.0;
-	return retv;
-}
-
-mrComplex_ptr mr_arg(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::arg(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_conj(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::conj(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_deg(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->real = fmod(x->real * 180 / mr_pi(), 360);
-	retv->imag = 0;
-
-	return retv;
-}
-
-mrComplex_ptr mr_rad(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->real = fmod(x->real * mr_pi() / 180, 2*mr_pi());
-	retv->imag = 0;
-
-	return retv;
-}
-
-mrComplex_ptr mr_norm(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::norm(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_polar(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t retv_c;
-
-	retv_c = std::polar(x->real, x->imag);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-	retv->real = std::atan2(x->real, y->real);
 	return retv;
 }
 

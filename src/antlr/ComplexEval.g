@@ -107,60 +107,60 @@ atom returns [mrComplex_ptr compl_retv]
 
 funct_ref1 returns [mrComplex_ptr compl_retv]
 	: ^(FUNCTION FN_SIN expr) {		
-		$compl_retv = mr_sin ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_SIN, $expr.compl_retv); }
 	| ^(FUNCTION FN_COS expr) {		
-		$compl_retv = mr_cos ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_COS, $expr.compl_retv); }
 	| ^(FUNCTION FN_TAN expr) {		
-		$compl_retv = mr_tan ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_TAN, $expr.compl_retv); }
 	| ^(FUNCTION FN_ASIN expr) {		
-		$compl_retv = mr_asin ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ASIN, $expr.compl_retv); }
 	| ^(FUNCTION FN_ACOS expr) {		
-		$compl_retv = mr_acos ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ACOS, $expr.compl_retv); }
 	| ^(FUNCTION FN_ATAN expr) {		
-		$compl_retv = mr_atan ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ATAN, $expr.compl_retv); }
 	| ^(FUNCTION FN_SINH expr) {		
-		$compl_retv = mr_sinh ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_SINH, $expr.compl_retv); }
 	| ^(FUNCTION FN_COSH expr) {		
-		$compl_retv = mr_cosh ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_COSH, $expr.compl_retv); }
 	| ^(FUNCTION FN_TANH expr) {
-		$compl_retv = mr_tanh ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_TANH, $expr.compl_retv); }
 	| ^(FUNCTION FN_ASINH expr) {		
-		$compl_retv = mr_asinh ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ASINH, $expr.compl_retv); }
 	| ^(FUNCTION FN_ACOSH expr) {		
-		$compl_retv = mr_acosh ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ACOSH, $expr.compl_retv); }
 	| ^(FUNCTION FN_ATANH expr) {		
-		$compl_retv = mr_atanh ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ATANH, $expr.compl_retv); }
 	| ^(FUNCTION FN_EXP expr) {		
-		$compl_retv = mr_exp ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_EXP, $expr.compl_retv); }
 	| ^(FUNCTION FN_LN expr) {		
-		$compl_retv = mr_log ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_LOG, $expr.compl_retv); }
 	| ^(FUNCTION FN_LOG10 expr) {		
-		$compl_retv = mr_log10 ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_LOG10, $expr.compl_retv); }
 	| ^(FUNCTION FN_SQRT expr) {		
-		$compl_retv = mr_sqrt ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_SQRT, $expr.compl_retv); }
 	| ^(FUNCTION FN_ABS expr) {		
-		$compl_retv = mr_abs ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ABS, $expr.compl_retv); }
 	| ^(FUNCTION FN_RE expr) {		
-		$compl_retv = mr_re ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_RE, $expr.compl_retv); }
 	| ^(FUNCTION FN_IM expr) {		
-		$compl_retv = mr_im ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_IM, $expr.compl_retv); }
 	| ^(FUNCTION FN_ARG expr) {		
-		$compl_retv = mr_arg ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_ARG, $expr.compl_retv); }
 	| ^(FUNCTION FN_CONJ expr) {		
-		$compl_retv = mr_conj ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_CONJ, $expr.compl_retv); }
 	| ^(FUNCTION FN_DEG expr) {		
-		$compl_retv = mr_deg ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_DEG, $expr.compl_retv); }
 	| ^(FUNCTION FN_RAD expr) {		
-		$compl_retv = mr_rad ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_RAD, $expr.compl_retv); }
 	| ^(FUNCTION FN_NORM expr) {		
-		$compl_retv = mr_norm ($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_NORM, $expr.compl_retv); }
 	| ^(FUNCTION FN_POLAR expr) {		
-		$compl_retv = mr_polar($expr.compl_retv); }
+		$compl_retv = mr_unary_function (MR_FUN_POLAR, $expr.compl_retv); }
 	;
 
 funct_ref2 returns [mrComplex_ptr compl_retv]
 	: ^(FUNCTION FN_ATAN2 a=expr b=expr) {
-		$compl_retv = mr_atan2($a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_binary_function(MR_FUN2_ATAN2, $a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION FN_POW a=expr b=expr) {
 		$compl_retv = mr_binary_operator(MR_POW, $a.compl_retv, $b.compl_retv); 

@@ -79,38 +79,28 @@ typedef enum {
 } MR_MATH_UNARY_OPERATORS;
 mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val);
 
+typedef enum {
+	MR_FUN_SIN, MR_FUN_COS, MR_FUN_TAN, 
+	MR_FUN_ASIN, MR_FUN_ACOS, MR_FUN_ATAN, 
+	MR_FUN_SINH, MR_FUN_COSH, MR_FUN_TANH,
+	MR_FUN_ASINH, MR_FUN_ACOSH, MR_FUN_ATANH,
+	MR_FUN_EXP, MR_FUN_LOG, MR_FUN_LOG10,
+	MR_FUN_SQRT, MR_FUN_ABS, 
+	MR_FUN_RE, MR_FUN_IM, MR_FUN_ARG, MR_FUN_CONJ,
+	MR_FUN_DEG, MR_FUN_RAD, 
+	MR_FUN_NORM, MR_FUN_POLAR
+} MR_MATH_UNARY_FUNCTIONS;
+mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, mrComplex_ptr val);
+
+typedef enum {
+	MR_FUN2_ATAN2
+} MR_MATH_BINARY_FUNCTIONS;
+mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr arg1, mrComplex_ptr arg2);
+
 mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING str);
 mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING str);
 mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING str);
 mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING str);
-
-mrComplex_ptr mr_sin(mrComplex_ptr x);
-mrComplex_ptr mr_cos(mrComplex_ptr x);
-mrComplex_ptr mr_tan(mrComplex_ptr x);
-mrComplex_ptr mr_asin(mrComplex_ptr x);
-mrComplex_ptr mr_acos(mrComplex_ptr x);
-mrComplex_ptr mr_atan(mrComplex_ptr x);
-mrComplex_ptr mr_sinh(mrComplex_ptr x);
-mrComplex_ptr mr_cosh(mrComplex_ptr x);
-mrComplex_ptr mr_tanh(mrComplex_ptr x);
-mrComplex_ptr mr_asinh(mrComplex_ptr x);
-mrComplex_ptr mr_acosh(mrComplex_ptr x);
-mrComplex_ptr mr_atanh(mrComplex_ptr x);
-mrComplex_ptr mr_exp(mrComplex_ptr x);
-mrComplex_ptr mr_log(mrComplex_ptr x);
-mrComplex_ptr mr_log10(mrComplex_ptr x);
-mrComplex_ptr mr_sqrt(mrComplex_ptr x);
-mrComplex_ptr mr_abs(mrComplex_ptr x);
-mrComplex_ptr mr_re(mrComplex_ptr x);
-mrComplex_ptr mr_im(mrComplex_ptr x);
-mrComplex_ptr mr_arg(mrComplex_ptr x);
-mrComplex_ptr mr_conj(mrComplex_ptr x);
-mrComplex_ptr mr_deg(mrComplex_ptr x);
-mrComplex_ptr mr_rad(mrComplex_ptr x);
-mrComplex_ptr mr_norm(mrComplex_ptr x);
-mrComplex_ptr mr_polar(mrComplex_ptr x);
-
-mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y);
 
 #ifdef __cplusplus
 }
