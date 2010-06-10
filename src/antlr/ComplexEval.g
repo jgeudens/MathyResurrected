@@ -155,15 +155,36 @@ funct_ref1 returns [mrComplex_ptr compl_retv]
 	| ^(FUNCTION FN_NORM expr) {		
 		$compl_retv = mr_norm ($expr.compl_retv); }
 	| ^(FUNCTION FN_POLAR expr) {		
-		$compl_retv = mr_polar ($expr.compl_retv); }
+		$compl_retv = mr_polar($expr.compl_retv); }
 	;
 
 funct_ref2 returns [mrComplex_ptr compl_retv]
 	: ^(FUNCTION FN_ATAN2 a=expr b=expr) {
-		$compl_retv = mr_atan2 ($a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_atan2($a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION FN_POW a=expr b=expr) {
-		$compl_retv = mr_pow ($a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_pow($a.compl_retv, $b.compl_retv); 
+	}
+	| ^(FUNCTION BINARY_FN_AND a=expr b=expr) {
+		$compl_retv = mr_and($a.compl_retv, $b.compl_retv); 
+	}
+	| ^(FUNCTION BINARY_FN_OR a=expr b=expr) {
+		$compl_retv = mr_or($a.compl_retv, $b.compl_retv); 
+	}
+	| ^(FUNCTION BINARY_FN_NOT a=expr) {
+		$compl_retv = mr_not($a.compl_retv); 
+	}
+	| ^(FUNCTION BINARY_FN_NAND a=expr b=expr) {
+		$compl_retv = mr_nand ($a.compl_retv, $b.compl_retv); 
+	}
+	| ^(FUNCTION BINARY_FN_NOR a=expr b=expr) {
+		$compl_retv = mr_nor($a.compl_retv, $b.compl_retv); 
+	}
+	| ^(FUNCTION BINARY_FN_XOR a=expr b=expr) {
+		$compl_retv = mr_xor($a.compl_retv, $b.compl_retv); 
+	}
+	| ^(FUNCTION BINARY_FN_XNOR a=expr b=expr) {
+		$compl_retv = mr_xnor($a.compl_retv, $b.compl_retv); 
 	}
 	;
 

@@ -107,6 +107,14 @@ mrComplex_ptr mr_polar(mrComplex_ptr x);
 mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y); 
 mrComplex_ptr mr_pow (mrComplex_ptr x, mrComplex_ptr y); 
 
+mrComplex_ptr mr_and (mrComplex_ptr x, mrComplex_ptr y); 
+mrComplex_ptr mr_or (mrComplex_ptr x, mrComplex_ptr y); 
+mrComplex_ptr mr_not (mrComplex_ptr x); 
+mrComplex_ptr mr_nand (mrComplex_ptr x, mrComplex_ptr y); 
+mrComplex_ptr mr_nor (mrComplex_ptr x, mrComplex_ptr y); 
+mrComplex_ptr mr_xor (mrComplex_ptr x, mrComplex_ptr y); 
+mrComplex_ptr mr_xnor (mrComplex_ptr x, mrComplex_ptr y); 
+
 #ifdef __cplusplus
 }
 #endif
