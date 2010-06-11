@@ -221,48 +221,200 @@ mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr 
 		case MR_POW:
 			retv_c = std::pow(lv_c, rv_c);
 			break;
-		case MR_BITWISE_AND:
-			retv_c.imag(0);
-			//retv->real = x->real & y->real;
-			break;
-		case MR_BITWISE_OR:
-			retv_c.imag(0);
-			//retv->real = x->real | y->real;
-			break;
-		case MR_BITWISE_NAND:
-			retv_c.imag(0);
-			//retv->real = ~(x->real & y->real);
-			break;
-		case MR_BITWISE_NOR:
-			retv_c.imag(0);
-			//retv->real = ~(x->real | y->real);
-			break;
-		case MR_BITWISE_XOR:
-			retv_c.imag(0);
-			//retv->real = x->real ^ y->real;
-			break;
-		case MR_BITWISE_XNOR:
-			retv_c.imag(0);
-			//retv->real = ~(x->real ^ y->real);
-			break;
 	}
 
 	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
 	return retv;
 }
 
+mrComplex_ptr 
+mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv) {
+	mrComplex_ptr retv = newMrComplex();
+
+	quint64 lv64, rv64;
+	quint32 lv32, rv32;
+	quint16 lv16, rv16;
+	quint8 lv8, rv8;
+	bool okFlag;
+
+	switch (globalData->bit_width) {
+		case 64:
+			lv64 = MathEvaluator::safe_convert_u64b(lv->real, okFlag);
+			rv64 = MathEvaluator::safe_convert_u64b(rv->real, okFlag);
+			break;
+		case 32:
+			lv32 = MathEvaluator::safe_convert_u32b(lv->real, okFlag);
+			rv32 = MathEvaluator::safe_convert_u32b(rv->real, okFlag);
+			break;
+		case 16:
+			lv16 = MathEvaluator::safe_convert_u16b(lv->real, okFlag);
+			rv16 = MathEvaluator::safe_convert_u16b(rv->real, okFlag);
+			break;
+		case 8:
+			lv8 = MathEvaluator::safe_convert_u8b(lv->real, okFlag);
+			rv8 = MathEvaluator::safe_convert_u8b(rv->real, okFlag);
+			break;
+	}
+
+	if (okFlag) {
+		retv->imag = 0;
+		switch (which) {
+			// bitwise AND
+			case  MR_BITWISE_AND:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 & rv64;
+						break;
+					case 32:
+						retv->real = lv32 & rv32;
+						break;
+					case 16:
+						retv->real = lv16 & rv16;
+						break;
+					case 8:
+						retv->real = lv8 & rv8;
+						break;
+				}
+				break;
+			// bitwise OR
+			case  MR_BITWISE_OR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 | rv64;
+						break;
+					case 32:
+						retv->real = lv32 | rv32;
+						break;
+					case 16:
+						retv->real = lv16 | rv16;
+						break;
+					case 8:
+						retv->real = lv8 | rv8;
+						break;
+				}
+				break;
+			// bitwise NAND
+			case  MR_BITWISE_NAND:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = ~(lv64 & rv64);
+						break;
+					case 32:
+						retv->real = ~(lv32 & rv32);
+						break;
+					case 16:
+						retv->real = ~(lv16 & rv16);
+						break;
+					case 8:
+						retv->real = ~(lv8 & rv8);
+						break;
+				}
+				break;
+			// bitwise NOR
+			case  MR_BITWISE_NOR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = ~(lv64 | rv64);
+						break;
+					case 32:
+						retv->real = ~(lv32 | rv32);
+						break;
+					case 16:
+						retv->real = ~(lv16 | rv16);
+						break;
+					case 8:
+						retv->real = ~(lv8 | rv8);
+						break;
+				}
+				break;
+			// bitwise XOR
+			case  MR_BITWISE_XOR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 ^ rv64;
+						break;
+					case 32:
+						retv->real = lv32 ^ rv32;
+						break;
+					case 16:
+						retv->real = lv16 ^ rv16;
+						break;
+					case 8:
+						retv->real = lv8 ^ rv8;
+						break;
+				}
+				break;
+			// bitwise XNOR
+			case  MR_BITWISE_XNOR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = ~(lv64 ^ rv64);
+						break;
+					case 32:
+						retv->real = ~(lv32 ^ rv32);
+						break;
+					case 16:
+						retv->real = ~(lv16 ^ rv16);
+						break;
+					case 8:
+						retv->real = ~(lv8 ^ rv8);
+						break;
+				}
+				break;
+		}
+	}
+
+	return retv;
+}
+
 mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val) {
 	mrComplex_ptr retv = newMrComplex();
 
- 	qulonglong tmp;
+	quint64 tmpI64;
+	quint32 tmpI32;
+	quint16 tmpI16;
+	quint8 tmpI8;
  	bool okFlag;
-	switch (which) {
-		case  MR_BITWISE_NOT:
-// 			retv->imag = 0;
-// 			tmp = MathEvaluator::safe_convert(val->real, okFlag);
-// 			tmp = ~tmp;
-// 			retv->real = tmp;
+
+	switch (globalData->bit_width) {
+		case 64:
+			tmpI64 = MathEvaluator::safe_convert_u64b(val->real, okFlag);
 			break;
+		case 32:
+			tmpI32 = MathEvaluator::safe_convert_u32b(val->real, okFlag);
+			break;
+		case 16:
+			tmpI16 = MathEvaluator::safe_convert_u16b(val->real, okFlag);
+			break;
+		case 8:
+			tmpI8 = MathEvaluator::safe_convert_u8b(val->real, okFlag);
+			break;
+	}
+
+	if (okFlag) {
+		switch (which) {
+			case  MR_BITWISE_NOT:
+				retv->imag = 0;
+				switch (globalData->bit_width) {
+					case 64:
+						tmpI64 = ~tmpI64;
+						retv->real = tmpI64;
+						break;
+					case 32:
+						tmpI32 = ~tmpI32;
+						retv->real = tmpI32;
+						break;
+					case 16:
+						tmpI16 = ~tmpI16;
+						retv->real = tmpI16;
+						break;
+					case 8:
+						tmpI8 = ~tmpI8;
+						retv->real = tmpI8;
+						break;
+				}
+				break;
+		}
 	}
 
 	return retv;

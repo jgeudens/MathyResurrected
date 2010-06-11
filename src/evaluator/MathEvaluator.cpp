@@ -151,7 +151,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsZeroTreshold = pow (10.0, defaultZeroTresholdExp());
 		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(defaultDecimalPointTag());
 		itsGroupingCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
-		itsIntWidth = defaultBitWidth();
+		itsBAPI.bit_width = itsBitWidth = defaultBitWidth();
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
@@ -194,7 +194,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 			MathyResurrectedOptionsDialog::keyNameShowBasePrefix(), 
 			MathyResurrectedOptionsDialog::defaultShowBasePrefix()).toBool();
 
-		itsIntWidth = app_settings->value(
+		itsBAPI.bit_width = itsBitWidth = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameBitWidth(),
 			defaultBitWidth()).toUInt();
 	}
@@ -202,9 +202,6 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 	if (itsArgSeparator == itsDecimalPoint) {
 		itsArgSeparator = defaultArgSeparator();
 	}
-
-	// Update result string if output format has changed. 
-	toString();
 }
 
 void MathEvaluator::setExpression(const QString& expression) {
@@ -450,7 +447,7 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 			if (itsShowBasePrefix) {
 				retv += "0b";
 			}
-			switch (itsIntWidth) {
+			switch (itsBitWidth) {
 				case 64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
@@ -482,7 +479,6 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					} else {
 						retv = "8b int range error";
 					}
-				default:
 					break;
 			}			
 			break;
@@ -491,7 +487,7 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 			if (itsShowBasePrefix) {
 				retv += "0x";
 			}
-			switch (itsIntWidth) {
+			switch (itsBitWidth) {
 				case 64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
@@ -523,7 +519,6 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					} else {
 						retv = "8b int range error";
 					}
-				default:
 					break;
 			}
 			break;
@@ -532,7 +527,7 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 			if (itsShowBasePrefix) {
 				retv += "0";
 			}
-			switch (itsIntWidth) {
+			switch (itsBitWidth) {
 				case 64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
@@ -564,7 +559,6 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					} else {
 						retv = "8b int range error";
 					}
-				default:
 					break;
 			}
 			break;

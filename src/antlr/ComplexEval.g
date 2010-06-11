@@ -166,25 +166,25 @@ funct_ref2 returns [mrComplex_ptr compl_retv]
 		$compl_retv = mr_binary_operator(MR_POW, $a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION BINARY_FN_AND a=expr b=expr) {
-		$compl_retv = mr_binary_operator(MR_BITWISE_AND, $a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_AND, $a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION BINARY_FN_OR a=expr b=expr) {
-		$compl_retv = mr_binary_operator(MR_BITWISE_OR, $a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_OR, $a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION BINARY_FN_NOT a=expr) {
 		$compl_retv = mr_unary_operator(MR_BITWISE_NOT, $a.compl_retv); 
 	}
 	| ^(FUNCTION BINARY_FN_NAND a=expr b=expr) {
-		$compl_retv = mr_binary_operator (MR_BITWISE_NAND, $a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_NAND, $a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION BINARY_FN_NOR a=expr b=expr) {
-		$compl_retv = mr_binary_operator(MR_BITWISE_NOR, $a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_NOR, $a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION BINARY_FN_XOR a=expr b=expr) {
-		$compl_retv = mr_binary_operator(MR_BITWISE_XOR, $a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_XOR, $a.compl_retv, $b.compl_retv); 
 	}
 	| ^(FUNCTION BINARY_FN_XNOR a=expr b=expr) {
-		$compl_retv = mr_binary_operator(MR_BITWISE_XNOR, $a.compl_retv, $b.compl_retv); 
+		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_XNOR, $a.compl_retv, $b.compl_retv); 
 	}
 	;
 

@@ -132,7 +132,7 @@ private:
 	double itsZeroTreshold;
 	QChar itsGroupingCharacter;
 	bool itsShowBasePrefix;
-	unsigned char itsIntWidth;
+	unsigned char itsBitWidth;
 	/*! This should return same character that was used in grammar */
 	static QChar internalArgSeparator() { return QChar('#'); }
 
