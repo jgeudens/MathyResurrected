@@ -254,10 +254,14 @@ mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr 
 mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val) {
 	mrComplex_ptr retv = newMrComplex();
 
+ 	qulonglong tmp;
+ 	bool okFlag;
 	switch (which) {
 		case  MR_BITWISE_NOT:
-			retv->imag = 0;
-			//retv->real = ~(x->real);
+// 			retv->imag = 0;
+// 			tmp = MathEvaluator::safe_convert(val->real, okFlag);
+// 			tmp = ~tmp;
+// 			retv->real = tmp;
 			break;
 	}
 
@@ -424,9 +428,9 @@ mrReal parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
 
 	mrReal retv;
 
-	quint32 tempRetv;
+	quint64 tempRetv;
 	bool okFlag;
-	tempRetv = str.toUInt(&okFlag, 16);
+	tempRetv = str.toULongLong(&okFlag, 16);
 
 	if (!okFlag) {
 		throw NumericConversionError("Input conversion error: " + str.toStdString());
@@ -444,15 +448,15 @@ mrReal parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
 mrReal parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	QString str;
-	for (ANTLR3_UINT32 i = 1; i < len; ++i) {
+	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
 		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
 	mrReal retv;
 
-	quint32 tempRetv;
+	quint64 tempRetv;
 	bool okFlag;
-	tempRetv = str.toUInt(&okFlag, 8);
+	tempRetv = str.toULongLong(&okFlag, 8);
 
 	if (!okFlag) {
 		throw NumericConversionError("Input conversion error: " + str.toStdString());
@@ -476,9 +480,9 @@ mrReal parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
 
 	mrReal retv;
 
-	quint32 tempRetv;
+	quint64 tempRetv;
 	bool okFlag;
-	tempRetv = str.toUInt(&okFlag, 2);
+	tempRetv = str.toULongLong(&okFlag, 2);
 
 	if (!okFlag) {
 		throw NumericConversionError("Input conversion error: " + str.toStdString());

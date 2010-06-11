@@ -53,11 +53,12 @@ public:
 	static QChar defaultArgSeparator() { return QChar(':'); } // Must never be '.' or ','
 	static QString defaultDecimalPointTag();
 	static QString defaultGroupingCharTag();
-	static QChar defaultOutputFormat() { return QChar('d'); }
+	static QChar defaultOutputFormat() { return QChar('f'); }
 	static int defaultOutputPrecision() { return 2; }
 	static bool defaultShowDigitGrouping() { return true; }
 	static int defaultZeroTresholdExp() { return -15; }
 	static bool defaultShouldUseZeroTreshold() { return true; }
+	static unsigned char defaultBitWidth() { return 8; }
 
 	/*! Sets expression to be evaluated. */
 	void setExpression (const QString& expression);
@@ -84,7 +85,14 @@ public:
 	QString toStringHex() const;
 	QString toStringOct() const;
 
-	static qlonglong safe_convert(mrReal val, bool& ok, QString& error_mess);
+	static qint8 safe_convert_8b(mrReal val, bool& ok);
+	static qint16 safe_convert_16b(mrReal val, bool& ok);
+	static qint32 safe_convert_32b(mrReal val, bool& ok);
+	static qint64 safe_convert_64b(mrReal val, bool& ok);
+	static quint8 safe_convert_u8b(mrReal val, bool& ok);
+	static quint16 safe_convert_u16b(mrReal val, bool& ok);
+	static quint32 safe_convert_u32b(mrReal val, bool& ok);
+	static quint64 safe_convert_u64b(mrReal val, bool& ok);
 
 #ifdef _DEBUG
 	void printLexerErrors() const;
@@ -124,11 +132,14 @@ private:
 	double itsZeroTreshold;
 	QChar itsGroupingCharacter;
 	bool itsShowBasePrefix;
+	unsigned char itsIntWidth;
 	/*! This should return same character that was used in grammar */
 	static QChar internalArgSeparator() { return QChar('#'); }
 
 	void numberToString(mrReal val, QString& retv, char baseTag) const;
 	void toString(char baseTag, QString& dest) const;
+	template <class intT>
+	static intT safe_convert(mrReal val, bool& ok);
 	
 	struct LexerParser;
 	friend struct LexerParser;

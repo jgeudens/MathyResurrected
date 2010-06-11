@@ -166,6 +166,8 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsShowHex = defaultOutputShowHex();
 	itsShowOct = defaultOutputShowOct();
 	itsShowBasePrefix = defaultShowBasePrefix();
+
+	itsBWidth = MathEvaluator::defaultBitWidth();
 	
 	setupUiByAppSettings();
 }
@@ -226,6 +228,18 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 	checkBox_HexOut->setChecked(itsShowHex);
 	checkBox_OctOut->setChecked(itsShowOct);
 	checkBox_ShowBasePrefix->setChecked(itsShowBasePrefix);
+
+	if (itsBWidth == 8) {
+		radioButton_bw8->setChecked(true);
+	} else if (itsBWidth == 16) {
+		radioButton_bw16->setChecked(true);
+	} else if (itsBWidth == 32) {
+		radioButton_bw32->setChecked(true);
+	} else if (itsBWidth == 64) {
+		radioButton_bw64->setChecked(true);
+	} 
+
+	groupBox_bw->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
@@ -273,6 +287,9 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 	itsShowBasePrefix = app_settings->value(
 		keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
 
+	itsBWidth = app_settings->value(
+		keyNameBitWidth(), MathEvaluator::defaultBitWidth()).toInt();
+
 	setupUiByAppSettings();
 	connectAll();
 }
@@ -303,6 +320,7 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameOutputShowHex(), itsShowHex);
 	app_settings->setValue(keyNameOutputShowOct(), itsShowOct);
 	app_settings->setValue(keyNameShowBasePrefix(), itsShowBasePrefix);
+	app_settings->setValue(keyNameBitWidth(), itsBWidth);
 }
 
 } // namespace mathy_resurrected
