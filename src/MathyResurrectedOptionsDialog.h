@@ -33,34 +33,34 @@ class MathyResurrectedOptionsDialog : public QFrame, private Ui::MathyResurrecte
 	Q_OBJECT
 
 private slots:
-	void setFunArgSeparatorColon() { itsArgSeparator = ':'; }
-	void setFunArgSeparatorSemicolon() { itsArgSeparator = ';'; }
-	void setFunArgSeparatorComa();
-	void setDecPointDot();
-	void setDecPointSystem();
-	void setDecPointComa();
-	void setThousandSepDot() { itsThousandsSepTag = "dot"; }
-	void setThousandSepSystem() { itsThousandsSepTag = "sys"; }
-	void setThousandSepComa() { itsThousandsSepTag = "com"; }
-	void setSimpleInputMatching(bool flag) { itsSimpleInputFlag = flag; }
-	void setOutputFormatDefault() { itsOutputFormat = 'd'; }
-	void setOutputFormatScientiffic() { itsOutputFormat = 's'; }
-	void setOutputFormatFixed() { itsOutputFormat = 'f'; }
-	void setPrecision(int prec) { itsPrecision = prec;}
-	void setShowDigitGrouping(bool flag) { itsShowDigitGrouping = flag;}
-	void setUseEnterKey(bool flag) { itsUseEnterKey = flag;}
-	void setZeroTresholdExp(int treshold) { itsZeroTresholdExp = treshold; }
-	void setShouldUseZeroTreshold(bool flag) { itsZeroTresholdFlag = flag; }
-	void setOutputBaseDec(bool flag) { itsShowDec = flag; }
-	void setOutputBaseHex(bool flag) { itsShowHex = flag; }
-	void setOutputBaseOct(bool flag) { itsShowOct = flag; }
-	void setOutputBaseBin(bool flag) { itsShowBin = flag; }
-	void setOutputBasePrefix(bool flag) { itsShowBasePrefix = flag; }
-	void setBitWidth8() { itsBWidth = 8; } 
-	void setBitWidth16() { itsBWidth = 16; } 
-	void setBitWidth32() { itsBWidth = 32; } 
-	void setBitWidth64() { itsBWidth = 64; } 
-	void setAllDefaults();
+	void on_radioButtonArgSeparatorColon_clicked() { itsArgSeparator = ':'; }
+	void on_radioButtonArgSeparatorSemiColon_clicked() { itsArgSeparator = ';'; }
+	void on_radioButtonArgSeparatorComa_clicked();
+	void on_radioButtonDecSepDot_clicked();
+	void on_radioButtonDecSepSystem_clicked();
+	void on_radioButtonDecSepComa_clicked();
+	void on_radioButtonThSepDot_clicked() { itsThousandsSepTag = "dot"; }
+	void on_radioButtonThSepSys_clicked() { itsThousandsSepTag = "sys"; }
+	void on_radioButtonThSepCom_clicked() { itsThousandsSepTag = "com"; }
+	void on_checkBoxInputMatching_clicked(bool flag) { itsSimpleInputFlag = flag; }
+	void on_radioButtonoutputDefault_clicked() { itsOutputFormat = 'd'; }
+	void on_radioButtonoutputScientiffic_clicked() { itsOutputFormat = 's'; }
+	void on_radioButtonOutputFixed_clicked() { itsOutputFormat = 'f'; }
+	void on_checkBoxDecOut_clicked(bool flag);
+	void on_checkBoxHexOut_clicked(bool flag);
+	void on_checkBoxOctOut_clicked(bool flag);
+	void on_checkBoxBinOut_clicked(bool flag);
+	void on_checkBoxShowBasePrefix_clicked(bool flag) { itsShowBasePrefix = flag; }
+	void on_spinBoxOutputPrecision_valueChanged(int prec) { itsPrecision = prec;}
+	void on_checkBoxShowGrouping_clicked(bool flag) { itsShowDigitGrouping = flag;}
+	void on_checkBoxUseEnterKey_clicked(bool flag) { itsUseEnterKey = flag;}
+	void on_spinBoxZeroTreshold_valueChanged(int treshold) { itsZeroTresholdExp = treshold; }
+	void on_checkBoxZeroTreshold_clicked(bool flag) { itsZeroTresholdFlag = flag; }
+	void on_radioButtonBW8_clicked() { itsBWidth = 8; } 
+	void on_radioButtonBW16_clicked() { itsBWidth = 16; } 
+	void on_radioButtonBW32_clicked() { itsBWidth = 32; } 
+	void on_radioButtonBW64_clicked() { itsBWidth = 64; } 
+	void on_pushButtonSetDefaults_clicked();
 
 public:
 	MathyResurrectedOptionsDialog(QWidget* parent = 0);
@@ -115,7 +115,6 @@ private:
 	bool itsShowBasePrefix;
 	unsigned char itsBWidth;
 	
-	void connectAll();
 	void setupUiByAppSettings();
 };
 
