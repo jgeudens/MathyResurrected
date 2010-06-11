@@ -297,10 +297,11 @@ use constant alone instead of multiplying it with one, ie. 34+e, pi+25,
                     Binary, hexadecimal and octal numbers
 ===========================================================================
 
-    All these bases are supported in input, but only as integers. If present
-in output (which is configurable) these numbers represent cut-off value of
-actual calculation which is done with floats. When in input, numbers
-must be prefixed with their base prefix:
+    All these bases are supported in input, but only as unsigned integers. 
+If present in output (which is configurable) these numbers represent 
+cut-off value of actual calculation which is done with floats. 
+
+When in input, numbers must be prefixed with their base prefix:
 
     "0b" or "0B"    - for binary numbers.         Example: 0b10001111
     "0x" or "0X"    - for hexadecimal numbers.    Example: 0x44AFF

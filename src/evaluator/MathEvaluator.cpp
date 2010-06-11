@@ -355,15 +355,21 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 				re_disp = 0;
 			}
 
+			// Formating output of imaginary part
 			if ((boost::math::fpclassify)(im_disp) != FP_ZERO) {
-				if (im_disp > 0) {
+				// Display as decimal
+				if (baseTag == 'd') {
+					if (im_disp > 0) {
+						im_sign = " + ";
+					} else { // if (imag < 0) {
+						im_sign = " - ";
+					}
+					mrReal tmp = abs(im_disp);
+					numberToString(tmp, im_str, baseTag);
+				} else { // Display as any other base
 					im_sign = " + ";
-				} else { // if (imag < 0) {
-					im_sign = " - ";
+					numberToString(im_disp, im_str, baseTag);
 				}
-
-				mrReal tmp = abs(im_disp);
-				numberToString(tmp, im_str, baseTag);
 				add_i = true;
 			}
 			numberToString(re_disp, re_str, baseTag);
@@ -414,13 +420,14 @@ quint64 MathEvaluator::safe_convert_u64b(mrReal val, bool& ok) {
 template <class intT>
 intT MathEvaluator::safe_convert(mrReal val, bool& ok) {
 	intT retv;
-	try {
-		retv = numeric_cast<intT>(val);
-		ok = true;
-	}
-	catch (bad_numeric_cast&) {
-		ok = false;
-	}
+//	try {
+// 		retv = numeric_cast<intT>(val);
+// 		ok = true;
+// 	}
+// 	catch (bad_numeric_cast&) {
+// 		ok = false;
+// 	}
+	retv = val; ok = true;
 	return retv;
 }
 
@@ -432,10 +439,11 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 	quint16 tmpI16;
 	quint8 tmpI8;
 	QString bho_sign, bho_prefix;
-	if (val < 0) {
-		bho_sign = "-";
-	}
-	mrReal absVal = abs(val);
+// 	if (val < 0) {
+// 		bho_sign = "-";
+// 	}
+//	mrReal absVal = abs(val);
+	mrReal absVal = val;
 	switch (baseTag) {
 		case 'b':
 			retv += bho_sign;
