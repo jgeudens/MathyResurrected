@@ -1,6 +1,6 @@
 TARGET = mathyresurrected
 TEMPLATE = lib
-VERSION = 0.1.4
+VERSION = 0.1.5
 
 CONFIG += plugin \
 	warn_on \

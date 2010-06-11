@@ -145,7 +145,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QRadioButton" name="radioButtonoutputDefault">
+            <widget class="QRadioButton" name="radioButtonOutputDefault">
              <property name="toolTip">
               <string>Automatically chose output number format, but don't output more than &quot;Precision&quot; decimals.</string>
              </property>
@@ -158,7 +158,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButtonoutputScientiffic">
+            <widget class="QRadioButton" name="radioButtonOutputScientiffic">
              <property name="toolTip">
               <string>Output is always scientific and has &quot;Precision&quot; number of decimals.</string>
              </property>
@@ -477,8 +477,8 @@
      <y>180</y>
     </hint>
     <hint type="destinationlabel">
-     <x>493</x>
-     <y>182</y>
+     <x>432</x>
+     <y>180</y>
     </hint>
    </hints>
   </connection>

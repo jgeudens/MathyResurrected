@@ -259,7 +259,7 @@ the value of Im{x} is.
 	nand(x,y)	- bitwise nand: not(x and y)
 	nor(x,y)	- bitwise nor:	not(x or y)
 	xor(x,y)	- bitwise exclusive or 
-	xnor(x,y)	- bitwise xnor: not(x xnor y)
+	xnor(x,y)	- bitwise xnor: not(x xor y)
 
 ===========================================================================
                              Variables

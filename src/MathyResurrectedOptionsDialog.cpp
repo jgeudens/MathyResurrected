@@ -55,14 +55,6 @@ QChar MathyResurrectedOptionsDialog::digitGroupTag2Char (const QString& tag) {
 	return retv;
 }
 
-void MathyResurrectedOptionsDialog::on_radioButtonArgSeparatorComa_clicked() {
-	if (decPointTag2Char(itsDecPointTag) == ',') {
-		on_radioButtonArgSeparatorColon_clicked();
-	} else {
-		itsArgSeparator = ','; 
-	}
-}
-
 void MathyResurrectedOptionsDialog::on_radioButtonDecSepSystem_clicked() { 
 	itsDecPointTag = "sys";
 	if (MathEvaluator::systemDecimalPoint() == itsArgSeparator) {
@@ -86,6 +78,14 @@ void MathyResurrectedOptionsDialog::on_radioButtonDecSepComa_clicked() {
 void MathyResurrectedOptionsDialog::on_radioButtonDecSepDot_clicked() { 
 	itsDecPointTag = "dot";
 	radioButtonArgSeparatorComa->setEnabled(true);
+}
+
+void MathyResurrectedOptionsDialog::on_radioButtonArgSeparatorComa_clicked() {
+	if (decPointTag2Char(itsDecPointTag) == ',') {
+		on_radioButtonArgSeparatorColon_clicked();
+	} else {
+		itsArgSeparator = ','; 
+	}
 }
 
 void MathyResurrectedOptionsDialog::on_checkBoxDecOut_clicked(bool flag) { 
@@ -170,11 +170,11 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 	checkBoxUseEnterKey->setChecked(itsUseEnterKey);
 	
 	if (itsOutputFormat == 'd') {
-		radioButtonoutputDefault->setChecked(true);
+		radioButtonOutputDefault->setChecked(true);
 	} else if (itsOutputFormat == 'f') {
 		radioButtonOutputFixed->setChecked(true);
 	} else if (itsOutputFormat == 's') {
-		radioButtonoutputScientiffic->setChecked(true);
+		radioButtonOutputScientiffic->setChecked(true);
 	}
 
 	spinBoxOutputPrecision->setValue(itsPrecision);
@@ -204,48 +204,58 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
 	QFrame(parent) 
 {
-	QSettings* app_settings = *gmathyresurrectedInstance->settings;
+	setupUi(this);
 
-	itsArgSeparator = app_settings->value(
-		keyNameArgSeparator(), MathEvaluator::defaultArgSeparator()).toChar();
-	itsOutputFormat = app_settings->value(
-		keyNameOutputFormat(), MathEvaluator::defaultOutputFormat()).toChar();
-	itsPrecision = app_settings->value(
-		keyNamePrecision(), MathEvaluator::defaultOutputPrecision()).toInt();	
-	itsSimpleInputFlag = app_settings->value(
-		keyNameSimpleInputMatching(), defaultSimpleInputMatching()).toBool();
+	QSettings* app_settings = 0;
 
-	itsUseEnterKey = app_settings->value(
-		keyNameUseEnterKey(), defaultUseEnterKey()).toBool();
-	itsShowDigitGrouping = app_settings->value(
-		keyNameShowDigitGrouping(), MathEvaluator::defaultShowDigitGrouping()
-		).toBool();
-	itsZeroTresholdExp = app_settings->value(
-		keyNameZeroTresholdExp(), MathEvaluator::defaultZeroTresholdExp()
-		).toInt();
-	itsZeroTresholdFlag = app_settings->value(
-		keyNameShouldUseZeroTreshold(), MathEvaluator::defaultShouldUseZeroTreshold()
-		).toBool();
-	itsDecPointTag = app_settings->value(
-		keyNameDecimalPoint(), MathEvaluator::defaultDecimalPointTag()
-		).toString();
-	itsThousandsSepTag = app_settings->value(
-		keyNameGroupingChar(), MathEvaluator::defaultGroupingCharTag()
-		).toString();
+	if (gmathyresurrectedInstance) {
+		app_settings = *gmathyresurrectedInstance->settings;
+	}
 
-	itsShowDec = app_settings->value(
-		keyNameOutputShowDec(), defaultOutputShowDec()).toBool();
-	itsShowBin = app_settings->value(
-		keyNameOutputShowBin(), defaultOutputShowBin()).toBool();
-	itsShowHex = app_settings->value(
-		keyNameOutputShowHex(), defaultOutputShowHex()).toBool();
-	itsShowOct = app_settings->value(
-		keyNameOutputShowOct(), defaultOutputShowOct()).toBool();
-	itsShowBasePrefix = app_settings->value(
-		keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
+	if (app_settings) {
+		itsArgSeparator = app_settings->value(
+			keyNameArgSeparator(), MathEvaluator::defaultArgSeparator()).toChar();
+		itsOutputFormat = app_settings->value(
+			keyNameOutputFormat(), MathEvaluator::defaultOutputFormat()).toChar();
+		itsPrecision = app_settings->value(
+			keyNamePrecision(), MathEvaluator::defaultOutputPrecision()).toInt();	
+		itsSimpleInputFlag = app_settings->value(
+			keyNameSimpleInputMatching(), defaultSimpleInputMatching()).toBool();
 
-	itsBWidth = app_settings->value(
-		keyNameBitWidth(), MathEvaluator::defaultBitWidth()).toInt();
+		itsUseEnterKey = app_settings->value(
+			keyNameUseEnterKey(), defaultUseEnterKey()).toBool();
+		itsShowDigitGrouping = app_settings->value(
+			keyNameShowDigitGrouping(), MathEvaluator::defaultShowDigitGrouping()
+			).toBool();
+		itsZeroTresholdExp = app_settings->value(
+			keyNameZeroTresholdExp(), MathEvaluator::defaultZeroTresholdExp()
+			).toInt();
+		itsZeroTresholdFlag = app_settings->value(
+			keyNameShouldUseZeroTreshold(), MathEvaluator::defaultShouldUseZeroTreshold()
+			).toBool();
+		itsDecPointTag = app_settings->value(
+			keyNameDecimalPoint(), MathEvaluator::defaultDecimalPointTag()
+			).toString();
+		itsThousandsSepTag = app_settings->value(
+			keyNameGroupingChar(), MathEvaluator::defaultGroupingCharTag()
+			).toString();
+
+		itsShowDec = app_settings->value(
+			keyNameOutputShowDec(), defaultOutputShowDec()).toBool();
+		itsShowBin = app_settings->value(
+			keyNameOutputShowBin(), defaultOutputShowBin()).toBool();
+		itsShowHex = app_settings->value(
+			keyNameOutputShowHex(), defaultOutputShowHex()).toBool();
+		itsShowOct = app_settings->value(
+			keyNameOutputShowOct(), defaultOutputShowOct()).toBool();
+		itsShowBasePrefix = app_settings->value(
+			keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
+
+		itsBWidth = app_settings->value(
+			keyNameBitWidth(), MathEvaluator::defaultBitWidth()).toInt();
+	} else {
+		on_pushButtonSetDefaults_clicked();
+	}
 
 	setupUiByAppSettings();
 }

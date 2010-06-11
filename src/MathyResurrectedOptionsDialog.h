@@ -33,33 +33,33 @@ class MathyResurrectedOptionsDialog : public QFrame, private Ui::MathyResurrecte
 	Q_OBJECT
 
 private slots:
+	void on_radioButtonDecSepSystem_clicked();
+	void on_radioButtonDecSepComa_clicked();
+	void on_radioButtonDecSepDot_clicked();
 	void on_radioButtonArgSeparatorColon_clicked() { itsArgSeparator = ':'; }
 	void on_radioButtonArgSeparatorSemiColon_clicked() { itsArgSeparator = ';'; }
 	void on_radioButtonArgSeparatorComa_clicked();
-	void on_radioButtonDecSepDot_clicked();
-	void on_radioButtonDecSepSystem_clicked();
-	void on_radioButtonDecSepComa_clicked();
-	void on_radioButtonThSepDot_clicked() { itsThousandsSepTag = "dot"; }
+	void on_checkBoxInputMatching_clicked(bool flag) { itsSimpleInputFlag = flag; }
+	void on_radioButtonOutputDefault_clicked() { itsOutputFormat = 'd'; }
+	void on_radioButtonOutputScientiffic_clicked() { itsOutputFormat = 's'; }
+	void on_radioButtonOutputFixed_clicked() { itsOutputFormat = 'f'; }
+	void on_checkBoxShowGrouping_clicked(bool flag) { itsShowDigitGrouping = flag;}
 	void on_radioButtonThSepSys_clicked() { itsThousandsSepTag = "sys"; }
 	void on_radioButtonThSepCom_clicked() { itsThousandsSepTag = "com"; }
-	void on_checkBoxInputMatching_clicked(bool flag) { itsSimpleInputFlag = flag; }
-	void on_radioButtonoutputDefault_clicked() { itsOutputFormat = 'd'; }
-	void on_radioButtonoutputScientiffic_clicked() { itsOutputFormat = 's'; }
-	void on_radioButtonOutputFixed_clicked() { itsOutputFormat = 'f'; }
+	void on_radioButtonThSepDot_clicked() { itsThousandsSepTag = "dot"; }
+	void on_spinBoxOutputPrecision_valueChanged(int prec) { itsPrecision = prec;}
+	void on_checkBoxZeroTreshold_clicked(bool flag) { itsZeroTresholdFlag = flag; }
+	void on_spinBoxZeroTreshold_valueChanged(int treshold) { itsZeroTresholdExp = treshold; }
+	void on_checkBoxUseEnterKey_clicked(bool flag) { itsUseEnterKey = flag;}
+	void on_checkBoxBinOut_clicked(bool flag);
+	void on_checkBoxOctOut_clicked(bool flag);
 	void on_checkBoxDecOut_clicked(bool flag);
 	void on_checkBoxHexOut_clicked(bool flag);
-	void on_checkBoxOctOut_clicked(bool flag);
-	void on_checkBoxBinOut_clicked(bool flag);
-	void on_checkBoxShowBasePrefix_clicked(bool flag) { itsShowBasePrefix = flag; }
-	void on_spinBoxOutputPrecision_valueChanged(int prec) { itsPrecision = prec;}
-	void on_checkBoxShowGrouping_clicked(bool flag) { itsShowDigitGrouping = flag;}
-	void on_checkBoxUseEnterKey_clicked(bool flag) { itsUseEnterKey = flag;}
-	void on_spinBoxZeroTreshold_valueChanged(int treshold) { itsZeroTresholdExp = treshold; }
-	void on_checkBoxZeroTreshold_clicked(bool flag) { itsZeroTresholdFlag = flag; }
 	void on_radioButtonBW8_clicked() { itsBWidth = 8; } 
 	void on_radioButtonBW16_clicked() { itsBWidth = 16; } 
 	void on_radioButtonBW32_clicked() { itsBWidth = 32; } 
 	void on_radioButtonBW64_clicked() { itsBWidth = 64; } 
+	void on_checkBoxShowBasePrefix_clicked(bool flag) { itsShowBasePrefix = flag; }
 	void on_pushButtonSetDefaults_clicked();
 
 public:
