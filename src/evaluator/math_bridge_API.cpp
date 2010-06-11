@@ -407,67 +407,88 @@ mrReal parse_mrNumeric_t (pANTLR3_STRING strin) {
 		retv = numeric_cast<mrReal>(lexical_cast<mrReal, string>(str));
 	}
 	catch (bad_lexical_cast&) {
-		throw NumericConversionError("Range error: " + str);
+		throw NumericConversionError("NaN: " + str);
 	}
 	catch (bad_numeric_cast&) {
 		throw NumericConversionError("Range error: " + str);
 	}
- 
 	return retv;
 }
 
 mrReal parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
-	string str;
+	QString str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
 		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
 	mrReal retv;
 
-	std::stringstream convertor;
-	convertor << str;
-	unsigned long int result;
-	if (!(convertor >> std::hex >> result) || !convertor.eof()) {
-		throw NumericConversionError("Range error: " + str);
+	quint32 tempRetv;
+	bool okFlag;
+	tempRetv = str.toUInt(&okFlag, 16);
+
+	if (!okFlag) {
+		throw NumericConversionError("Input conversion error: " + str.toStdString());
+	}
+	try {
+		retv = numeric_cast<mrReal>(tempRetv);
+	}
+	catch (bad_numeric_cast&) {
+		throw NumericConversionError("Input range error: " + str.toStdString());
 	}
 
-	retv = result;
 	return retv;
 }
 
 mrReal parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
-	string str;
-	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
+	QString str;
+	for (ANTLR3_UINT32 i = 1; i < len; ++i) {
 		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
 	mrReal retv;
 
-	std::stringstream convertor;
-	convertor << str;
-	long int result;
-	if (!(convertor >> std::oct >> result) || !convertor.eof()) {
-		throw NumericConversionError("Range error: " + str);
+	quint32 tempRetv;
+	bool okFlag;
+	tempRetv = str.toUInt(&okFlag, 8);
+
+	if (!okFlag) {
+		throw NumericConversionError("Input conversion error: " + str.toStdString());
+	}
+	try {
+		retv = numeric_cast<mrReal>(tempRetv);
+	}
+	catch (bad_numeric_cast&) {
+		throw NumericConversionError("Input range error: " + str.toStdString());
 	}
 
-	retv = result;
 	return retv;
 }
 
 mrReal parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
-	string tmpS;
-	for (ANTLR3_UINT32 i = 2; i < len; ++i) { // Skipping "0b"
-		char digit = static_cast<char>(strin->charAt(strin, i));
-		tmpS.push_back(digit);
+	QString str;
+	for (ANTLR3_UINT32 i = 2; i < len; ++i) {
+		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
 	mrReal retv;
-	long int result;
-	dynamic_bitset<> set(tmpS);
-	result = set.to_ulong();
-	retv = result;
+
+	quint32 tempRetv;
+	bool okFlag;
+	tempRetv = str.toUInt(&okFlag, 2);
+
+	if (!okFlag) {
+		throw NumericConversionError("Input conversion error: " + str.toStdString());
+	}
+	try {
+		retv = numeric_cast<mrReal>(tempRetv);
+	}
+	catch (bad_numeric_cast&) {
+		throw NumericConversionError("Input range error: " + str.toStdString());
+	}
+
 	return retv;
 }

@@ -243,7 +243,7 @@ bool MathEvaluator::validate() {
 			// to analyze things before invoking parser.
 			if (lpr.parser->pParser->rec->state->errorCount > 0) {
 				itsIsValid = false;
-				itsResult = "Malformed expression";
+				itsErrStr = "Malformed expression";
 			} else {
 				itsIsValid = true;
 			}		
@@ -259,6 +259,8 @@ bool MathEvaluator::validate() {
 bool MathEvaluator::evaluate() {
 	if (!itsIsEvaluated) {
 		if (validate()) {
+
+			itsErrStr = "";
 
 			LexerParser lpr (itsExprString, itsExprLen);
 
@@ -291,7 +293,7 @@ bool MathEvaluator::evaluate() {
 				}
 				catch (NumericConversionError& e) {
 					itsIsValid = false;
-					itsResult = e.what();
+					itsErrStr = e.what();
 				}
 			}
 		}
@@ -307,9 +309,10 @@ void MathEvaluator::storeAns() {
 	itsBAPI.ans.real = real; itsBAPI.ans.imag = imag;
 }
 
-const QString& MathEvaluator::toString() {
-	toString('d', itsResult);
-	return itsResult;
+QString MathEvaluator::toString() const {
+	QString retv;
+	toString('d', retv);
+	return retv;
 }
 
 QString MathEvaluator::toStringBin() const {
@@ -366,15 +369,15 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 		} else {
 			dest = "Not evaluated!!!";
 		}
-	} // else {
-	// result has been set to some error message during evaluation 
-	// so don't touch it.
+	} else {
+		dest = itsErrStr;
+	}
 }
 
 qlonglong MathEvaluator::safe_convert(mrReal val, bool& ok, QString& error_mess) {
 	qlonglong retv;
 	try {
-		retv = numeric_cast<qlonglong>(val);
+		retv = numeric_cast<qint64>(val);
 		ok = true;
 		error_mess = "";
 	}
@@ -389,12 +392,12 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 	QLocale loc = QLocale::c();
 
 	qlonglong tmp;
-	bool ok_falg;
+	bool ok_flag;
 	QString tmpS;
 	switch (baseTag) {
 		case 'b':
-			tmp = safe_convert(val, ok_falg, retv);
-			if (ok_falg) {
+			tmp = safe_convert(val, ok_flag, retv);
+			if (ok_flag) {
 				if (itsShowBasePrefix) {
 					retv = "0b";
 				}
@@ -402,8 +405,8 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 			}
 			break;
 		case 'h':
-			tmp = safe_convert(val, ok_falg, retv);
-			if (ok_falg) {
+			tmp = safe_convert(val, ok_flag, retv);
+			if (ok_flag) {
 				if (itsShowBasePrefix) {
 					retv = "0x";
 				}
@@ -411,8 +414,8 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 			}
 			break;
 		case 'o':
-			tmp = safe_convert(val, ok_falg, retv);
-			if (ok_falg) {
+			tmp = safe_convert(val, ok_flag, retv);
+			if (ok_flag) {
 				if (itsShowBasePrefix) {
 					retv = "0";
 				}

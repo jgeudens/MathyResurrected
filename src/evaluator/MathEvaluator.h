@@ -79,7 +79,7 @@ public:
 	or is invalid, return value is unspecified. */
 	mrReal Im() const { return imag; }
 
-	const QString& toString();
+	QString toString() const;
 	QString toStringBin() const;
 	QString toStringHex() const;
 	QString toStringOct() const;
@@ -98,7 +98,7 @@ private:
 	bool itsIsValidated;	/*!< true if expression has been validated */
 	bool itsIsValid;		/*!< true if expression is valid */
 	bool itsIsEvaluated;	/*!< true if expression has been evaluated */
-	QString itsResult;		/*!< Result as string, or error as string. Handled by toString methods. */
+	QString itsErrStr;		/*!< Error string */
 	BridgeAPIGlobals itsBAPI;
 
 	// Input expression variables
