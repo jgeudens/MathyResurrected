@@ -1,4 +1,7 @@
 
+- replace mod operatr with something else, and use % to add percent operator
+- add factorial operator and function.
+
 - better error control and reporting (currently almost none)
 	- find unmatched braces in expresion
 	- find things that look like function but are not defined

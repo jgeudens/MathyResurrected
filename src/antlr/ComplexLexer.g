@@ -33,6 +33,14 @@ DECIMAL_POINT : '@';
 LEFT_PAREN : '(';
 RIGHT_PAREN : ')';
 
+BW_AND   : '&';
+BW_OR    : '|';
+BW_NOT   : '~';
+BW_XOR   : '×'; // U+00D7
+BW_NAND   : '~&';
+BW_NOR    : '~|';
+BW_XNOR   : '~×';
+
 SI_PREFIX_YOTTA  :'Y';
 SI_PREFIX_ZETTA  :'Z';
 SI_PREFIX_EXA    :'E';
