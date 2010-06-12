@@ -19,9 +19,25 @@ prog
   ;
 
 expr
-  : addition
+  : bitor
+  ;
+ 
+bitor
+  : bitxor ( (BW_OR)^ bitxor )*
   ;
   
+bitxor
+  : bitand ( (BW_XOR)^ bitand )*
+  ;
+
+bitand
+  : bitshift ( (BW_AND)^ bitshift )*
+  ;
+
+bitshift
+  : addition ( (BW_SHLEFT|BW_SHRIGHT)^ addition )*
+  ;
+
 addition
   : multiplication ( (PLUS|MINUS)^ multiplication )*
   ;
@@ -37,6 +53,7 @@ exponentiation
 unary
   : MINUS atom -> ^(UNARY MINUS atom)
   | PLUS atom -> ^(UNARY PLUS atom)
+  | BW_NOT atom -> ^(UNARY BW_NOT atom)
   | atom
   ;
 
@@ -89,6 +106,8 @@ funct_ref2
   | BINARY_FN_NOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN -> ^(FUNCTION BINARY_FN_NOR $a $b)
   | BINARY_FN_XOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN -> ^(FUNCTION BINARY_FN_XOR $a $b)
   | BINARY_FN_XNOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN -> ^(FUNCTION BINARY_FN_XNOR $a $b)
+  | BINARY_FN_SHL LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN -> ^(FUNCTION BINARY_FN_SHL $a $b)
+  | BINARY_FN_SHR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN -> ^(FUNCTION BINARY_FN_SHR $a $b)
   ;
 
 constant_ref

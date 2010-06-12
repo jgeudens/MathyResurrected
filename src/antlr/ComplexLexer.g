@@ -37,9 +37,8 @@ BW_AND   : '&';
 BW_OR    : '|';
 BW_NOT   : '~';
 BW_XOR   : '×'; // U+00D7
-BW_NAND   : '~&';
-BW_NOR    : '~|';
-BW_XNOR   : '~×';
+BW_SHLEFT : '<<';
+BW_SHRIGHT : '>>';
 
 SI_PREFIX_YOTTA  :'Y';
 SI_PREFIX_ZETTA  :'Z';
@@ -117,6 +116,8 @@ BINARY_FN_NAND	: (('n'|'N')('a'|'A')('n'|'N')('d'|'D'));
 BINARY_FN_NOR	: (('n'|'N')('o'|'O')('r'|'R'));
 BINARY_FN_XOR	: (('x'|'X')('o'|'O')('r'|'R'));
 BINARY_FN_XNOR	: (('x'|'X')('n'|'N')('o'|'O')('r'|'R'));
+BINARY_FN_SHL	: (('s'|'S')('h'|'H')('l'|'L'));
+BINARY_FN_SHR	: (('s'|'S')('h'|'H')('r'|'R'));
 
 CONSTANTS_PI  : 'pi';
 CONSTANTS_E : 'e';
@@ -142,20 +143,20 @@ fragment FLOAT_MANTISSA
 	    ( DECIMAL_POINT
 	    	(
 	    		('0'..'9')+
-	    		/*|
+	    		|
 	    		{ 
 					$type = LEXER_ERROR;
 					collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA); 
-				}*/
+				}
 	    	)
 	    )? 
 	| DECIMAL_POINT (
 		('0'..'9')+
-		/*|
+		|
 		{ 
 			$type = LEXER_ERROR;
 			collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA); 
-		}*/
+		}
 	)
     ;
 
@@ -163,10 +164,10 @@ fragment EXPONENT
     : ('e' | 'E') (PLUS | MINUS)? (
 		('0'..'9')+
 		|   
-		/*{ 
+		{ 
 			$type = LEXER_ERROR;
 			collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_EXPONENT); 
-		}*/
+		}
     )
 	;
 	
@@ -178,7 +179,7 @@ fragment LEXER_ERROR : ;
 /* Match anything that hasn't been mathced. Issue lexer error about 
 illegal input */
 OTHER_CHAR 
-	:. /*{
+	:. {
 		$type = LEXER_ERROR;
 		collectlexerError(GETCHARINDEX()-1, LEX_ERR_BAD_INPUT); 
-	}*/;
+	};

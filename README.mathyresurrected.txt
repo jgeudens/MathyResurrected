@@ -123,6 +123,8 @@ operator op
       ~&         nand
       ~|         nor
       ~×         xnor
+	  >>         bit shift right
+      <<         bit shift left
 
 ===========================================================================
                        SI and binary unit prefixes

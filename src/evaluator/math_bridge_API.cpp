@@ -233,7 +233,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 	quint32 lv32, rv32;
 	quint16 lv16, rv16;
 	quint8 lv8, rv8;
-	bool okFlag;
+	bool okFlag = false;
 
 	switch (globalData->bit_width) {
 		case 64:
@@ -356,6 +356,40 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 						break;
 					case 8:
 						retv->real = ~(lv8 ^ rv8);
+						break;
+				}
+				break;
+			// bitwise shift left
+			case  MR_BITWISE_SHL:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 << rv64;
+						break;
+					case 32:
+						retv->real = lv32 << rv32;
+						break;
+					case 16:
+						retv->real = lv16 << rv16;
+						break;
+					case 8:
+						retv->real = lv8 << rv8;
+						break;
+				}
+				break;
+			// bitwise shift right
+			case  MR_BITWISE_SHR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 >> rv64;
+						break;
+					case 32:
+						retv->real = lv32 >> rv32;
+						break;
+					case 16:
+						retv->real = lv16 >> rv16;
+						break;
+					case 8:
+						retv->real = lv8 >> rv8;
 						break;
 				}
 				break;

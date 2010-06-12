@@ -74,7 +74,8 @@ mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr 
 typedef enum {
 	MR_BITWISE_AND, MR_BITWISE_OR, 
 	MR_BITWISE_NAND, MR_BITWISE_NOR, 
-	MR_BITWISE_XOR, MR_BITWISE_XNOR
+	MR_BITWISE_XOR, MR_BITWISE_XNOR,
+	MR_BITWISE_SHL, MR_BITWISE_SHR
 } MR_MATH_BINARY_BITWISE_OPERATORS;
 mrComplex_ptr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv);
 
