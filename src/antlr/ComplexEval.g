@@ -22,88 +22,47 @@ expr returns [mrComplex_ptr compl_retv]
     | ^(POW a = expr b = expr) { $compl_retv = mr_binary_operator(MR_POW, $a.compl_retv, $b.compl_retv); }
 	| unary  { $compl_retv =  $unary.compl_retv; }
 	;
-
+	
 unary returns [mrComplex_ptr compl_retv]
-@init {
-  int negate_flag = 0;
-  mrComplex_t tmp1, tmp2;
-  tmp1.real = -1; tmp1.imag = 0;
-}
-    : ^(UNARY (MINUS { negate_flag = 1; })? expr) {  
-   		if (negate_flag == 1) {
-   			tmp2.real = $expr.compl_retv->real; 
-			tmp2.imag = $expr.compl_retv->imag;
-			$compl_retv = mr_binary_operator(MR_MULTI, &tmp1, &tmp2);
-   		} else {
-   			$compl_retv = $expr.compl_retv;
-   		}
-   	}
-    | atom {
-      $compl_retv = $atom.compl_retv;
+  : ^(UNARY MINUS atom) {
+		mrComplex_t tmp;
+		tmp.real = -1; tmp.imag = 0;
+		$compl_retv = mr_binary_operator(MR_MULTI, &tmp, $atom.compl_retv);
     }
-   ;
+  | ^(UNARY PLUS atom) {
+		$compl_retv = $atom.compl_retv;
+    }
+  | atom {
+		$compl_retv = $atom.compl_retv;
+    }
+  ;
 
 atom returns [mrComplex_ptr compl_retv]
-@init {
-	mrComplex_t tmp1, tmp2;
-    int negate_flag = 0;
-	tmp1.real = -1; tmp1.imag = 0;
-}
-	: ^(ATOM (MINUS { negate_flag = 1; })? real_number) {  
-   		if (negate_flag == 1) {
-   			tmp2.real = $real_number.compl_retv->real;
-			tmp2.imag = $real_number.compl_retv->imag;
-			$compl_retv = mr_binary_operator(MR_MULTI, &tmp1, &tmp2);
-   		} else {
-   			$compl_retv = $real_number.compl_retv;
-   		}
-   	}
-	| ^(ATOM (MINUS { negate_flag = 1; })? imaginary_number) {  
-   		if (negate_flag == 1) {
-   			tmp2.real = $imaginary_number.compl_retv->real;
-			tmp2.imag = $imaginary_number.compl_retv->imag;
-			$compl_retv = mr_binary_operator(MR_MULTI, &tmp1, &tmp2);
-   		} else {
-   			$compl_retv = $imaginary_number.compl_retv;
-   		}
-   	}
-	| ^(ATOM (MINUS { negate_flag = 1; })? si_unit_ref) {  
-   		if (negate_flag == 1) {
-			tmp2.real = $si_unit_ref.compl_retv->real;
-			tmp2.imag = $si_unit_ref.compl_retv->imag;
-			$compl_retv = mr_binary_operator(MR_MULTI, &tmp1, &tmp2);
-   		} else {
-   			$compl_retv = $si_unit_ref.compl_retv;
-   		}
-   	}
-	| ^(ATOM (MINUS { negate_flag = 1; })? constant_ref) {  
-   		if (negate_flag == 1) {
-			tmp2.real = $constant_ref.compl_retv->real;
-			tmp2.imag = $constant_ref.compl_retv->imag;
-			$compl_retv = mr_binary_operator(MR_MULTI, &tmp1, &tmp2);
-   		} else {
-   			$compl_retv = $constant_ref.compl_retv;
-   		}
-   	}
-	| ^(ATOM (MINUS { negate_flag = 1; })? funct_ref1) {  
-   		if (negate_flag == 1) {
-			tmp2.real = $funct_ref1.compl_retv->real;
-			tmp2.imag = $funct_ref1.compl_retv->imag;
-			$compl_retv = mr_binary_operator(MR_MULTI, &tmp1, &tmp2);
-   		} else {
-   			$compl_retv = $funct_ref1.compl_retv;
-   		}
-   	}
-	| ^(ATOM (MINUS { negate_flag = 1; })? funct_ref2) {  
-   		if (negate_flag == 1) {
-			tmp2.real = $funct_ref2.compl_retv->real;
-			tmp2.imag = $funct_ref2.compl_retv->imag;
-			$compl_retv = mr_binary_operator(MR_MULTI, &tmp1, &tmp2);
-   		} else {
-   			$compl_retv = $funct_ref2.compl_retv;
-   		}
-   	}
-	;
+  :  ^(ATOM real_number) {
+		$compl_retv = $real_number.compl_retv;
+	}
+  |  ^(ATOM imaginary_number) {
+		$compl_retv = $imaginary_number.compl_retv;
+	}
+  |  ^(ATOM real_number si_unit_ref) {
+		$compl_retv = mr_binary_operator(MR_MULTI, $real_number.compl_retv, $si_unit_ref.compl_retv);
+	}
+  |  ^(ATOM imaginary_number si_unit_ref) {
+		$compl_retv = mr_binary_operator(MR_MULTI, $imaginary_number.compl_retv, $si_unit_ref.compl_retv);
+	}
+  |  ^(ATOM constant_ref) {
+		$compl_retv = $constant_ref.compl_retv;
+	}
+  |  ^(ATOM funct_ref1) {
+		$compl_retv = $funct_ref1.compl_retv;
+	}
+  |  ^(ATOM funct_ref2) {
+		$compl_retv = $funct_ref2.compl_retv;
+	}
+  |  ^(ATOM expr) {
+		$compl_retv = $expr.compl_retv;
+	}
+  ;
 
 funct_ref1 returns [mrComplex_ptr compl_retv]
 	: ^(FUNCTION FN_SIN expr) {		
@@ -191,12 +150,12 @@ funct_ref2 returns [mrComplex_ptr compl_retv]
 constant_ref returns [mrComplex_ptr compl_retv]
 	: ^(CONSTANT_REF CONSTANTS_PI) {
 		$compl_retv = newMrComplex(); 
-		$compl_retv->imag=0.0; 
+		$compl_retv->imag = 0.0; 
 		$compl_retv->real = mr_pi();
     	}
 	| ^(CONSTANT_REF CONSTANTS_E) {
 		$compl_retv = newMrComplex(); 
-		$compl_retv->imag=0.0; 
+		$compl_retv->imag = 0.0; 
 		$compl_retv->real = mr_e();
     	}
     | ^(CONSTANT_REF CONSTANTS_ANS) {
@@ -209,117 +168,89 @@ si_unit_ref returns [mrComplex_ptr compl_retv]
 	$compl_retv = newMrComplex(); 
 	$compl_retv->imag = 0.0; 
 }
-	: ^(SI_CONVERT real_number SI_PREFIX_YOTTA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_YOTTA);
+	: ^(SI_CONVERT SI_PREFIX_YOTTA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_YOTTA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_ZETTA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_ZETTA);
+	| ^(SI_CONVERT SI_PREFIX_ZETTA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ZETTA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_EXA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_EXA);
+	| ^(SI_CONVERT SI_PREFIX_EXA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_EXA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_PETA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_PETA);
+	| ^(SI_CONVERT SI_PREFIX_PETA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_PETA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_TERA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_TERA);
+	| ^(SI_CONVERT SI_PREFIX_TERA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_TERA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_GIGA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_GIGA);
+	| ^(SI_CONVERT SI_PREFIX_GIGA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_GIGA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_MEGA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_MEGA);
+	| ^(SI_CONVERT SI_PREFIX_MEGA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MEGA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_KILO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_KILO);
+	| ^(SI_CONVERT SI_PREFIX_KILO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_KILO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_HECTO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_HECTO);
+	| ^(SI_CONVERT SI_PREFIX_HECTO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_HECTO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_DECA) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_DECA);
+	| ^(SI_CONVERT SI_PREFIX_DECA) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_DECA);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_DECI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_DECI);
+	| ^(SI_CONVERT SI_PREFIX_DECI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_DECI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_CENTI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_CENTI);
+	| ^(SI_CONVERT SI_PREFIX_CENTI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_CENTI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_MILLI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_MILLI);
+	| ^(SI_CONVERT SI_PREFIX_MILLI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MILLI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_MICRO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_MICRO);
+	| ^(SI_CONVERT SI_PREFIX_MICRO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MICRO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_NANO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_NANO);
+	| ^(SI_CONVERT SI_PREFIX_NANO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_NANO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_PICO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_PICO);
+	| ^(SI_CONVERT SI_PREFIX_PICO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_PICO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_FEMTO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_FEMTO);
+	| ^(SI_CONVERT SI_PREFIX_FEMTO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_FEMTO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_ATTO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_ATTO);
+	| ^(SI_CONVERT SI_PREFIX_ATTO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ATTO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_ZEPTO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_ZEPTO);
+	| ^(SI_CONVERT SI_PREFIX_ZEPTO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ZEPTO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_YOCTO) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_YOCTO);
+	| ^(SI_CONVERT SI_PREFIX_YOCTO) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_YOCTO);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_KIBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_KIBI);
+	| ^(SI_CONVERT SI_PREFIX_KIBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_KIBI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_MEBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_MEBI);
+	| ^(SI_CONVERT SI_PREFIX_MEBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MEBI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_GIBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_GIBI);
+	| ^(SI_CONVERT SI_PREFIX_GIBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_GIBI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_TEBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_TEBI);
+	| ^(SI_CONVERT SI_PREFIX_TEBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_TEBI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_PEBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_PEBI);
+	| ^(SI_CONVERT SI_PREFIX_PEBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_PEBI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_EXBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_EXBI);
+	| ^(SI_CONVERT SI_PREFIX_EXBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_EXBI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_ZEBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_ZEBI);
+	| ^(SI_CONVERT SI_PREFIX_ZEBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ZEBI);
 	}
-	| ^(SI_CONVERT real_number SI_PREFIX_YOBI) {
-		$compl_retv->real = si_calc ($real_number.compl_retv->real, 
-			MR_MATH_SI_PREFIX_YOBI);
+	| ^(SI_CONVERT SI_PREFIX_YOBI) {
+		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_YOBI);
 	}
 	;
 

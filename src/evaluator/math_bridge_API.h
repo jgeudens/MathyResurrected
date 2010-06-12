@@ -64,7 +64,7 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
-mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix);
+mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix);
 
 typedef enum {
 	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW

@@ -5,6 +5,9 @@ options {
 	output=AST;
 	ASTLabelType=pANTLR3_BASE_TREE;
 	language=C;
+//	ASTLabelType=CommonTree;
+//	language=Java;
+//	backtrack = true;
 }
 
 @parser::includes {
@@ -18,7 +21,7 @@ prog
 expr
   : addition
   ;
-
+  
 addition
   : multiplication ( (PLUS|MINUS)^ multiplication )*
   ;
@@ -32,17 +35,20 @@ exponentiation
   ;
 
 unary
-  : MINUS? LEFT_PAREN expr RIGHT_PAREN -> ^(UNARY MINUS? expr)
+  : MINUS atom -> ^(UNARY MINUS atom)
+  | PLUS atom -> ^(UNARY PLUS atom)
   | atom
   ;
-  
+
 atom
-  : MINUS? real_number -> ^(ATOM MINUS? real_number)
-  | MINUS? imaginary_number -> ^(ATOM MINUS? imaginary_number)
-  | MINUS? si_unit_ref -> ^(ATOM MINUS? si_unit_ref)
-  | MINUS? constant_ref -> ^(ATOM MINUS? constant_ref)
-  | MINUS? funct_ref1 -> ^(ATOM MINUS? funct_ref1)
-  | MINUS? funct_ref2 -> ^(ATOM MINUS? funct_ref2)
+  :  real_number -> ^(ATOM real_number)
+  |  imaginary_number -> ^(ATOM imaginary_number)
+  |  real_number si_unit_ref -> ^(ATOM real_number si_unit_ref)
+  |  imaginary_number si_unit_ref -> ^(ATOM imaginary_number si_unit_ref)
+  |  constant_ref -> ^(ATOM constant_ref)
+  |  funct_ref1 -> ^(ATOM funct_ref1)
+  |  funct_ref2 -> ^(ATOM funct_ref2)
+  |  LEFT_PAREN expr RIGHT_PAREN -> ^(ATOM expr)
   ;
 
 funct_ref1
@@ -90,36 +96,36 @@ constant_ref
   | CONSTANTS_E -> ^(CONSTANT_REF CONSTANTS_E)
   | CONSTANTS_ANS -> ^(CONSTANT_REF CONSTANTS_ANS)
   ;
-
+  
 si_unit_ref
-  : real_number SI_PREFIX_YOTTA -> ^(SI_CONVERT real_number SI_PREFIX_YOTTA)
-  | real_number SI_PREFIX_ZETTA -> ^(SI_CONVERT real_number SI_PREFIX_ZETTA)
-  | real_number SI_PREFIX_EXA -> ^(SI_CONVERT real_number SI_PREFIX_EXA)
-  | real_number SI_PREFIX_PETA -> ^(SI_CONVERT real_number SI_PREFIX_PETA)
-  | real_number SI_PREFIX_TERA -> ^(SI_CONVERT real_number SI_PREFIX_TERA)
-  | real_number SI_PREFIX_GIGA -> ^(SI_CONVERT real_number SI_PREFIX_GIGA)
-  | real_number SI_PREFIX_MEGA -> ^(SI_CONVERT real_number SI_PREFIX_MEGA)
-  | real_number SI_PREFIX_KILO -> ^(SI_CONVERT real_number SI_PREFIX_KILO)
-  | real_number SI_PREFIX_HECTO -> ^(SI_CONVERT real_number SI_PREFIX_HECTO)
-  | real_number SI_PREFIX_DECA -> ^(SI_CONVERT real_number SI_PREFIX_DECA)
-  | real_number SI_PREFIX_DECI -> ^(SI_CONVERT real_number SI_PREFIX_DECI)
-  | real_number SI_PREFIX_CENTI -> ^(SI_CONVERT real_number SI_PREFIX_CENTI)
-  | real_number SI_PREFIX_MILLI -> ^(SI_CONVERT real_number SI_PREFIX_MILLI)
-  | real_number SI_PREFIX_MICRO -> ^(SI_CONVERT real_number SI_PREFIX_MICRO)
-  | real_number SI_PREFIX_NANO -> ^(SI_CONVERT real_number SI_PREFIX_NANO)
-  | real_number SI_PREFIX_PICO -> ^(SI_CONVERT real_number SI_PREFIX_PICO)
-  | real_number SI_PREFIX_FEMTO -> ^(SI_CONVERT real_number SI_PREFIX_FEMTO)
-  | real_number SI_PREFIX_ATTO -> ^(SI_CONVERT real_number SI_PREFIX_ATTO)
-  | real_number SI_PREFIX_ZEPTO -> ^(SI_CONVERT real_number SI_PREFIX_ZEPTO)
-  | real_number SI_PREFIX_YOCTO -> ^(SI_CONVERT real_number SI_PREFIX_YOCTO)
-  | real_number SI_PREFIX_KIBI -> ^(SI_CONVERT real_number SI_PREFIX_KIBI)
-  | real_number SI_PREFIX_MEBI -> ^(SI_CONVERT real_number SI_PREFIX_MEBI)
-  | real_number SI_PREFIX_GIBI -> ^(SI_CONVERT real_number SI_PREFIX_GIBI)
-  | real_number SI_PREFIX_TEBI -> ^(SI_CONVERT real_number SI_PREFIX_TEBI)
-  | real_number SI_PREFIX_PEBI -> ^(SI_CONVERT real_number SI_PREFIX_PEBI)
-  | real_number SI_PREFIX_EXBI -> ^(SI_CONVERT real_number SI_PREFIX_EXBI)
-  | real_number SI_PREFIX_ZEBI -> ^(SI_CONVERT real_number SI_PREFIX_ZEBI)
-  | real_number SI_PREFIX_YOBI -> ^(SI_CONVERT real_number SI_PREFIX_YOBI)
+  : SI_PREFIX_YOTTA -> ^(SI_CONVERT SI_PREFIX_YOTTA)
+  | SI_PREFIX_ZETTA -> ^(SI_CONVERT SI_PREFIX_ZETTA)
+  | SI_PREFIX_EXA -> ^(SI_CONVERT SI_PREFIX_EXA)
+  | SI_PREFIX_PETA -> ^(SI_CONVERT SI_PREFIX_PETA)
+  | SI_PREFIX_TERA -> ^(SI_CONVERT SI_PREFIX_TERA)
+  | SI_PREFIX_GIGA -> ^(SI_CONVERT SI_PREFIX_GIGA)
+  | SI_PREFIX_MEGA -> ^(SI_CONVERT SI_PREFIX_MEGA)
+  | SI_PREFIX_KILO -> ^(SI_CONVERT SI_PREFIX_KILO)
+  | SI_PREFIX_HECTO -> ^(SI_CONVERT SI_PREFIX_HECTO)
+  | SI_PREFIX_DECA -> ^(SI_CONVERT SI_PREFIX_DECA)
+  | SI_PREFIX_DECI -> ^(SI_CONVERT SI_PREFIX_DECI)
+  | SI_PREFIX_CENTI -> ^(SI_CONVERT SI_PREFIX_CENTI)
+  | SI_PREFIX_MILLI -> ^(SI_CONVERT SI_PREFIX_MILLI)
+  | SI_PREFIX_MICRO -> ^(SI_CONVERT SI_PREFIX_MICRO)
+  | SI_PREFIX_NANO -> ^(SI_CONVERT SI_PREFIX_NANO)
+  | SI_PREFIX_PICO -> ^(SI_CONVERT SI_PREFIX_PICO)
+  | SI_PREFIX_FEMTO -> ^(SI_CONVERT SI_PREFIX_FEMTO)
+  | SI_PREFIX_ATTO -> ^(SI_CONVERT SI_PREFIX_ATTO)
+  | SI_PREFIX_ZEPTO -> ^(SI_CONVERT SI_PREFIX_ZEPTO)
+  | SI_PREFIX_YOCTO -> ^(SI_CONVERT SI_PREFIX_YOCTO)
+  | SI_PREFIX_KIBI -> ^(SI_CONVERT SI_PREFIX_KIBI)
+  | SI_PREFIX_MEBI -> ^(SI_CONVERT SI_PREFIX_MEBI)
+  | SI_PREFIX_GIBI -> ^(SI_CONVERT SI_PREFIX_GIBI)
+  | SI_PREFIX_TEBI -> ^(SI_CONVERT SI_PREFIX_TEBI)
+  | SI_PREFIX_PEBI -> ^(SI_CONVERT SI_PREFIX_PEBI)
+  | SI_PREFIX_EXBI -> ^(SI_CONVERT SI_PREFIX_EXBI)
+  | SI_PREFIX_ZEBI -> ^(SI_CONVERT SI_PREFIX_ZEBI)
+  | SI_PREFIX_YOBI -> ^(SI_CONVERT SI_PREFIX_YOBI)
   ;
 
 imaginary_number
@@ -127,10 +133,10 @@ imaginary_number
 	;
 
 real_number 
-	:	 dec_num
-	|	 hex_num
-	|	 oct_num
-	|	 bin_num
+	: dec_num
+	| hex_num
+	| oct_num
+	| bin_num
 	;
 	
 dec_num

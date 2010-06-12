@@ -100,8 +100,8 @@ mrReal mr_e() {
 	return eVal;
 }
 
-mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix) {
-	mrReal suff_val, retv;
+mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix) {
+	mrReal suff_val;
 
 	switch (si_prefix) {
 		case MR_MATH_SI_PREFIX_YOTTA:
@@ -189,9 +189,7 @@ mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix) {
 			suff_val = pow (static_cast<double>(2), 80);
 			break;
 	}
-
-	retv = suff_val * multipl;
-	return retv;
+	return suff_val;
 }
 
 mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv) {

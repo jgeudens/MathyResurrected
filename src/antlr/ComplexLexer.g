@@ -2,6 +2,7 @@ lexer grammar ComplexLexer;
 
 options {
 	language=C;
+//	language=Java;
 }
 
 tokens {
@@ -133,20 +134,20 @@ fragment FLOAT_MANTISSA
 	    ( DECIMAL_POINT
 	    	(
 	    		('0'..'9')+
-	    		|
+	    		/*|
 	    		{ 
 					$type = LEXER_ERROR;
 					collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA); 
-				}
+				}*/
 	    	)
 	    )? 
 	| DECIMAL_POINT (
 		('0'..'9')+
-		|
+		/*|
 		{ 
 			$type = LEXER_ERROR;
 			collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA); 
-		}
+		}*/
 	)
     ;
 
@@ -154,10 +155,10 @@ fragment EXPONENT
     : ('e' | 'E') (PLUS | MINUS)? (
 		('0'..'9')+
 		|   
-		{ 
+		/*{ 
 			$type = LEXER_ERROR;
 			collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_EXPONENT); 
-		}
+		}*/
     )
 	;
 	
@@ -169,7 +170,7 @@ fragment LEXER_ERROR : ;
 /* Match anything that hasn't been mathced. Issue lexer error about 
 illegal input */
 OTHER_CHAR 
-	:. {
+	:. /*{
 		$type = LEXER_ERROR;
 		collectlexerError(GETCHARINDEX()-1, LEX_ERR_BAD_INPUT); 
-	};
+	}*/;
