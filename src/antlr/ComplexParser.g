@@ -24,7 +24,11 @@ bitxor
   ;
 
 bitand
-  : addition ( BW_AND^ addition )*
+  : bitshift ( BW_AND^ bitshift )*
+  ;
+  
+bitshift
+  : addition ( (BW_SHLEFT | BW_SHRIGHT)^ addition)*
   ;
   
 addition
