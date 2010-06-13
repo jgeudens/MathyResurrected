@@ -61,6 +61,8 @@ private slots:
 	void on_radioButtonBW64_clicked() { itsBWidth = 64; } 
 	void on_checkBoxShowBasePrefix_clicked(bool flag) { itsShowBasePrefix = flag; }
 	void on_pushButtonSetDefaults_clicked();
+	void on_checkBoxShowLeadingZerosHex_clicked(bool flag) { itsShowLeadZeroesHex = flag; }
+	void on_checkBoxShowLeadingZerosBin_clicked(bool flag) { itsShowLeadZeroesBin = flag; }
 
 public:
 	MathyResurrectedOptionsDialog(QWidget* parent = 0);
@@ -82,6 +84,8 @@ public:
 	static QString keyNameOutputShowOct() { return QString("MathyResurrected/OutputBinary"); }
 	static QString keyNameShowBasePrefix() { return QString("MathyResurrected/OutputBaseShowPrefix"); }
 	static QString keyNameBitWidth() { return QString("MathyResurrected/BitWidth"); }
+	static QString keyNameShowLeadingZeroesHex() { return QString("MathyResurrected/ShowLeadingZeroesHex"); }
+	static QString keyNameShowLeadingZeroesBin() { return QString("MathyResurrected/ShowLeadingZeroesBin"); }
 	
 	void writeSettings();
 
@@ -114,6 +118,8 @@ private:
 	bool itsShowOct;
 	bool itsShowBasePrefix;
 	unsigned char itsBWidth;
+	bool itsShowLeadZeroesHex;
+	bool itsShowLeadZeroesBin;
 	
 	void setupUiByAppSettings();
 };

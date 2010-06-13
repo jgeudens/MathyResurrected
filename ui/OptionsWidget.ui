@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>516</width>
-    <height>394</height>
+    <width>548</width>
+    <height>454</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,9 +20,9 @@
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0" colspan="2">
-    <layout class="QFormLayout" name="formLayout_3">
+    <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
       <widget class="QGroupBox" name="groupBox_4">
        <property name="title">
@@ -336,32 +336,79 @@
           </item>
          </layout>
         </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QGroupBox" name="groupBox_3">
-          <property name="title">
-           <string>Output number base</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
+       </layout>
+       <zorder>groupBox</zorder>
+       <zorder>checkBoxShowGrouping</zorder>
+       <zorder></zorder>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="title">
+        <string>Input / Output number base</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QCheckBox" name="checkBoxBinOut">
+              <property name="text">
+               <string>Bin</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxOctOut">
+              <property name="text">
+               <string>Oct</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxDecOut">
+              <property name="text">
+               <string>Dec</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxHexOut">
+              <property name="text">
+               <string>Hex</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBoxBW">
+            <property name="title">
+             <string>Calculation bit width</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QCheckBox" name="checkBoxBinOut">
+              <widget class="QRadioButton" name="radioButtonBW64">
                <property name="text">
-                <string>Bin</string>
+                <string>64</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBoxOctOut">
+              <widget class="QRadioButton" name="radioButtonBW32">
                <property name="text">
-                <string>Oct</string>
+                <string>32</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBoxDecOut">
+              <widget class="QRadioButton" name="radioButtonBW16">
                <property name="text">
-                <string>Dec</string>
+                <string>16</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -369,76 +416,66 @@
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="checkBoxHexOut">
+              <widget class="QRadioButton" name="radioButtonBW8">
                <property name="text">
-                <string>Hex</string>
+                <string>8</string>
                </property>
               </widget>
              </item>
             </layout>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBoxBW">
-             <property name="title">
-              <string>Calculation bit width</string>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
-               <widget class="QRadioButton" name="radioButtonBW64">
-                <property name="text">
-                 <string>64</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="radioButtonBW32">
-                <property name="text">
-                 <string>32</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="radioButtonBW16">
-                <property name="text">
-                 <string>16</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="radioButtonBW8">
-                <property name="text">
-                 <string>8</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxShowBasePrefix">
-             <property name="toolTip">
-              <string>Show prefix for given number base in results (i.e. &quot;0x&quot; for hexadecimal numbers)</string>
-             </property>
-             <property name="text">
-              <string>Show base prefix in results</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QCheckBox" name="checkBoxShowBasePrefix">
+            <property name="toolTip">
+             <string>Show prefix for given number base in results (i.e. &quot;0x&quot; for hexadecimal numbers)</string>
+            </property>
+            <property name="text">
+             <string>Show base prefix in results</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxShowLeadingZerosBin">
+            <property name="text">
+             <string>Show leading zeros in bin output</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxShowLeadingZerosHex">
+            <property name="text">
+             <string>Show leading zeros in hex output</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
-       <zorder>groupBox</zorder>
-       <zorder>checkBoxShowGrouping</zorder>
-       <zorder></zorder>
-       <zorder>groupBox_3</zorder>
       </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -461,6 +498,19 @@
       <string>Defaults</string>
      </property>
     </widget>
+   </item>
+   <item row="0" column="2">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

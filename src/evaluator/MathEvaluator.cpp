@@ -152,6 +152,8 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(defaultDecimalPointTag());
 		itsGroupingCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
 		itsBAPI.bit_width = itsBitWidth = defaultBitWidth();
+		itsShowLeadZeroesHex = defaultShowLeadingZeroesHex();
+		itsShowLeadZeroesBin = defaultShowLeadingZeroesBin();
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
@@ -197,6 +199,14 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsBAPI.bit_width = itsBitWidth = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameBitWidth(),
 			defaultBitWidth()).toUInt();
+
+		itsShowLeadZeroesHex = app_settings->value(
+			MathyResurrectedOptionsDialog::keyNameShowLeadingZeroesHex(), 
+			defaultShowLeadingZeroesHex()).toBool();
+			
+		itsShowLeadZeroesBin = app_settings->value(
+			MathyResurrectedOptionsDialog::keyNameShowLeadingZeroesBin(), 
+			defaultShowLeadingZeroesBin()).toBool();
 	}
 
 	if (itsArgSeparator == itsDecimalPoint) {
@@ -443,15 +453,14 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 	mrReal absVal = val;
 	switch (baseTag) {
 		case 'b':
-			retv += bho_sign;
-			if (itsShowBasePrefix) {
-				retv += "0b";
-			}
 			switch (itsBitWidth) {
 				case 64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI64, 2);
+						if (itsShowLeadZeroesBin) {
+							retv = retv.rightJustified(64, '0');
+						}
 					} else {
 						retv = "64b int range error";
 					}
@@ -460,6 +469,9 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					tmpI32 = safe_convert_u32b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI32, 2);
+						if (itsShowLeadZeroesBin) {
+							retv = retv.rightJustified(32, '0');
+						}
 					} else {
 						retv = "32b int range error";
 					}
@@ -468,6 +480,9 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					tmpI16 = safe_convert_u16b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI16, 2);
+						if (itsShowLeadZeroesBin) {
+							retv = retv.rightJustified(16, '0');
+						}
 					} else {
 						retv = "16b int range error";
 					}
@@ -476,22 +491,28 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					tmpI8 = safe_convert_u8b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI8, 2);
+						if (itsShowLeadZeroesBin) {
+							retv = retv.rightJustified(8, '0');
+						}
 					} else {
 						retv = "8b int range error";
 					}
 					break;
-			}			
+			}
+			if (itsShowBasePrefix) {
+				retv.insert(0, "0b");
+			}
+			retv.insert(0, bho_sign);
 			break;
 		case 'h':
-			retv += bho_sign;
-			if (itsShowBasePrefix) {
-				retv += "0x";
-			}
 			switch (itsBitWidth) {
 				case 64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI64, 16).toUpper();
+						if (itsShowLeadZeroesHex) {
+							retv = retv.rightJustified(16, '0');
+						}
 					} else {
 						retv = "64b int range error";
 					}
@@ -500,6 +521,9 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					tmpI32 = safe_convert_u32b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI32, 16).toUpper();
+						if (itsShowLeadZeroesHex) {
+							retv = retv.rightJustified(8, '0');
+						}
 					} else {
 						retv = "32b int range error";
 					}
@@ -508,6 +532,9 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					tmpI16 = safe_convert_u16b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI16, 16).toUpper();
+						if (itsShowLeadZeroesHex) {
+							retv = retv.rightJustified(4, '0');
+						}
 					} else {
 						retv = "16b int range error";
 					}
@@ -516,17 +543,20 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					tmpI8 = safe_convert_u8b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI8, 16).toUpper();
+						if (itsShowLeadZeroesHex) {
+							retv = retv.rightJustified(2, '0');
+						}
 					} else {
 						retv = "8b int range error";
 					}
 					break;
 			}
+			if (itsShowBasePrefix) {
+				retv.insert(0, "0x");
+			}
+			retv.insert(0, bho_sign);
 			break;
 		case 'o':
-			retv += bho_sign;
-			if (itsShowBasePrefix) {
-				retv += "0";
-			}
 			switch (itsBitWidth) {
 				case 64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
@@ -561,6 +591,10 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					}
 					break;
 			}
+			if (itsShowBasePrefix) {
+				retv.insert(0, "0");
+			}
+			retv.insert(0, bho_sign);
 			break;
 		case 'd':
 		default:
