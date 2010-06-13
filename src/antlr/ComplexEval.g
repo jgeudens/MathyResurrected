@@ -18,12 +18,12 @@ expr returns [mrComplex_ptr compl_retv]
     : ^(BW_AND a = expr b = expr) {
 		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_AND, $a.compl_retv, $b.compl_retv);
 	}
-	/*| ^(BW_OR a = expr b = expr) {
+	| ^(BW_OR a = expr b = expr) {
 		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_OR, $a.compl_retv, $b.compl_retv);
 	}
 	| ^(BW_XOR a = expr b = expr) {
 		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_XOR, $a.compl_retv, $b.compl_retv);
-	}*/
+	}
 	| ^(PLUS a = expr b = expr) {
 		$compl_retv = mr_binary_operator(MR_PLUS, $a.compl_retv, $b.compl_retv);
 	}
