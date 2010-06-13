@@ -109,20 +109,17 @@ separator following are examples of supported numeric input:
     Bitwise operators (unary and binary)
     ====================================
 
-    These operators operate on unsigned integer real part of operands.
+    These operators operate on unsigned integer, real part of operands.
 This means that for any two complex numbers x and y, and binary bitwise
 operator op
 
-                    x op y = UInt{Re{x}} op UInt{Re{y}}
+                x op y = UInt{Re{x}} op UInt{Re{y}}
 
     symbol        name
        &         and
        |         or
        ×         xor
        ~         not
-      ~&         nand
-      ~|         nor
-      ~×         xnor
 	  >>         bit shift right
       <<         bit shift left
 
