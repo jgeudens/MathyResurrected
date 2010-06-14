@@ -37,7 +37,7 @@ public:
 	uint HASH_MATHYRESURRECTED;
 
 	MathyResurrectedPlugin();
-	virtual ~MathyResurrectedPlugin() {}
+	virtual ~MathyResurrectedPlugin();
 
 	virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL); 
 

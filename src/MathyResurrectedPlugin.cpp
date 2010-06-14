@@ -44,6 +44,10 @@ MathyResurrectedPlugin::MathyResurrectedPlugin() {
 	itsCalculator.reset(p);
 }
 
+MathyResurrectedPlugin::~MathyResurrectedPlugin() {
+	gmathyresurrectedInstance = NULL;
+}
+
 void MathyResurrectedPlugin::getID(uint* id) {
 	*id = HASH_MATHYRESURRECTED;
 }
