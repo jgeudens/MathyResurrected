@@ -24,9 +24,8 @@
 #include <boost/math/complex.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/dynamic_bitset.hpp>
 #include <string>
-#include "MathyResurrectedExceptions.h"
+#include "Exceptions.h"
 #include "math_bridge_API.h"
 #include "math_bridge_globals.h"
 #include "MathEvaluator.h"
@@ -53,7 +52,7 @@ inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr dest, const mr_StdComplex_t& sr
 
 /** Global data used by bridge API. Although this doesn't make this API much
 tread safer than before, at leaset this "unsafety" has been localized and 
-modulatized. */
+modularized. */
 BridgeAPIGlobals* globalData = 0;
 
 void init_bridge_API (BridgeAPIGlobals* globs) {
@@ -577,7 +576,7 @@ mrReal parse_mrNumeric_t (pANTLR3_STRING strin) {
 	with internal representation, before input is handed to parser. 
 	This replacement will occur somewhere high in application so that
 	parser and lexer will always get clear string expressions in which
-	decimal separator will always be '.' */
+	decimal separator will always be MathEvaluator::internalDecimalPoint */
 
 	char removeCh = MathEvaluator::internalDecimalPoint().toAscii();
 	char current;

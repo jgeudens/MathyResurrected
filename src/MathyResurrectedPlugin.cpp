@@ -18,20 +18,10 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtGui>
-#include <QUrl>
-#include <QFile>
-#include <QRegExp>
-#include <QTextCodec>
-#include <QClipboard>
-
-#ifdef Q_WS_WIN
-#include <windows.h>
-#include <shlobj.h>
-#include <tchar.h>
-#endif
-
 #include "MathyResurrectedPlugin.h"
+#include <QtCore>
+#include <QClipboard>
+#include "Settings.h"
 
 using namespace mathy_resurrected;
 
@@ -40,7 +30,8 @@ MathyResurrectedPlugin* gmathyresurrectedInstance = NULL;
 MathyResurrectedPlugin::MathyResurrectedPlugin() {
 	HASH_MATHYRESURRECTED = qHash(QString("MathyResurrected"));
 	itsName = "MathyResurrected";
-	MathEvaluator* p = new MathEvaluator();
+	itsSettings = new Settings(this);
+	MathEvaluator* p = new MathEvaluator(itsSettings);
 	itsCalculator.reset(p);
 }
 
@@ -60,39 +51,8 @@ void MathyResurrectedPlugin::init() {
 	if (gmathyresurrectedInstance == NULL)
 		gmathyresurrectedInstance = this;
 
-	QSettings* sett = *(this->settings);
-
- 	itsCalculator->changeEvaluatorSettings(sett);
-
-	itsSimpleMatching = sett->value(
-			MathyResurrectedOptionsDialog::keyNameSimpleInputMatching(),
-			MathyResurrectedOptionsDialog::defaultSimpleInputMatching()
-		).toBool();
-	itsUseEnterKey = sett->value(
-			MathyResurrectedOptionsDialog::keyNameUseEnterKey(), 
-			MathyResurrectedOptionsDialog::defaultUseEnterKey()
-		).toBool();
-	
-	itsShowDec = sett->value(
-		MathyResurrectedOptionsDialog::keyNameOutputShowDec(), 
-		MathyResurrectedOptionsDialog::defaultOutputShowDec()
-		).toBool();
-
-	itsShowBin = sett->value(
-		MathyResurrectedOptionsDialog::keyNameOutputShowBin(), 
-		MathyResurrectedOptionsDialog::defaultOutputShowBin()
-		).toBool();
-
-	itsShowHex = sett->value(
-		MathyResurrectedOptionsDialog::keyNameOutputShowHex(), 
-		MathyResurrectedOptionsDialog::defaultOutputShowHex()
-		).toBool();
-
-	itsShowOct = sett->value(
-		MathyResurrectedOptionsDialog::keyNameOutputShowOct(), 
-		MathyResurrectedOptionsDialog::defaultOutputShowOct()
-		).toBool();
-	
+	itsSettings->readSettings(*(this->settings));
+ 	itsCalculator->changeEvaluatorSettings(itsSettings);
 	itsGUI.reset();
 }
 
@@ -102,7 +62,7 @@ void MathyResurrectedPlugin::getLabels(QList<InputData>* id) {
 	const QString & text = id->last().getText();
 
 	bool shouldLabl;
-	if (itsSimpleMatching) {
+	if (itsSettings->useSimpleInputMatching()) {
 		QString tmp_expr = text;
 		if (tmp_expr.startsWith('=')) {
 			tmp_expr.remove(0, 1);
@@ -126,25 +86,25 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 
 		QString result;
 
-		if (itsShowDec) {
+		if (itsSettings->showDecOutput()) {
 			result = itsCalculator->toString();
 			results->push_back(CatItem(result + ".math.dec", 
 				result, HASH_MATHYRESURRECTED, getIcon()));
 		}
 
-		if (itsShowOct) {
+		if (itsSettings->showOctOutput()) {
 			result = itsCalculator->toStringOct();
 			results->push_back(CatItem(result + ".math.oct", 
 				result, HASH_MATHYRESURRECTED, getIcon()));
 		}
 
-		if (itsShowBin) {
+		if (itsSettings->showBinOutput()) {
 			result = itsCalculator->toStringBin();
 			results->push_back(CatItem(result + ".math.bin", 
 				result, HASH_MATHYRESURRECTED, getIcon()));
 		}
 
-		if (itsShowHex) {
+		if (itsSettings->showHexOutput()) {
 			result = itsCalculator->toStringHex();
 			results->push_back(CatItem(result + ".math.hex", 
 				result, HASH_MATHYRESURRECTED, getIcon()));
@@ -153,15 +113,16 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 }
 
 void MathyResurrectedPlugin::doDialog(QWidget* parent, QWidget** newDlg) {
-	if (itsGUI != NULL) return;
-	MathyResurrectedOptionsDialog* p = new MathyResurrectedOptionsDialog(parent);
-	itsGUI.reset(p);
-	*newDlg = itsGUI.get();
+	if (itsGUI == 0) {
+		OptionsDialog* p = new OptionsDialog(itsSettings, parent);
+		itsGUI.reset(p);
+		*newDlg = itsGUI.get();
+	}
 }
 
 void MathyResurrectedPlugin::endDialog(bool accept) {
 	if (accept) {
-		itsGUI->writeSettings();
+		itsSettings->writeSettings(*(this->settings));
 		init();
 	}
 	itsGUI.reset();
@@ -175,8 +136,8 @@ void MathyResurrectedPlugin::setPath(QString * path) {
 	libPath = *path;
 }
 
-void MathyResurrectedPlugin::launchItem(QList<InputData>* inputData, CatItem* item) {
-	if (itsUseEnterKey) {
+void MathyResurrectedPlugin::launchItem(QList<InputData>* /*inputData*/, CatItem* item) {
+	if (itsSettings->useEnterToCopy()) {
 		QClipboard *clipboard = QApplication::clipboard();
 		clipboard->setText(item->shortName);
 	}

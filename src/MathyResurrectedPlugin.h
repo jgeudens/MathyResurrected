@@ -23,9 +23,13 @@
 
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <QString>
-#include "MathyResurrectedOptionsDialog.h"
+#include "OptionsDialog.h"
 #include "MathEvaluator.h"
 #include "plugin_interface.h"
+
+namespace mathy_resurrected {
+	class Settings;
+}
 
 class MathyResurrectedPlugin : public QObject, public PluginInterface
 {
@@ -50,21 +54,14 @@ public:
 	void endDialog(bool accept);
 	void init();
 	QString getIcon();
-	void setPath(QString * path);
+	void setPath(QString* path);
 
 private:
 	boost::shared_ptr<mathy_resurrected::MathEvaluator> itsCalculator;
-	boost::shared_ptr<mathy_resurrected::MathyResurrectedOptionsDialog> itsGUI;
+	boost::shared_ptr<mathy_resurrected::OptionsDialog> itsGUI;
+	mathy_resurrected::Settings* itsSettings;
 	QString itsName;
 	QString libPath;
-
-	bool itsSimpleMatching;
-	bool itsUseEnterKey;
-	
-	bool itsShowDec;
-	bool itsShowBin;
-	bool itsShowHex;
-	bool itsShowOct;
 };
 
 extern MathyResurrectedPlugin* gmathyresurrectedInstance;

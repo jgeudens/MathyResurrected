@@ -18,7 +18,7 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "MathyResurrectedExceptions.h"
+#include "Exceptions.h"
 
 namespace mathy_resurrected {
 

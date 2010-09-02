@@ -59,15 +59,17 @@ CONFIG(release, debug|release) {
 LIBS += -lantlr3c
 
 # Plugin main sources
-SOURCES += $$PWD/src/MathyResurrectedOptionsDialog.cpp \
+SOURCES += $$PWD/src/OptionsDialog.cpp \
+	$$PWD/src/Settings.cpp \
 	$$PWD/src/MathyResurrectedPlugin.cpp \
 	$$PWD/src/evaluator/MathEvaluator.cpp \
-	$$PWD/src/evaluator/MathyResurrectedExceptions.cpp \
+	$$PWD/src/evaluator/Exceptions.cpp \
 	$$PWD/src/evaluator/math_bridge_API.cpp
-HEADERS += $$PWD/src/MathyResurrectedOptionsDialog.h \
+HEADERS += $$PWD/src/OptionsDialog.h \
+	$$PWD/src/Settings.h \
 	$$PWD/src/MathyResurrectedPlugin.h \
 	$$PWD/src/evaluator/MathEvaluator.h \
-	$$PWD/src/evaluator/MathyResurrectedExceptions.h \
+	$$PWD/src/evaluator/Exceptions.h \
 	$$PWD/src/evaluator/math_bridge_globals.h \
 	$$PWD/src/evaluator/math_bridge_API.h \
 	$$PWD/src/evaluator/math_bridge_API_types.h
