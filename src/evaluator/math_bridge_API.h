@@ -36,7 +36,6 @@ extern "C" {
 be deleted directly, it is handled automatically. */
 mrComplex_ptr newMrComplex();
 void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-void setAns(mrReal real, mrReal imag);
 const_mrComplex_ptr getAns();
 
 /*! Return value of PI */

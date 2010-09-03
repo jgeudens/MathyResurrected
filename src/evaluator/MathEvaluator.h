@@ -24,7 +24,6 @@
 #include <QString>
 #include <boost/smart_ptr/shared_array.hpp>
 #include "math_bridge_API_types.h"
-#include "math_bridge_globals.h"
 
 namespace mathy_resurrected {
 
@@ -55,7 +54,7 @@ public:
 	/** Stores current state of calculation for future use by "ans" 
 	variable in expression. */
 	void storeAns();
-	const mrComplex_t& ans() const { return itsBAPI.ans; }
+	const mrComplex_t& ans() const;
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
@@ -93,7 +92,6 @@ private:
 	bool itsIsValid;		/*!< true if expression is valid */
 	bool itsIsEvaluated;	/*!< true if expression has been evaluated */
 	QString itsErrStr;		/*!< Error string */
-	BridgeAPIGlobals itsBAPI;
 
 	/** Evaluator settings. Non-owned pointer to const object. */
 	const Settings* itsSettings;

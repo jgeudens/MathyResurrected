@@ -31,6 +31,7 @@
 #include "Settings.h"
 #include "Exceptions.h"
 #include <QLocale>
+#include "math_bridge_globals.h"
 
 using namespace std;
 using namespace boost;
@@ -40,12 +41,12 @@ namespace mathy_resurrected {
 #ifdef _DEBUG
 void MathEvaluator::printLexerErrors() const {
 	unsigned int i = 0;
-	unsigned int iend = itsBAPI.lexerErrorsCollection.size();
+	unsigned int iend = BridgeAPIGlobals::getLexerErrors().size();
 
 	for (; i != iend; ++i) {
-		cout << "Char at: " << itsBAPI.lexerErrorsCollection[i].char_index;
+		cout << "Char at: " << BridgeAPIGlobals::getLexerErrors()[i].char_index;
 		cout << " Error: ";
-		switch (itsBAPI.lexerErrorsCollection[i].err_type) {
+		switch (BridgeAPIGlobals::getLexerErrors()[i].err_type) {
 			case LEX_ERR_MALFORMED_MANTISSA:
 				cout << "LEX_ERR_MALFORMED_MANTISSA";
 				break;
@@ -130,9 +131,8 @@ MathEvaluator::MathEvaluator(const Settings* app_settings) :
 	itsExprLen(0)
 {
 	changeEvaluatorSettings(app_settings);
-	init_bridge_API(&itsBAPI);
 	real = imag = 0;
-	setAns(0, 0);
+	storeAns();
 }
 
 void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
@@ -140,7 +140,11 @@ void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
 		throw invalid_argument("Null pointer to evaluator settings!");
 	}
 	itsSettings = app_settings;
-	itsBAPI.bit_width = itsSettings->calculationBitWidth();
+	BridgeAPIGlobals::setBitWidth(itsSettings->calculationBitWidth());
+}
+
+const mrComplex_t& MathEvaluator::ans() const { 
+	return *BridgeAPIGlobals::getAns(); 
 }
 
 void MathEvaluator::setExpression(const QString& expression) {
@@ -192,8 +196,8 @@ bool MathEvaluator::validate() {
 		itsIsValidated = true;
 	}
 
-	itsBAPI.complexFactoryData.clear();
-	itsBAPI.lexerErrorsCollection.clear();
+	BridgeAPIGlobals::clearComplexFactory();
+	BridgeAPIGlobals::clearLexerErrors();
 	return itsIsValid;
 }
 
@@ -241,13 +245,13 @@ bool MathEvaluator::evaluate() {
 		itsIsEvaluated = true;
 	}
 
-	itsBAPI.complexFactoryData.clear();
-	itsBAPI.lexerErrorsCollection.clear();
+	BridgeAPIGlobals::clearComplexFactory();
+	BridgeAPIGlobals::clearLexerErrors();
 	return itsIsValid;
 }
 
 void MathEvaluator::storeAns() {
-	itsBAPI.ans.real = real; itsBAPI.ans.imag = imag;
+	BridgeAPIGlobals::setAns(real, imag);
 }
 
 QString MathEvaluator::toString() const {

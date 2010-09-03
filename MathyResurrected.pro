@@ -64,6 +64,7 @@ SOURCES += $$PWD/src/OptionsDialog.cpp \
 	$$PWD/src/MathyResurrectedPlugin.cpp \
 	$$PWD/src/evaluator/MathEvaluator.cpp \
 	$$PWD/src/evaluator/Exceptions.cpp \
+	$$PWD/src/evaluator/math_bridge_globals.cpp \
 	$$PWD/src/evaluator/math_bridge_API.cpp
 HEADERS += $$PWD/src/OptionsDialog.h \
 	$$PWD/src/Settings.h \
