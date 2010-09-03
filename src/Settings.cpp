@@ -251,11 +251,11 @@ void Settings::readSettings(const QSettings* settings) {
 				itsOutputFormat = AUTOMATIC;
 				break;
 			case 's':
-				itsOutputFormat = FIXED;
+				itsOutputFormat = SCIENTIFFIC;
 				break;
 			case 'f':
 			default:
-				itsOutputFormat = SCIENTIFFIC;
+				itsOutputFormat = FIXED;
 				break;
 		}
 
