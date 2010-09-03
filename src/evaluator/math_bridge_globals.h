@@ -33,7 +33,7 @@ C parser/lexer/evaluator with C++ std::complex */
 /** Structure that holds global variables needed by math bridge API. */
 class BridgeAPIGlobals {
 public:
-	static mrComplex_ptr newMrComplex();
+	static ComplexPtr newMrComplex();
 	static void clearComplexFactory();
 	
 	typedef struct {
@@ -48,7 +48,7 @@ public:
 	static const LexerErrorsCollection& getLexerErrors();
 
 	static void setAns(mrReal real, mrReal imag);
-	static const_mrComplex_ptr getAns();
+	static ComplexConstPtr getAns();
 
 	static unsigned char bitWidth();
 	static void setBitWidth(unsigned char nw);
@@ -58,14 +58,14 @@ private:
 	static BridgeAPIGlobals& getGlobals();
 
 	/*! Data storage for factory produced objects. */
-	std::vector< boost::shared_ptr< mrComplex_t > > complexFactoryData;
+	std::vector< boost::shared_ptr< Complex > > complexFactoryData;
 
 	/*! All lexer errors are collected here during lexing phase. After 
 	that and before parser is invoked, this can be used to generate error 
 	message. */
 	LexerErrorsCollection lexerErrorsCollection;
 
-	mrComplex_t ans;
+	Complex ans;
 	unsigned char bit_width;
 };
 

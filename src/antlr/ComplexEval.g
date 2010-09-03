@@ -10,11 +10,11 @@ options {
 	#include "math_bridge_API.h"
 }
 
-prog returns [mrComplex_ptr compl_retv]
+prog returns [ComplexPtr compl_retv]
     : expr { $compl_retv = $expr.compl_retv; }
 	;
 
-expr returns [mrComplex_ptr compl_retv]
+expr returns [ComplexPtr compl_retv]
     : ^(BW_AND a = expr b = expr) {
 		$compl_retv = mr_binary_bitwise_operator(MR_BITWISE_AND, $a.compl_retv, $b.compl_retv);
 	}
@@ -68,9 +68,9 @@ expr returns [mrComplex_ptr compl_retv]
 	}
 	;
 	
-unary returns [mrComplex_ptr compl_retv]
+unary returns [ComplexPtr compl_retv]
   : ^(UNARY MINUS atom) {
-		mrComplex_t tmp;
+		Complex tmp;
 		tmp.real = -1; tmp.imag = 0;
 		$compl_retv = mr_binary_operator(MR_MULTI, &tmp, $atom.compl_retv);
     }
@@ -85,7 +85,7 @@ unary returns [mrComplex_ptr compl_retv]
     }
   ;
 
-atom returns [mrComplex_ptr compl_retv]
+atom returns [ComplexPtr compl_retv]
   :  ^(ATOM real_number) {
 		$compl_retv = $real_number.compl_retv;
 	}
@@ -112,7 +112,7 @@ atom returns [mrComplex_ptr compl_retv]
 	}
   ;
 
-funct_ref1 returns [mrComplex_ptr compl_retv]
+funct_ref1 returns [ComplexPtr compl_retv]
 	: ^(FUNCTION FN_SIN expr) {		
 		$compl_retv = mr_unary_function (MR_FUN_SIN, $expr.compl_retv); }
 	| ^(FUNCTION FN_COS expr) {		
@@ -165,7 +165,7 @@ funct_ref1 returns [mrComplex_ptr compl_retv]
 		$compl_retv = mr_unary_function (MR_FUN_POLAR, $expr.compl_retv); }
 	;
 
-funct_ref2 returns [mrComplex_ptr compl_retv]
+funct_ref2 returns [ComplexPtr compl_retv]
 	: ^(FUNCTION FN_ATAN2 a=expr b=expr) {
 		$compl_retv = mr_binary_function(MR_FUN2_ATAN2, $a.compl_retv, $b.compl_retv); 
 	}
@@ -183,7 +183,7 @@ funct_ref2 returns [mrComplex_ptr compl_retv]
 	}
 	;
 
-constant_ref returns [mrComplex_ptr compl_retv]
+constant_ref returns [ComplexPtr compl_retv]
 	: ^(CONSTANT_REF CONSTANTS_PI) {
 		$compl_retv = newMrComplex(); 
 		$compl_retv->imag = 0.0; 
@@ -201,7 +201,7 @@ constant_ref returns [mrComplex_ptr compl_retv]
     	}
     	;
 
-si_unit_ref returns [mrComplex_ptr compl_retv]
+si_unit_ref returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
 	$compl_retv->imag = 0.0; 
@@ -292,7 +292,7 @@ si_unit_ref returns [mrComplex_ptr compl_retv]
 	}
 	;
 
-imaginary_number returns [mrComplex_ptr compl_retv]
+imaginary_number returns [ComplexPtr compl_retv]
 @init {
 	mrReal numb = 0;
 	char num_present = 0;
@@ -314,45 +314,45 @@ imaginary_number returns [mrComplex_ptr compl_retv]
     }
     ;
 
-real_number returns [mrComplex_ptr compl_retv]
+real_number returns [ComplexPtr compl_retv]
 	:	 dec_num { $compl_retv =  $dec_num.compl_retv; }
 	|	 hex_num { $compl_retv =  $hex_num.compl_retv; }
 	|	 oct_num { $compl_retv =  $oct_num.compl_retv; }
 	|	 bin_num { $compl_retv =  $bin_num.compl_retv; }
 	;
 	
-dec_num returns [mrComplex_ptr compl_retv]
+dec_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
 	$compl_retv->imag = 0.0; 
 }
     : ^(RE FLOAT_NUMBER) {
-    	$compl_retv->real = parse_mrNumeric_t ($FLOAT_NUMBER->getText($FLOAT_NUMBER));
+    	$compl_retv->real = strToReal ($FLOAT_NUMBER->getText($FLOAT_NUMBER));
     };
 	
-hex_num returns [mrComplex_ptr compl_retv]
+hex_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
 	$compl_retv->imag = 0.0; 
 }
     : ^(HEX HEX_NUMBER) {
-    	$compl_retv->real = parse_hex_mrNumeric_t ($HEX_NUMBER->getText($HEX_NUMBER));
+    	$compl_retv->real = strHexToReal ($HEX_NUMBER->getText($HEX_NUMBER));
     };
 	
-oct_num returns [mrComplex_ptr compl_retv]
+oct_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
 	$compl_retv->imag = 0.0; 
 }
     : ^(OCT OCTAL_NUMBER) {
-    	$compl_retv->real = parse_oct_mrNumeric_t ($OCTAL_NUMBER->getText($OCTAL_NUMBER));
+    	$compl_retv->real = strOctToReal ($OCTAL_NUMBER->getText($OCTAL_NUMBER));
     };
 	
-bin_num returns [mrComplex_ptr compl_retv]
+bin_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
 	$compl_retv->imag = 0.0; 
 }
     : ^(BIN BINARY_NUMBER) {
-    	$compl_retv->real = parse_bin_mrNumeric_t ($BINARY_NUMBER->getText($BINARY_NUMBER));
+    	$compl_retv->real = strBinToReal ($BINARY_NUMBER->getText($BINARY_NUMBER));
     };

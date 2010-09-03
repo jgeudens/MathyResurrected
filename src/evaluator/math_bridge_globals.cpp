@@ -34,10 +34,10 @@ BridgeAPIGlobals& BridgeAPIGlobals::getGlobals() {
 	return globalData;
 }
 
-mrComplex_ptr BridgeAPIGlobals::newMrComplex() {
-	mrComplex_ptr p = new mrComplex_t;
+ComplexPtr BridgeAPIGlobals::newMrComplex() {
+	ComplexPtr p = new Complex;
 	p->real = 0; p->imag = 0;
-	boost::shared_ptr< mrComplex_t > sp(p);
+	boost::shared_ptr< Complex > sp(p);
 	getGlobals().complexFactoryData.push_back(sp);
 	return p;
 }
@@ -66,7 +66,7 @@ void BridgeAPIGlobals::setAns(mrReal real, mrReal imag) {
 	getGlobals().ans.imag = imag;
 }
 
-const_mrComplex_ptr BridgeAPIGlobals::getAns() {
+ComplexConstPtr BridgeAPIGlobals::getAns() {
 	return &(getGlobals().ans);
 }
 

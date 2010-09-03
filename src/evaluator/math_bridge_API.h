@@ -32,11 +32,11 @@ C parser/lexer/evaluator with C++ std::complex */
 extern "C" {
 #endif
 
-/*! Returns pointer to new mrComplex_t. This pointer should never 
+/*! Returns pointer to new Complex. This pointer should never 
 be deleted directly, it is handled automatically. */
-mrComplex_ptr newMrComplex();
+ComplexPtr newMrComplex();
 void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-const_mrComplex_ptr getAns();
+ComplexConstPtr getAns();
 
 /*! Return value of PI */
 mrReal mr_pi();
@@ -68,8 +68,8 @@ mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix);
 typedef enum {
 	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
 } MR_MATH_BINARY_OPERATORS;
-mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
-								  const_mrComplex_ptr lv, const_mrComplex_ptr rv);
+ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
+							   ComplexConstPtr lv, ComplexConstPtr rv);
 
 typedef enum {
 	MR_BITWISE_AND, MR_BITWISE_OR, 
@@ -77,13 +77,13 @@ typedef enum {
 	MR_BITWISE_XOR, MR_BITWISE_XNOR,
 	MR_BITWISE_SHL, MR_BITWISE_SHR
 } MR_MATH_BINARY_BITWISE_OPERATORS;
-mrComplex_ptr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, 
-										  const_mrComplex_ptr lv, const_mrComplex_ptr rv);
+ComplexPtr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, 
+									   ComplexConstPtr lv, ComplexConstPtr rv);
 
 typedef enum {
 	MR_BITWISE_NOT
 } MR_MATH_UNARY_OPERATORS;
-mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, const_mrComplex_ptr val);
+ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val);
 
 typedef enum {
 	MR_FUN_SIN, MR_FUN_COS, MR_FUN_TAN, 
@@ -96,18 +96,18 @@ typedef enum {
 	MR_FUN_DEG, MR_FUN_RAD, 
 	MR_FUN_NORM, MR_FUN_POLAR
 } MR_MATH_UNARY_FUNCTIONS;
-mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, const_mrComplex_ptr val);
+ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val);
 
 typedef enum {
 	MR_FUN2_ATAN2
 } MR_MATH_BINARY_FUNCTIONS;
-mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, 
-								  const_mrComplex_ptr arg1, const_mrComplex_ptr arg2);
+ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, 
+								  ComplexConstPtr arg1, ComplexConstPtr arg2);
 
-mrReal parse_mrNumeric_t (const pANTLR3_STRING str);
-mrReal parse_hex_mrNumeric_t (const pANTLR3_STRING str);
-mrReal parse_oct_mrNumeric_t (const pANTLR3_STRING str);
-mrReal parse_bin_mrNumeric_t (const pANTLR3_STRING str);
+mrReal strToReal(const pANTLR3_STRING str);
+mrReal strHexToReal(const pANTLR3_STRING str);
+mrReal strOctToReal(const pANTLR3_STRING str);
+mrReal strBinToReal(const pANTLR3_STRING str);
 
 #ifdef __cplusplus
 }

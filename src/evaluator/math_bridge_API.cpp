@@ -37,7 +37,7 @@ using namespace mathy_resurrected;
 
 typedef std::complex<mrReal> mr_StdComplex_t;
 
-mrComplex_ptr newMrComplex() {
+ComplexPtr newMrComplex() {
 	return BridgeAPIGlobals::newMrComplex();
 }
 
@@ -45,18 +45,18 @@ void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type) 
 	BridgeAPIGlobals::collectlexerError(char_index, err_type);
 }
 
-const_mrComplex_ptr getAns() {
+ComplexConstPtr getAns() {
 	return BridgeAPIGlobals::getAns();
 }
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& dest, const_mrComplex_ptr src) {
+inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& dest, ComplexConstPtr src) {
 	dest.real(src->real);
 	dest.imag(src->imag);
 }
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr dest, const mr_StdComplex_t& src) {
+inline void STDCOMPLEX_2_MRCOMPLEX(ComplexPtr dest, const mr_StdComplex_t& src) {
 	dest->real = src.real();
 	dest->imag = src.imag();
 }
@@ -166,9 +166,9 @@ mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix) {
 	return suff_val;
 }
 
-mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
-								  const_mrComplex_ptr lv, const_mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
+								  ComplexConstPtr lv, ComplexConstPtr rv) {
+	ComplexPtr retv = newMrComplex();
 	mr_StdComplex_t rv_c, lv_c, retv_c;
 
 	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
@@ -200,9 +200,9 @@ mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which,
 	return retv;
 }
 
-mrComplex_ptr 
-mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, const_mrComplex_ptr lv, const_mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr 
+mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv) {
+	ComplexPtr retv = newMrComplex();
 
 	quint64 lv64, rv64;
 	quint32 lv32, rv32;
@@ -374,8 +374,8 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, const_mrComp
 	return retv;
 }
 
-mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, const_mrComplex_ptr val) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val) {
+	ComplexPtr retv = newMrComplex();
 
 	quint64 tmpI64;
 	quint32 tmpI32;
@@ -427,8 +427,8 @@ mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, const_mrComplex_
 	return retv;
 }
 
-mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, const_mrComplex_ptr val) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val) {
+	ComplexPtr retv = newMrComplex();
 	mr_StdComplex_t arg_c, retv_c;
 	MRCOMPLEX_2_STDCOMPLEX(arg_c, val);
 
@@ -516,9 +516,9 @@ mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, const_mrComplex_
 	return retv;
 }
 
-mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
-								  const_mrComplex_ptr arg1, const_mrComplex_ptr arg2) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
+								  ComplexConstPtr arg1, ComplexConstPtr arg2) {
+	ComplexPtr retv = newMrComplex();
 	mr_StdComplex_t arg1_c, arg2_c, retv_c;
 
 	MRCOMPLEX_2_STDCOMPLEX(arg1_c, arg1);
@@ -536,7 +536,7 @@ mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
 }
 
 /*! Parsing of numeric types. */
-mrReal parse_mrNumeric_t (const pANTLR3_STRING strin) {
+mrReal strToReal (const pANTLR3_STRING strin) {
 	string str;
 	ANTLR3_UINT32 len = strin->len;
 
@@ -579,7 +579,7 @@ mrReal parse_mrNumeric_t (const pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrReal parse_hex_mrNumeric_t (const pANTLR3_STRING strin) {
+mrReal strHexToReal (const pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	QString str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
@@ -631,7 +631,7 @@ mrReal parse_oct_mrNumeric_t (const pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrReal parse_bin_mrNumeric_t (const pANTLR3_STRING strin) {
+mrReal strBinToReal (const pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	QString str;
 	for (ANTLR3_UINT32 i = 2; i < len; ++i) {

@@ -38,7 +38,7 @@ variables for communication between this class and ANTLR generated
 evaluator. Because of that, only single instance of MathEvaluator
 should exist at any time in program. If this is not ensured, evaluation
 will result in unspecified behavior. */
-class MathEvaluator : private mrComplex_t {
+class MathEvaluator : private Complex {
 public:
 	MathEvaluator(const Settings* app_settings);
 	void changeEvaluatorSettings(const Settings* settings);
@@ -54,7 +54,7 @@ public:
 	/** Stores current state of calculation for future use by "ans" 
 	variable in expression. */
 	void storeAns();
-	const mrComplex_t& ans() const;
+	const Complex& ans() const;
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */

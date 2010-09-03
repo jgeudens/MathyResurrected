@@ -143,7 +143,7 @@ void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
 	BridgeAPIGlobals::setBitWidth(itsSettings->calculationBitWidth());
 }
 
-const mrComplex_t& MathEvaluator::ans() const { 
+const Complex& MathEvaluator::ans() const { 
 	return *BridgeAPIGlobals::getAns(); 
 }
 
@@ -229,7 +229,7 @@ bool MathEvaluator::evaluate() {
 			}
 
 			if (!lpr.malloc_error) {
-				mrComplex_ptr retv_val;
+				ComplexPtr retv_val;
 
 				try {
 					retv_val = lpr.treeParser->prog(lpr.treeParser);
