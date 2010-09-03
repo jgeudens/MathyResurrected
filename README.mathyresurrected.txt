@@ -92,6 +92,7 @@ separator following are examples of supported numeric input:
     Op        Name                Example
      +        plus                 +4, +i
      -        minus                -4, -i
+	 %       percent               2%, 3%i, 2+33%
 
     Binary operators
     ================
@@ -103,7 +104,6 @@ separator following are examples of supported numeric input:
      ^        to the power of      4^4, 2^i
      mod      modulo               456 mod 45
               NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
-	%         percent               2%, 3%i, 2+33%
 			
     ()        brackets
 
@@ -119,7 +119,7 @@ operator op
 symbol       long symbol      description                        usage
    &            and            bitwise and                   x & y; x and y
    |            or             bitwse or                     x & y; x or y
-   ×            xor            bitwse exclusive or           x × y; x xor y
+   ~            xor            bitwse exclusive or           x ~ y; x xor y
    !            not            bitwse not                    !x; not x
   >>            shr            bitwse shift left             x >> y; x shr y
   <<            shl            bitwse shift right            x << y; x shl y

@@ -1,5 +1,6 @@
 v 0.1.7
 =======
+* Replaced symbol '×' for bitwise XOR operator with '~'
 * Replaced symbol '~' for bitwise not operator with '!'
 + Added percent operator. Expressions like "3.3%", "25%i", etc. are now 
   possible.
