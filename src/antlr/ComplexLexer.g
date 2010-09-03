@@ -26,7 +26,7 @@ MINUS            : '-';
 MULT             : '*';
 DIV              : '/';
 MOD              : (('m'|'M')('o'|'O')('d'|'D'));
-// PERCENT          : '%';
+PERCENT          : '%';
 POW              : '^';
 ARG_SEPARATOR    : '#';
 DECIMAL_POINT    : '@';

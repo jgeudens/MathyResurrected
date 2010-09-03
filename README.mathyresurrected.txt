@@ -101,9 +101,10 @@ separator following are examples of supported numeric input:
      *        multiply             6*4, 1*2
      /        divide               4/4, 2/i
      ^        to the power of      4^4, 2^i
-     %        modulo               456%45
+     mod      modulo               456 mod 45
               NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
-
+	%         percent               2%, 3%i, 2+33%
+			
     ()        brackets
 
     Bitwise operators (unary and binary)

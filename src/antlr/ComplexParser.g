@@ -146,7 +146,13 @@ imaginary_number
 
 real_number 
     : dec_num | hex_num | oct_num | bin_num
+	| dec_num_percent | hex_num_percent | oct_num_percent | bin_num_percent
     ;
+	
+dec_num_percent : dec_num PERCENT -> ^(PERCENT dec_num);
+hex_num_percent : hex_num PERCENT -> ^(PERCENT hex_num);
+oct_num_percent : oct_num PERCENT -> ^(PERCENT oct_num);
+bin_num_percent : bin_num PERCENT -> ^(PERCENT bin_num);
     
 dec_num : FLOAT_NUMBER  -> ^(RE FLOAT_NUMBER);
 hex_num : HEX_NUMBER    -> ^(HEX HEX_NUMBER);

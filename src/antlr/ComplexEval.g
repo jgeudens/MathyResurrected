@@ -315,12 +315,40 @@ imaginary_number returns [ComplexPtr compl_retv]
     ;
 
 real_number returns [ComplexPtr compl_retv]
-	:	 dec_num { $compl_retv =  $dec_num.compl_retv; }
-	|	 hex_num { $compl_retv =  $hex_num.compl_retv; }
-	|	 oct_num { $compl_retv =  $oct_num.compl_retv; }
-	|	 bin_num { $compl_retv =  $bin_num.compl_retv; }
+	:	 dec_num { $compl_retv = $dec_num.compl_retv; }
+	|	 hex_num { $compl_retv = $hex_num.compl_retv; }
+	|	 oct_num { $compl_retv = $oct_num.compl_retv; }
+	|	 bin_num { $compl_retv = $bin_num.compl_retv; }
+	|    dec_num_percent { $compl_retv = $dec_num_percent.compl_retv; }
+	|    hex_num_percent { $compl_retv = $hex_num_percent.compl_retv; }
+	|    oct_num_percent { $compl_retv = $oct_num_percent.compl_retv; }
+	|    bin_num_percent { $compl_retv = $bin_num_percent.compl_retv; }
 	;
 	
+dec_num_percent returns [ComplexPtr compl_retv]
+    : ^(PERCENT dec_num) {
+        $compl_retv = $dec_num.compl_retv;
+		$compl_retv->real = $compl_retv->real / 100; 
+    };
+	
+hex_num_percent returns [ComplexPtr compl_retv]
+    : ^(PERCENT hex_num) {
+        $compl_retv = $hex_num.compl_retv;
+		$compl_retv->real = $compl_retv->real / 100; 
+    };
+	
+oct_num_percent returns [ComplexPtr compl_retv]
+    : ^(PERCENT oct_num) {
+        $compl_retv = $oct_num.compl_retv;
+		$compl_retv->real = $compl_retv->real / 100; 
+    };
+	
+bin_num_percent returns [ComplexPtr compl_retv]
+    : ^(PERCENT bin_num) {
+        $compl_retv = $bin_num.compl_retv;
+		$compl_retv->real = $compl_retv->real / 100; 
+    };
+
 dec_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
