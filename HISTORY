@@ -1,3 +1,12 @@
+v 0.1.7
+=======
+* Large code maintenance, refactoring and cleanup...
+* Replaced functions and(x,y), or(x,y), xor(x,y), shr(x,y), shl(x,y) with 
+  operators: x and y, x or y, x xor y, x shr y, x shl y. Operations NAND, NOR 
+  and XNOR ar still left as functions. Old syntax for operators still remains
+  (see readme for details)
+* Fixed: Launchy crash when plugin was disabled and then enabled again.
+
 v 0.1.6
 =======
 + Added bitwise operators: AND, OR, XOR, bit shift left and right

@@ -1,5 +1,5 @@
 
-- replace mod operatr with something else, and use % to add percent operator
+- replace mod operator with something else, and use % to add percent operator
 - add factorial operator and function.
 
 - better error control and reporting (currently almost none)
