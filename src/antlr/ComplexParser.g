@@ -22,9 +22,13 @@ bitor
 bitxor
   : bitand ( (BW_XOR | BW_XOR2)^ bitand )*
   ;
-
+  
 bitand
-  : bitshift ( (BW_AND | BW_AND2)^ bitshift )*
+  : bitoper ( (BW_AND | BW_AND2)^ bitoper )*
+  ;
+  
+bitoper
+  : bitshift ( (BW_NAND | BW_NOR | BW_XNOR)^ bitshift )*
   ;
   
 bitshift
@@ -95,12 +99,6 @@ funct_ref2
         -> ^(FUNCTION FN_ATAN2 $a $b)
     | FN_POW LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
         -> ^(FUNCTION FN_POW $a $b)
-    | BITWISE_FN_NAND LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_NAND $a $b)
-    | BITWISE_FN_NOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_NOR $a $b)
-    | BITWISE_FN_XNOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_XNOR $a $b)
     ;
 
 constant_ref

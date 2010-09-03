@@ -46,9 +46,9 @@ BW_XOR2			 : (('x'|'X')('o'|'O')('r'|'R'));
 BW_SHLEFT2		 : (('s'|'S')('h'|'H')('l'|'L'));
 BW_SHRIGHT2		 : (('s'|'S')('h'|'H')('r'|'R'));
 
-BITWISE_FN_NAND  : (('n'|'N')('a'|'A')('n'|'N')('d'|'D'));
-BITWISE_FN_NOR   : (('n'|'N')('o'|'O')('r'|'R'));
-BITWISE_FN_XNOR  : (('x'|'X')('n'|'N')('o'|'O')('r'|'R'));
+BW_NAND  : (('n'|'N')('a'|'A')('n'|'N')('d'|'D'));
+BW_NOR   : (('n'|'N')('o'|'O')('r'|'R'));
+BW_XNOR  : (('x'|'X')('n'|'N')('o'|'O')('r'|'R'));
 
 SI_PREFIX_YOTTA  : 'Y';
 SI_PREFIX_ZETTA  : 'Z';
