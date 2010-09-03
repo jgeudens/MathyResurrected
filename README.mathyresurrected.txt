@@ -120,7 +120,7 @@ symbol       long symbol      description                        usage
    &            and            bitwise and                   x & y; x and y
    |            or             bitwse or                     x & y; x or y
    ×            xor            bitwse exclusive or           x × y; x xor y
-   ~            not            bitwse not                    ~x; not x
+   !            not            bitwse not                    !x; not x
   >>            shr            bitwse shift left             x >> y; x shr y
   <<            shl            bitwse shift right            x << y; x shl y
 

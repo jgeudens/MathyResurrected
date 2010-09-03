@@ -34,7 +34,7 @@ LEFT_PAREN       : '(';
 RIGHT_PAREN      : ')';
 BW_AND           : '&';
 BW_OR            : '|';
-BW_NOT           : '~';
+BW_NOT           : '!';
 BW_XOR           : '×';//U+00D7
 BW_SHLEFT        : '<<';
 BW_SHRIGHT       : '>>';
