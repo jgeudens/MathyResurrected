@@ -195,7 +195,9 @@ constant_ref returns [mrComplex_ptr compl_retv]
 		$compl_retv->real = mr_e();
     	}
     | ^(CONSTANT_REF CONSTANTS_ANS) {
-		$compl_retv = getAns();
+		$compl_retv = newMrComplex(); 
+		$compl_retv->imag = getAns()->imag; 
+		$compl_retv->real = getAns()->real;
     	}
     	;
 

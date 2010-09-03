@@ -36,6 +36,8 @@ typedef struct {
 
 /*! Pointer to mrComplex_t */ 
 typedef mrComplex_t* mrComplex_ptr;
+/*! const pointer to const mrComplex_t */ 
+typedef const mrComplex_t* const const_mrComplex_ptr;
 
 typedef enum MR_LEXER_ERROR_TYPES_ {
 	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,
