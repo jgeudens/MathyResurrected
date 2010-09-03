@@ -43,7 +43,7 @@ All questions regarding plugin should be asked at Sourceforge project site:
 
 Or at Launchy project site, "Plugins 2.0+" subforum:
 
-         https://sourceforge.net/projects/launchy/
+         http://sourceforge.net/projects/launchy/
 
 Features
 ========
@@ -115,13 +115,13 @@ operator op
 
                 x op y = UInt{Re{x}} op UInt{Re{y}}
 
-    symbol        name
-       &         and
-       |         or
-       ×         xor
-       ~         not
-	  >>         bit shift right
-      <<         bit shift left
+symbol       long symbol      description                        usage
+   &            and            bitwise and                   x & y; x and y
+   |            or             bitwse or                     x & y; x or y
+   ×            xor            bitwse exclusive or           x × y; x xor y
+   ~            not            bitwse not                    ~x; not x
+  >>            shr            bitwse shift left             x >> y; x shr y
+  <<            shl            bitwse shift right            x << y; x shl y
 
 ===========================================================================
                        SI and binary unit prefixes
@@ -262,7 +262,8 @@ Miscellaneous functions
     norm(x)     norm of complex number
     polar(x)    creates complex number from polar components, where
                 Re(x) = r and Im(x) = t;
-
+				
+				
 Bitwise functions
 =================
 
@@ -270,12 +271,8 @@ Bitwise functions
 This means that for any function f from this group, f(x) = f(Re(x)) no matter what
 the value of Im{x} is.
 
-    and(x,y)    - bitwise and
-    or(x,y)     - bitwse or
-    not(x)      - bitwise not
     nand(x,y)   - bitwise nand: not(x and y)
     nor(x,y)    - bitwise nor: not(x or y)
-    xor(x,y)    - bitwise exclusive or
     xnor(x,y)   - bitwise xnor: not(x xor y)
 
 ===========================================================================

@@ -16,19 +16,19 @@ expr
   ;
 
 bitor
-  : bitxor ( BW_OR^ bitxor )*
+  : bitxor ( (BW_OR | BW_OR2)^ bitxor )*
   ;
   
 bitxor
-  : bitand ( BW_XOR^ bitand )*
+  : bitand ( (BW_XOR | BW_XOR2)^ bitand )*
   ;
 
 bitand
-  : bitshift ( BW_AND^ bitshift )*
+  : bitshift ( (BW_AND | BW_AND2)^ bitshift )*
   ;
   
 bitshift
-  : addition ( (BW_SHLEFT | BW_SHRIGHT)^ addition)*
+  : addition ( (BW_SHLEFT | BW_SHRIGHT | BW_SHLEFT2 | BW_SHRIGHT2)^ addition)*
   ;
   
 addition
@@ -47,6 +47,7 @@ unary
     : MINUS atom    -> ^(UNARY MINUS atom)
     | PLUS atom     -> ^(UNARY PLUS atom)
     | BW_NOT atom   -> ^(UNARY BW_NOT atom)
+	| BW_NOT2 atom   -> ^(UNARY BW_NOT atom)
     | atom
     ;
 
@@ -94,24 +95,12 @@ funct_ref2
         -> ^(FUNCTION FN_ATAN2 $a $b)
     | FN_POW LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
         -> ^(FUNCTION FN_POW $a $b)
-    | BITWISE_FN_AND LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_AND $a $b)
-    | BITWISE_FN_OR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_OR $a $b)
-    | BITWISE_FN_NOT LEFT_PAREN a = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_NOT $a)
     | BITWISE_FN_NAND LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
         -> ^(FUNCTION BITWISE_FN_NAND $a $b)
     | BITWISE_FN_NOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
         -> ^(FUNCTION BITWISE_FN_NOR $a $b)
-    | BITWISE_FN_XOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_XOR $a $b)
     | BITWISE_FN_XNOR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
         -> ^(FUNCTION BITWISE_FN_XNOR $a $b)
-    | BITWISE_FN_SHL LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_SHL $a $b)
-    | BITWISE_FN_SHR LEFT_PAREN a = expr ARG_SEPARATOR b = expr RIGHT_PAREN    
-        -> ^(FUNCTION BITWISE_FN_SHR $a $b)
     ;
 
 constant_ref
