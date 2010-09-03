@@ -61,8 +61,6 @@ inline void STDCOMPLEX_2_MRCOMPLEX(ComplexPtr dest, const mr_StdComplex_t& src) 
 	dest->imag = src.imag();
 }
 
-
-
 mrReal mr_pi() {
 	static const mrReal 
 		piVal = atan2((mrReal)(0.0), static_cast<mrReal>(-1.0));
@@ -605,7 +603,7 @@ mrReal strHexToReal (const pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrReal parse_oct_mrNumeric_t (const pANTLR3_STRING strin) {
+mrReal strOctToReal (const pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	QString str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {

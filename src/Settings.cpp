@@ -89,21 +89,21 @@ QChar Settings::digitGroupingCharacterAsChar() const {
 void Settings::setDefaults() {
 	itsDecimalPoint = defaultDecimalPoint();
 	itsFunctionArgSeparator = defaultFunctionArgSeparator();
-	itsUseSimpleInputMatching = defaultUseSimpleInputMatching();
+	itsFlags.itsUseSimpleInputMatching = defaultUseSimpleInputMatching();
 	itsOutputFormat = defaultOutputFormat();
-	itsOutputDigitGrouping = defaultOutputDigitGrouping();
+	itsFlags.itsOutputDigitGrouping = defaultOutputDigitGrouping();
 	itsDigitGroupingCharacter = defaultDigitGroupingCharacter();
 	itsPrecision = defaultPrecision();
-	itsShowSmallNumbersAsZero = defaultShowSmallNumbersAsZero();
+	itsFlags.itsShowSmallNumbersAsZero = defaultShowSmallNumbersAsZero();
 	itsZeroTresholdExp = defaultZeroTresholdExp();
-	itsUseEnterToCopy = defaultUseEnterToCopy();
-	itsShowDecOutput = defaultShowDecOutput();
-	itsShowBinOutput = defaultShowBinOutput();
-	itsShowHexOutput = defaultShowHexOutput();
-	itsShowOctOutput = defaultShowOctOutput();
-	itsShowBasePrefix = defaultShowBasePrefix();
-	itsShowLeadingZeroesBin = defaultShowLeadingZeroesBin();
-	itsShowLeadingZeroesHex = defaultShowLeadingZeroesHex();
+	itsFlags.itsUseEnterToCopy = defaultUseEnterToCopy();
+	itsFlags.itsShowDecOutput = defaultShowDecOutput();
+	itsFlags.itsShowBinOutput = defaultShowBinOutput();
+	itsFlags.itsShowHexOutput = defaultShowHexOutput();
+	itsFlags.itsShowOctOutput = defaultShowOctOutput();
+	itsFlags.itsShowBasePrefix = defaultShowBasePrefix();
+	itsFlags.itsShowLeadingZeroesBin = defaultShowLeadingZeroesBin();
+	itsFlags.itsShowLeadingZeroesHex = defaultShowLeadingZeroesHex();
 	itsCalculationBitWidth = defaultCalculationBitWidth();
 }
 
@@ -165,19 +165,19 @@ void Settings::writeSettings(QSettings* dest) const {
 				break;
 		}
 
-		dest->setValue(keyNameUseSimpleInputMatching(), itsUseSimpleInputMatching);
-		dest->setValue(keyNameOutputDigitGrouping(), itsOutputDigitGrouping);
+		dest->setValue(keyNameUseSimpleInputMatching(), itsFlags.itsUseSimpleInputMatching);
+		dest->setValue(keyNameOutputDigitGrouping(), itsFlags.itsOutputDigitGrouping);
 		dest->setValue(keyNamePrecision(), itsPrecision);
-		dest->setValue(keyNameShowSmallNumbersAsZero(), itsShowSmallNumbersAsZero);
+		dest->setValue(keyNameShowSmallNumbersAsZero(), itsFlags.itsShowSmallNumbersAsZero);
 		dest->setValue(keyNameZeroTresholdExp(), itsZeroTresholdExp);
-		dest->setValue(keyNameUseEnterToCopy(), itsUseEnterToCopy);
-		dest->setValue(keyNameShowDecOutput(), itsShowDecOutput);
-		dest->setValue(keyNameShowBinOutput(), itsShowBinOutput);
-		dest->setValue(keyNameShowHexOutput(), itsShowHexOutput);
-		dest->setValue(keyNameShowOctOutput(), itsShowOctOutput);
-		dest->setValue(keyNameShowBasePrefix(), itsShowBasePrefix);
-		dest->setValue(keyNameShowLeadingZeroesBin(), itsShowLeadingZeroesBin);
-		dest->setValue(keyNameShowLeadingZeroesHex(), itsShowLeadingZeroesHex);
+		dest->setValue(keyNameUseEnterToCopy(), itsFlags.itsUseEnterToCopy);
+		dest->setValue(keyNameShowDecOutput(), itsFlags.itsShowDecOutput);
+		dest->setValue(keyNameShowBinOutput(), itsFlags.itsShowBinOutput);
+		dest->setValue(keyNameShowHexOutput(), itsFlags.itsShowHexOutput);
+		dest->setValue(keyNameShowOctOutput(), itsFlags.itsShowOctOutput);
+		dest->setValue(keyNameShowBasePrefix(), itsFlags.itsShowBasePrefix);
+		dest->setValue(keyNameShowLeadingZeroesBin(), itsFlags.itsShowLeadingZeroesBin);
+		dest->setValue(keyNameShowLeadingZeroesHex(), itsFlags.itsShowLeadingZeroesHex);
 		dest->setValue(keyNameCalculationBitWidth(), itsCalculationBitWidth);
 	}
 }
@@ -259,31 +259,31 @@ void Settings::readSettings(const QSettings* settings) {
 				break;
 		}
 
-		itsUseSimpleInputMatching = settings->value(
+		itsFlags.itsUseSimpleInputMatching = settings->value(
 			keyNameUseSimpleInputMatching(), defaultUseSimpleInputMatching()).toBool();
-		itsOutputDigitGrouping = settings->value(
+		itsFlags.itsOutputDigitGrouping = settings->value(
 			keyNameOutputDigitGrouping(), defaultOutputDigitGrouping()).toBool();
 		itsPrecision = settings->value(
 			keyNamePrecision(), defaultPrecision()).toInt();
-		itsShowSmallNumbersAsZero = settings->value(
+		itsFlags.itsShowSmallNumbersAsZero = settings->value(
 			keyNameShowSmallNumbersAsZero(), defaultShowSmallNumbersAsZero()).toBool();
 		itsZeroTresholdExp = settings->value(
 			keyNameZeroTresholdExp(), defaultZeroTresholdExp()).toInt();
-		itsUseEnterToCopy = settings->value(
+		itsFlags.itsUseEnterToCopy = settings->value(
 			keyNameUseEnterToCopy(), defaultUseEnterToCopy()).toBool();
-		itsShowDecOutput = settings->value(
+		itsFlags.itsShowDecOutput = settings->value(
 			keyNameShowDecOutput(), defaultShowDecOutput()).toBool();
-		itsShowBinOutput = settings->value(
+		itsFlags.itsShowBinOutput = settings->value(
 			keyNameShowBinOutput(), defaultShowBinOutput()).toBool();
-		itsShowHexOutput = settings->value(
+		itsFlags.itsShowHexOutput = settings->value(
 			keyNameShowHexOutput(), defaultShowHexOutput()).toBool();
-		itsShowOctOutput = settings->value(
+		itsFlags.itsShowOctOutput = settings->value(
 			keyNameShowOctOutput(), defaultShowOctOutput()).toBool();
-		itsShowBasePrefix = settings->value(
+		itsFlags.itsShowBasePrefix = settings->value(
 			keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
-		itsShowLeadingZeroesBin = settings->value(
+		itsFlags.itsShowLeadingZeroesBin = settings->value(
 			keyNameShowLeadingZeroesBin(), defaultShowLeadingZeroesBin()).toBool();
-		itsShowLeadingZeroesHex = settings->value(
+		itsFlags.itsShowLeadingZeroesHex = settings->value(
 			keyNameShowLeadingZeroesHex(), defaultShowLeadingZeroesHex()).toBool();
 	}
 }
@@ -301,13 +301,13 @@ void Settings::setFunctionArgSeparator(ArgumentSeparatorType newVal) {
 	}
 }
 void Settings::setUseSimpleInputMatching(bool newVal) {
-	itsUseSimpleInputMatching = newVal;
+	itsFlags.itsUseSimpleInputMatching = newVal;
 }
 void Settings::setOutputFormat(OutputFormatType newVal) {
 	itsOutputFormat = newVal;
 }
 void Settings::setOutputDigitGrouping(bool newVal) {
-	itsOutputDigitGrouping = newVal;
+	itsFlags.itsOutputDigitGrouping = newVal;
 }
 void Settings::setDigitGroupingCharacter(DigitGroupingType newVal) {
 	itsDigitGroupingCharacter = newVal;
@@ -316,34 +316,34 @@ void Settings::setPrecision(int newVal) {
 	itsPrecision = newVal;
 }
 void Settings::setShowSmallNumbersAsZero(bool newVal) {
-	itsShowSmallNumbersAsZero = newVal;
+	itsFlags.itsShowSmallNumbersAsZero = newVal;
 }
 void Settings::setZeroTresholdExp(int newVal) {
 	itsZeroTresholdExp = newVal; 
 }
 void Settings::setUseEnterToCopy(bool newVal) {
-	itsUseEnterToCopy = newVal;
+	itsFlags.itsUseEnterToCopy = newVal;
 }
 void Settings::setShowDecOutput(bool newVal) {
-	itsShowDecOutput = newVal;
+	itsFlags.itsShowDecOutput = newVal;
 }
 void Settings::setShowBinOutput(bool newVal) {
-	itsShowBinOutput = newVal;
+	itsFlags.itsShowBinOutput = newVal;
 }
 void Settings::setShowHexOutput(bool newVal) {
-	itsShowHexOutput= newVal;
+	itsFlags.itsShowHexOutput= newVal;
 }
 void Settings::setShowOctOutput(bool newVal) {
-	itsShowOctOutput = newVal;
+	itsFlags.itsShowOctOutput = newVal;
 }
 void Settings::setShowBasePrefix(bool newVal) {
-	itsShowBasePrefix = newVal;
+	itsFlags.itsShowBasePrefix = newVal;
 }
 void Settings::setShowLeadingZeroesBin(bool newVal) {
-	itsShowLeadingZeroesBin = newVal;
+	itsFlags.itsShowLeadingZeroesBin = newVal;
 }
 void Settings::setShowLeadingZeroesHex(bool newVal) {
-	itsShowLeadingZeroesHex = newVal;
+	itsFlags.itsShowLeadingZeroesHex = newVal;
 }
 void Settings::setCalculationBitWidth(CalculationBitWidth newVal) {
 	itsCalculationBitWidth = newVal;

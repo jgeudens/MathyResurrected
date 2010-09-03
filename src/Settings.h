@@ -81,21 +81,21 @@ public:
 
 	DecimalPointType decimalPoint() const { return itsDecimalPoint; }
 	ArgumentSeparatorType functionArgSeparator() const { return itsFunctionArgSeparator; }
-	bool useSimpleInputMatching() const { return itsUseSimpleInputMatching; }
+	bool useSimpleInputMatching() const { return itsFlags.itsUseSimpleInputMatching; }
 	OutputFormatType outputFormat() const { return itsOutputFormat; }
-	bool outputDigitGrouping() const { return itsOutputDigitGrouping; }
+	bool outputDigitGrouping() const { return itsFlags.itsOutputDigitGrouping; }
 	DigitGroupingType digitGroupingCharacter() const { return itsDigitGroupingCharacter; }
 	int precision() const { return itsPrecision; }
-	bool showSmallNumbersAsZero() const { return itsShowSmallNumbersAsZero; }
+	bool showSmallNumbersAsZero() const { return itsFlags.itsShowSmallNumbersAsZero; }
 	int zeroTresholdExp() const { return itsZeroTresholdExp; }
-	bool useEnterToCopy() const { return itsUseEnterToCopy; }
-	bool showDecOutput() const { return itsShowDecOutput; }
-	bool showBinOutput() const { return itsShowBinOutput; }
-	bool showHexOutput() const { return itsShowHexOutput; }
-	bool showOctOutput() const { return itsShowOctOutput; }
-	bool showBasePrefix() const { return itsShowBasePrefix; }
-	bool showLeadingZeroesBin() const { return itsShowLeadingZeroesBin; }
-	bool showLeadingZeroesHex() const { return itsShowLeadingZeroesBin; }
+	bool useEnterToCopy() const { return itsFlags.itsUseEnterToCopy; }
+	bool showDecOutput() const { return itsFlags.itsShowDecOutput; }
+	bool showBinOutput() const { return itsFlags.itsShowBinOutput; }
+	bool showHexOutput() const { return itsFlags.itsShowHexOutput; }
+	bool showOctOutput() const { return itsFlags.itsShowOctOutput; }
+	bool showBasePrefix() const { return itsFlags.itsShowBasePrefix; }
+	bool showLeadingZeroesBin() const { return itsFlags.itsShowLeadingZeroesBin; }
+	bool showLeadingZeroesHex() const { return itsFlags.itsShowLeadingZeroesHex; }
 	CalculationBitWidth calculationBitWidth() const { return itsCalculationBitWidth; }
 
 	static QString keyNameDecimalPoint() {return QString("MathyResurrected/DecimalPoint"); }
@@ -144,22 +144,26 @@ public Q_SLOTS:
 private:
 	DecimalPointType itsDecimalPoint;
 	ArgumentSeparatorType itsFunctionArgSeparator;
-	bool itsUseSimpleInputMatching;
 	OutputFormatType itsOutputFormat;
-	bool itsOutputDigitGrouping;
 	DigitGroupingType itsDigitGroupingCharacter;
 	int itsPrecision;
-	bool itsShowSmallNumbersAsZero;
-	double itsZeroTresholdExp;
-	bool itsUseEnterToCopy;
-	bool itsShowDecOutput;
-	bool itsShowBinOutput;
-	bool itsShowHexOutput;
-	bool itsShowOctOutput;
-	bool itsShowBasePrefix;
-	bool itsShowLeadingZeroesBin;
-	bool itsShowLeadingZeroesHex;
+	int itsZeroTresholdExp;
 	CalculationBitWidth itsCalculationBitWidth;
+
+	struct Flags {
+		bool itsUseSimpleInputMatching : 1;
+		bool itsOutputDigitGrouping : 1;
+		bool itsShowSmallNumbersAsZero : 1;
+		bool itsUseEnterToCopy : 1;
+		bool itsShowDecOutput : 1;
+		bool itsShowBinOutput : 1;
+		bool itsShowHexOutput : 1;
+		bool itsShowOctOutput : 1;
+		bool itsShowBasePrefix : 1;
+		bool itsShowLeadingZeroesBin : 1;
+		bool itsShowLeadingZeroesHex : 1;
+	};
+	Flags itsFlags;
 };
 
 } // namespace mathy_resurrected
