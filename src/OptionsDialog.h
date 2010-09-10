@@ -37,8 +37,11 @@ public:
 	@param [in] settings - Settings object that is used as container for dialog settings.
 	Dialog doesn't own this object, it only displays it and manipulates it according to user 
 	actions. */
-	OptionsDialog(Settings* settings, QWidget* parent = 0);
-	~OptionsDialog();
+	OptionsDialog(QWidget* parent = 0, Settings* settings = 0);
+	virtual ~OptionsDialog();
+
+public slots: 
+	void connectSettings(Settings* settings);
 
 private slots:
 	void on_radioButtonDecSepSystem_clicked();

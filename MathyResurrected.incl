@@ -1,0 +1,60 @@
+
+CONFIG(release, debug|release) { # general release build options
+	DESTDIR = $${_PRO_FILE_PWD_}/../bin/release
+	OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	RCC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	MOC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	UI_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	INCLUDEPATH += $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+} else {                         # general debug build options
+	DESTDIR = $${_PRO_FILE_PWD_}/../bin/debug
+	OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	RCC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	MOC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	UI_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	INCLUDEPATH += $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+}
+
+# Plugin main sources
+SOURCES += $${_PRO_FILE_PWD_}/../src/OptionsDialog.cpp \
+	$${_PRO_FILE_PWD_}/../src/Settings.cpp \
+	$${_PRO_FILE_PWD_}/../src/MathyResurrectedPlugin.cpp \
+	$${_PRO_FILE_PWD_}/../src/evaluator/MathEvaluator.cpp \
+	$${_PRO_FILE_PWD_}/../src/evaluator/Exceptions.cpp \
+	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.cpp \
+	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_globals.cpp \
+	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API.cpp
+HEADERS += $${_PRO_FILE_PWD_}/../src/OptionsDialog.h \
+	$${_PRO_FILE_PWD_}/../src/Settings.h \
+	$${_PRO_FILE_PWD_}/../src/MathyResurrectedPlugin.h \
+	$${_PRO_FILE_PWD_}/../src/evaluator/MathEvaluator.h \
+	$${_PRO_FILE_PWD_}/../src/evaluator/Exceptions.h \
+	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.h \
+	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_globals.h \
+	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API.h \
+	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API_types.h
+INCLUDEPATH += $${_PRO_FILE_PWD_}/../src $${_PRO_FILE_PWD_}/../src/evaluator
+
+# Plugin API sources
+HEADERS += $${_PRO_FILE_PWD_}/../src/pluginAPI/plugin_interface.h \
+	$${_PRO_FILE_PWD_}/../src/pluginAPI/catalog.h
+SOURCES += $${_PRO_FILE_PWD_}/../src/pluginAPI/plugin_interface.cpp
+INCLUDEPATH += $${_PRO_FILE_PWD_}/../src/pluginAPI
+
+# ANTLR generated math lexer, parser and evaluator
+SOURCES += $${_PRO_FILE_PWD_}/../src/antlr/ComplexEval.c \
+	$${_PRO_FILE_PWD_}/../src/antlr/ComplexLexer.c \
+	$${_PRO_FILE_PWD_}/../src/antlr/ComplexParser.c
+HEADERS += $${_PRO_FILE_PWD_}/../src/antlr/ComplexEval.h \
+	$${_PRO_FILE_PWD_}/../src/antlr/ComplexLexer.h \
+	$${_PRO_FILE_PWD_}/../src/antlr/ComplexParser.h
+INCLUDEPATH += $${_PRO_FILE_PWD_}/../src/antlr
+
+LIBS += -lantlr3c
+
+FORMS = $${_PRO_FILE_PWD_}/../ui/OptionsWidget.ui
+
+win32 {
+	LIBS += shell32.lib
+	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc
+}

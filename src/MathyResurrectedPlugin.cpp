@@ -114,7 +114,7 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 
 void MathyResurrectedPlugin::doDialog(QWidget* parent, QWidget** newDlg) {
 	if (itsGUI == 0) {
-		OptionsDialog* p = new OptionsDialog(itsSettings, parent);
+		OptionsDialog* p = new OptionsDialog(parent, itsSettings);
 		itsGUI.reset(p);
 		*newDlg = itsGUI.get();
 	}
