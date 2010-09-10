@@ -19,6 +19,7 @@
 */
 
 #include "TestAppMainWindow.h"
+#include "MathEvaluator.h"
 #include "Settings.h"
 
 namespace mathy_resurrected {
@@ -28,6 +29,24 @@ TestAppMainWindow::TestAppMainWindow(QWidget* parent) :
 	setupUi(this);
 	Settings *sett = new Settings(this);
 	frameSettings->connectSettings(sett);
+
+	// 	QString tmp;
+	// 	Settings sett;
+	// 	sett.setOutputFormat(Settings::FIXED);
+	// 	sett.setPrecision(2);
+	// 	MathEvaluator calc(&sett);
+	// 
+	// 	for (int i = 0; i < 10000; ++i) {
+	// 		calc.setExpression("234+2i");
+	// 		calc.evaluate();
+	// 		//	tmp = calc.toString();
+	// 
+	// 		tmp = calc.toString();
+	// 		tmp = calc.toStringHex();
+	// 		tmp = calc.toStringBin();
+	// 		tmp = calc.toStringOct();
+	// 		progressBar->setValue(i+1);
+	// 	}
 }
 
 TestAppMainWindow::~TestAppMainWindow() {

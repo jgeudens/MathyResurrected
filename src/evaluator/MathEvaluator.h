@@ -37,7 +37,7 @@ variables for communication between this class and ANTLR generated
 evaluator. Because of that, only single instance of MathEvaluator
 should exist at any time in program. If this is not ensured, evaluation
 will result in unspecified behavior. */
-class MathEvaluator : private Complex {
+class MathEvaluator/* : public QObject */{
 public:
 	MathEvaluator(const Settings* app_settings);
 	void changeEvaluatorSettings(const Settings* settings);
@@ -57,10 +57,10 @@ public:
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
-	mrReal Re() const { return real; }
+	mrReal Re() const { return itsValue.real; }
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
-	mrReal Im() const { return imag; }
+	mrReal Im() const { return itsValue.imag; }
 
 	QString toString() const;
 	QString toStringBin() const;
@@ -85,6 +85,7 @@ private:
 		  replaced with internalArgSeparator() before handing this string to 
 		  lexer/parser */
 	QString itsExprString; 
+	Complex itsValue;
 
 	class LexerParser;
 	friend class LexerParser;

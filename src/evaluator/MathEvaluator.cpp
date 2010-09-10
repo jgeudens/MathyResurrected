@@ -133,7 +133,7 @@ MathEvaluator::MathEvaluator(const Settings* app_settings) :
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false)
 {
 	changeEvaluatorSettings(app_settings);
-	real = imag = 0;
+	itsValue.real = itsValue.imag = 0;
 	storeAns();
 }
 
@@ -220,8 +220,8 @@ bool MathEvaluator::evaluate() {
 
 				try {
 					retv_val = lpr.treeParser->prog(lpr.treeParser);
-					this->real = retv_val->real;
-					this->imag = retv_val->imag;
+					itsValue.real = retv_val->real;
+					itsValue.imag = retv_val->imag;
 				}
 				catch (NumericConversionError& e) {
 					itsIsValid = false;
@@ -238,13 +238,13 @@ bool MathEvaluator::evaluate() {
 }
 
 void MathEvaluator::storeAns() {
-	BridgeAPIGlobals::setAns(real, imag);
+	BridgeAPIGlobals::setAns(itsValue.real, itsValue.imag);
 }
 
 QString MathEvaluator::toString() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
-			return Conversion::toString(Conversion::DECIMAL, *itsSettings, *this);
+			return Conversion::toString(Conversion::DECIMAL, *itsSettings, itsValue);
 		} else {
 			return "Not evaluated!!!";
 		}
@@ -256,7 +256,7 @@ QString MathEvaluator::toString() const {
 QString MathEvaluator::toStringBin() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
-			return Conversion::toString(Conversion::BINARY, *itsSettings, *this);
+			return Conversion::toString(Conversion::BINARY, *itsSettings, itsValue);
 		} else {
 			return "Not evaluated!!!";
 		}
@@ -268,7 +268,7 @@ QString MathEvaluator::toStringBin() const {
 QString MathEvaluator::toStringHex() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
-			return Conversion::toString(Conversion::HEXADECIMAL, *itsSettings, *this);
+			return Conversion::toString(Conversion::HEXADECIMAL, *itsSettings, itsValue);
 		} else {
 			return "Not evaluated!!!";
 		}
@@ -280,7 +280,7 @@ QString MathEvaluator::toStringHex() const {
 QString MathEvaluator::toStringOct() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
-			return Conversion::toString(Conversion::OCTAL, *itsSettings, *this);
+			return Conversion::toString(Conversion::OCTAL, *itsSettings, itsValue);
 		} else {
 			return "Not evaluated!!!";
 		}
