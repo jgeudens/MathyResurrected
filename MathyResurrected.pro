@@ -2,11 +2,7 @@ TARGET = mathyresurrected
 TEMPLATE = lib
 VERSION = 0.1.7
 
-CONFIG += plugin \
-	warn_on \
-	exceptions \
-	debug_and_release \
-	build_all
+LIBS += -lantlr3c
 
 unix {
 	PREFIX = /usr
@@ -23,6 +19,12 @@ win32 {
 	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc
 }
 
+CONFIG += plugin \
+	warn_on \
+	exceptions \
+	debug_and_release \
+	build_all
+	
 DISTFILES += AUTHORS \
 	COPYING \
 	HISTORY \
@@ -55,14 +57,13 @@ CONFIG(release, debug|release) { # general release build options
 	INCLUDEPATH += $${_PRO_FILE_PWD_}/build/debug
 }
 
-LIBS += -lantlr3c
-
 # Plugin main sources
 SOURCES += src/OptionsDialog.cpp \
 	src/Settings.cpp \
 	src/MathyResurrectedPlugin.cpp \
 	src/evaluator/MathEvaluator.cpp \
 	src/evaluator/Exceptions.cpp \
+	src/evaluator/Conversion.cpp \
 	src/evaluator/math_bridge_globals.cpp \
 	src/evaluator/math_bridge_API.cpp
 HEADERS += src/OptionsDialog.h \
@@ -70,11 +71,11 @@ HEADERS += src/OptionsDialog.h \
 	src/MathyResurrectedPlugin.h \
 	src/evaluator/MathEvaluator.h \
 	src/evaluator/Exceptions.h \
+	src/evaluator/Conversion.h \
 	src/evaluator/math_bridge_globals.h \
 	src/evaluator/math_bridge_API.h \
 	src/evaluator/math_bridge_API_types.h
-INCLUDEPATH += src \
-	src/evaluator
+INCLUDEPATH += src src/evaluator
 
 # Plugin API sources
 HEADERS += src/pluginAPI/plugin_interface.h \

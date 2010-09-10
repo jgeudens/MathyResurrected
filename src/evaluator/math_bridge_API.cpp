@@ -18,24 +18,19 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <antlr3.h>
+#include "math_bridge_API.h"
 #include <cmath>
 #include <complex>
 #include <boost/math/complex.hpp>
-#include <boost/numeric/conversion/cast.hpp>
-#include <boost/lexical_cast.hpp>
-#include <string>
-#include "Exceptions.h"
-#include "math_bridge_API.h"
 #include "math_bridge_globals.h"
-#include "MathEvaluator.h"
+#include "Conversion.h"
 
 using namespace boost;
 using namespace boost::math;
 using namespace std;
 using namespace mathy_resurrected;
 
-typedef std::complex<mrReal> mr_StdComplex_t;
+typedef std::complex<mrReal> StdComplex;
 
 ComplexPtr newMrComplex() {
 	return BridgeAPIGlobals::newMrComplex();
@@ -50,13 +45,13 @@ ComplexConstPtr getAns() {
 }
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& dest, ComplexConstPtr src) {
+inline void MRCOMPLEX_2_STDCOMPLEX(StdComplex& dest, ComplexConstPtr src) {
 	dest.real(src->real);
 	dest.imag(src->imag);
 }
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void STDCOMPLEX_2_MRCOMPLEX(ComplexPtr dest, const mr_StdComplex_t& src) {
+inline void STDCOMPLEX_2_MRCOMPLEX(ComplexPtr dest, const StdComplex& src) {
 	dest->real = src.real();
 	dest->imag = src.imag();
 }
@@ -164,10 +159,10 @@ mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix) {
 	return suff_val;
 }
 
-ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
-								  ComplexConstPtr lv, ComplexConstPtr rv) {
+ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which,
+							   ComplexConstPtr lv, ComplexConstPtr rv) {
 	ComplexPtr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
+	StdComplex rv_c, lv_c, retv_c;
 
 	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
 	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
@@ -190,7 +185,7 @@ ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which,
 			retv_c.real(static_cast<mrReal>(fmod(lv->real, rv->real)));
 			break;
 		case MR_POW:
-			retv_c = std::pow(lv_c, rv_c);
+			retv_c = pow(lv_c, rv_c);
 			break;
 	}
 
@@ -210,20 +205,20 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 
 	switch (BridgeAPIGlobals::bitWidth()) {
 		case 64:
-			lv64 = MathEvaluator::safe_convert_u64b(lv->real, okFlag);
-			rv64 = MathEvaluator::safe_convert_u64b(rv->real, okFlag);
+			lv64 = Conversion::safe_convert_u64b(lv->real, okFlag);
+			rv64 = Conversion::safe_convert_u64b(rv->real, okFlag);
 			break;
 		case 32:
-			lv32 = MathEvaluator::safe_convert_u32b(lv->real, okFlag);
-			rv32 = MathEvaluator::safe_convert_u32b(rv->real, okFlag);
+			lv32 = Conversion::safe_convert_u32b(lv->real, okFlag);
+			rv32 = Conversion::safe_convert_u32b(rv->real, okFlag);
 			break;
 		case 16:
-			lv16 = MathEvaluator::safe_convert_u16b(lv->real, okFlag);
-			rv16 = MathEvaluator::safe_convert_u16b(rv->real, okFlag);
+			lv16 = Conversion::safe_convert_u16b(lv->real, okFlag);
+			rv16 = Conversion::safe_convert_u16b(rv->real, okFlag);
 			break;
 		case 8:
-			lv8 = MathEvaluator::safe_convert_u8b(lv->real, okFlag);
-			rv8 = MathEvaluator::safe_convert_u8b(rv->real, okFlag);
+			lv8 = Conversion::safe_convert_u8b(lv->real, okFlag);
+			rv8 = Conversion::safe_convert_u8b(rv->real, okFlag);
 			break;
 	}
 
@@ -383,16 +378,16 @@ ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val
 
 	switch (BridgeAPIGlobals::bitWidth()) {
 		case 64:
-			tmpI64 = MathEvaluator::safe_convert_u64b(val->real, okFlag);
+			tmpI64 = Conversion::safe_convert_u64b(val->real, okFlag);
 			break;
 		case 32:
-			tmpI32 = MathEvaluator::safe_convert_u32b(val->real, okFlag);
+			tmpI32 = Conversion::safe_convert_u32b(val->real, okFlag);
 			break;
 		case 16:
-			tmpI16 = MathEvaluator::safe_convert_u16b(val->real, okFlag);
+			tmpI16 = Conversion::safe_convert_u16b(val->real, okFlag);
 			break;
 		case 8:
-			tmpI8 = MathEvaluator::safe_convert_u8b(val->real, okFlag);
+			tmpI8 = Conversion::safe_convert_u8b(val->real, okFlag);
 			break;
 	}
 
@@ -427,7 +422,7 @@ ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val
 
 ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val) {
 	ComplexPtr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
+	StdComplex arg_c, retv_c;
 	MRCOMPLEX_2_STDCOMPLEX(arg_c, val);
 
 	switch (which) {
@@ -515,9 +510,9 @@ ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val
 }
 
 ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
-								  ComplexConstPtr arg1, ComplexConstPtr arg2) {
+							   ComplexConstPtr arg1, ComplexConstPtr arg2) {
 	ComplexPtr retv = newMrComplex();
-	mr_StdComplex_t arg1_c, arg2_c, retv_c;
+	StdComplex arg1_c, arg2_c, retv_c;
 
 	MRCOMPLEX_2_STDCOMPLEX(arg1_c, arg1);
 	MRCOMPLEX_2_STDCOMPLEX(arg2_c, arg2);
@@ -533,124 +528,18 @@ ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
 	return retv;
 }
 
-/*! Parsing of numeric types. */
-mrReal strToReal (const pANTLR3_STRING strin) {
-	string str;
-	ANTLR3_UINT32 len = strin->len;
-
-	/*! This naive implementation works only if str contains
-	just digits, dot as decimal separator, sign and 'e' or 'E'.
-	For other possibilities (for example, Arabic decimal separator)
-	it will not work. This is inherent limitation of
-	ANTLR3_STRING which could be overcome by looking into input
-	stream directly, while using position of token that ANTLR
-	provides, thus avoiding ANTLR3_STRING completely.
-
-	Instead of doing this complicated implementation, input preprocessor
-	will be implemented that will replace all locale specific characters
-	with internal representation, before input is handed to parser. 
-	This replacement will occur somewhere high in application so that
-	parser and lexer will always get clear string expressions in which
-	decimal separator will always be MathEvaluator::internalDecimalPoint */
-
-	char removeCh = MathEvaluator::internalDecimalPoint().toAscii();
-	char current;
-	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		current = static_cast<char>(strin->charAt(strin, i));
-		if (current == removeCh) {
-			str += '.';
-		} else {
-			str += current;
-		}
-	}
-
-	mrReal retv;
-	try {
-		retv = numeric_cast<mrReal>(lexical_cast<mrReal, string>(str));
-	}
-	catch (bad_lexical_cast&) {
-		throw NumericConversionError("NaN: " + str);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Range error: " + str);
-	}
-	return retv;
+mrReal strToReal(const pANTLR3_STRING str) {
+	return Conversion::strToReal(str);
 }
 
-mrReal strHexToReal (const pANTLR3_STRING strin) {
-	ANTLR3_UINT32 len = strin->len;
-	QString str;
-	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));;
-	}
-
-	mrReal retv;
-
-	quint64 tempRetv;
-	bool okFlag;
-	tempRetv = str.toULongLong(&okFlag, 16);
-
-	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + str.toStdString());
-	}
-	try {
-		retv = numeric_cast<mrReal>(tempRetv);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + str.toStdString());
-	}
-
-	return retv;
+mrReal strHexToReal(const pANTLR3_STRING str) {
+	return Conversion::strHexToReal(str);
 }
 
-mrReal strOctToReal (const pANTLR3_STRING strin) {
-	ANTLR3_UINT32 len = strin->len;
-	QString str;
-	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));;
-	}
-
-	mrReal retv;
-
-	quint64 tempRetv;
-	bool okFlag;
-	tempRetv = str.toULongLong(&okFlag, 8);
-
-	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + str.toStdString());
-	}
-	try {
-		retv = numeric_cast<mrReal>(tempRetv);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + str.toStdString());
-	}
-
-	return retv;
+mrReal strOctToReal(const pANTLR3_STRING str) {
+	return Conversion::strOctToReal(str);
 }
 
-mrReal strBinToReal (const pANTLR3_STRING strin) {
-	ANTLR3_UINT32 len = strin->len;
-	QString str;
-	for (ANTLR3_UINT32 i = 2; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));;
-	}
-
-	mrReal retv;
-
-	quint64 tempRetv;
-	bool okFlag;
-	tempRetv = str.toULongLong(&okFlag, 2);
-
-	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + str.toStdString());
-	}
-	try {
-		retv = numeric_cast<mrReal>(tempRetv);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + str.toStdString());
-	}
-
-	return retv;
+mrReal strBinToReal(const pANTLR3_STRING str) {
+	return Conversion::strBinToReal(str);
 }

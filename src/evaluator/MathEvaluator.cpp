@@ -19,22 +19,18 @@
 */
 
 #include "MathEvaluator.h"
-#include <antlr3.h>
 #ifdef _DEBUG
 #include <iostream>
 #endif // _DEBUG
-#include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/numeric/conversion/cast.hpp>
 #include "ComplexLexer.h"
 #include "ComplexParser.h"
 #include "ComplexEval.h"
 #include "Settings.h"
 #include "Exceptions.h"
-#include <QLocale>
 #include "math_bridge_globals.h"
+#include "Conversion.h"
 
 using namespace std;
-using namespace boost;
 
 namespace mathy_resurrected {
 
@@ -157,8 +153,8 @@ void MathEvaluator::setExpression(const QString& expression) {
 	QString tmp_expr = expression;
 
 	// Preprocessing expression...
-	tmp_expr.replace(itsSettings->decimalPointAsChar(), internalDecimalPoint());
-	tmp_expr.replace(itsSettings->functionArgSeparatorAsChar(), internalArgSeparator());
+	tmp_expr.replace(itsSettings->decimalPointAsChar(), Conversion::internalDecimalPoint());
+	tmp_expr.replace(itsSettings->functionArgSeparatorAsChar(), Conversion::internalArgSeparator());
 
 	QByteArray tmp = tmp_expr.toAscii();
 	int iend = tmp.length();
@@ -255,310 +251,50 @@ void MathEvaluator::storeAns() {
 }
 
 QString MathEvaluator::toString() const {
-	QString retv;
-	toString('d', retv);
-	return retv;
-}
-
-QString MathEvaluator::toStringBin() const {
-	QString retv;
-	toString('b', retv);
-	return retv;
-}
-
-QString MathEvaluator::toStringHex() const {
-	QString retv;
-	toString('h', retv);
-	return retv;
-}
-
-QString MathEvaluator::toStringOct() const {
-	QString retv;
-	toString('o', retv);
-	return retv;
-}
-
-void MathEvaluator::toString(char baseTag, QString& dest) const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
-			QString im_sign;
-			QString re_str, im_str;
-			bool add_i = false;
-
-			// If number is close enough to zero, we make it zero 
-			// explicitly (but for display purposes only)
-			mrReal im_disp = imag, re_disp = real;
-			if (abs(im_disp) < pow(10.0, itsSettings->zeroTresholdExp())) {
-				im_disp = 0;
-			}
-			if (abs(re_disp) < pow(10.0, itsSettings->zeroTresholdExp())) {
-				re_disp = 0;
-			}
-
-			// Formating output of imaginary part
-			if ((boost::math::fpclassify)(im_disp) != FP_ZERO) {
-				// Display as decimal
-				if (baseTag == 'd') {
-					if (im_disp > 0) {
-						im_sign = " + ";
-					} else { // if (imag < 0) {
-						im_sign = " - ";
-					}
-					mrReal tmp = abs(im_disp);
-					numberToString(tmp, im_str, baseTag);
-				} else { // Display as any other base
-					im_sign = " + ";
-					numberToString(im_disp, im_str, baseTag);
-				}
-				add_i = true;
-			}
-			numberToString(re_disp, re_str, baseTag);
-			dest = re_str;
-			if (add_i) {
-				dest +=  im_sign + im_str + "i";
-			}
+			return Conversion::toString(Conversion::DECIMAL, *itsSettings, *this);
 		} else {
-			dest = "Not evaluated!!!";
+			return "Not evaluated!!!";
 		}
 	} else {
-		dest = itsErrStr;
+		return itsErrStr;
 	}
 }
 
-qint8 MathEvaluator::safe_convert_8b(mrReal val, bool& ok) {
-	return safe_convert<qint8>(val, ok);
+QString MathEvaluator::toStringBin() const {
+	if (itsIsValid) {
+		if (itsIsEvaluated) {
+			return Conversion::toString(Conversion::BINARY, *itsSettings, *this);
+		} else {
+			return "Not evaluated!!!";
+		}
+	} else {
+		return itsErrStr;
+	}
 }
 
-qint16 MathEvaluator::safe_convert_16b(mrReal val, bool& ok) {
-	return safe_convert<qint8>(val, ok);
+QString MathEvaluator::toStringHex() const {
+	if (itsIsValid) {
+		if (itsIsEvaluated) {
+			return Conversion::toString(Conversion::HEXADECIMAL, *itsSettings, *this);
+		} else {
+			return "Not evaluated!!!";
+		}
+	} else {
+		return itsErrStr;
+	}
 }
 
-qint32 MathEvaluator::safe_convert_32b(mrReal val, bool& ok) {
-	return safe_convert<qint32>(val, ok);
-}
-
-qint64 MathEvaluator::safe_convert_64b(mrReal val, bool& ok) {
-	return safe_convert<qint64>(val, ok);
-}
-
-quint8 MathEvaluator::safe_convert_u8b(mrReal val, bool& ok) {
-	return safe_convert<quint8>(val, ok);
-}
-
-quint16 MathEvaluator::safe_convert_u16b(mrReal val, bool& ok) {
-	return safe_convert<quint16>(val, ok);
-}
-
-quint32 MathEvaluator::safe_convert_u32b(mrReal val, bool& ok) {
-	return safe_convert<quint32>(val, ok);
-}
-
-quint64 MathEvaluator::safe_convert_u64b(mrReal val, bool& ok) {
-	return safe_convert<quint64>(val, ok);
-}
-
-template <class intT>
-intT MathEvaluator::safe_convert(mrReal val, bool& ok) {
-	intT retv;
-//	try {
-// 		retv = numeric_cast<intT>(val);
-// 		ok = true;
-// 	}
-// 	catch (bad_numeric_cast&) {
-// 		ok = false;
-// 	}
-	retv = val; ok = true;
-	return retv;
-}
-
-void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) const {
-	QLocale loc = QLocale::c();
-	bool ok_flag;
-	quint64 tmpI64;
-	quint32 tmpI32;
-	quint16 tmpI16;
-	quint8 tmpI8;
-	QString bho_sign, bho_prefix;
-// 	if (val < 0) {
-// 		bho_sign = "-";
-// 	}
-//	mrReal absVal = abs(val);
-	mrReal absVal = val;
-	switch (baseTag) {
-		case 'b':
-			switch (itsSettings->calculationBitWidth()) {
-				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(64, '0');
-						}
-					} else {
-						retv = "64b int range error";
-					}
-					break;
-				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(32, '0');
-						}
-					} else {
-						retv = "32b int range error";
-					}
-					break;
-				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(16, '0');
-						}
-					} else {
-						retv = "16b int range error";
-					}
-					break;
-				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(8, '0');
-						}
-					} else {
-						retv = "8b int range error";
-					}
-					break;
-			}
-			if (itsSettings->showBasePrefix()) {
-				retv.insert(0, "0b");
-			}
-			retv.insert(0, bho_sign);
-			break;
-		case 'h':
-			switch (itsSettings->calculationBitWidth()) {
-				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(16, '0');
-						}
-					} else {
-						retv = "64b int range error";
-					}
-					break;
-				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(8, '0');
-						}
-					} else {
-						retv = "32b int range error";
-					}
-					break;
-				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(4, '0');
-						}
-					} else {
-						retv = "16b int range error";
-					}
-					break;
-				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(2, '0');
-						}
-					} else {
-						retv = "8b int range error";
-					}
-					break;
-			}
-			if (itsSettings->showBasePrefix()) {
-				retv.insert(0, "0x");
-			}
-			retv.insert(0, bho_sign);
-			break;
-		case 'o':
-			switch (itsSettings->calculationBitWidth()) {
-				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 8);
-					} else {
-						retv = "64b int range error";
-					}
-					break;
-				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 8);
-					} else {
-						retv = "32b int range error";
-					}
-					break;
-				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 8);
-					} else {
-						retv = "16b int range error";
-					}
-					break;
-				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 8);
-					} else {
-						retv = "8b int range error";
-					}
-					break;
-			}
-			if (itsSettings->showBasePrefix()) {
-				retv.insert(0, "0");
-			}
-			retv.insert(0, bho_sign);
-			break;
-		case 'd':
-		default:
-			if (itsSettings->outputFormat() == Settings::AUTOMATIC) { 
-				retv = loc.toString(val, 'g', itsSettings->precision());
-			} else if (itsSettings->outputFormat() == Settings::SCIENTIFFIC) {
-				retv = loc.toString(val, 'e', itsSettings->precision());
-			} else if (itsSettings->outputFormat() == Settings::FIXED) {
-				retv = loc.toString(val, 'f', itsSettings->precision());		
-			}
-
-			// Post processing
-
-			// First, "saving" decimal point from modification.
-			// This is relatively safe because internally used 
-			// character for decimal point representation is 
-			// not likely to be used for that purpose in any 
-			// existing locale. 
-			retv.replace(loc.decimalPoint(), internalDecimalPoint());
-
-			// Post processing group separator. 
-			if (!itsSettings->outputDigitGrouping()) {
-				retv.remove(loc.groupSeparator());
-			} else {
-				retv.replace(loc.groupSeparator(), itsSettings->digitGroupingCharacterAsChar());
-			}
-
-			// Post processing decimal point. 
-			retv.replace(internalDecimalPoint(), itsSettings->decimalPointAsChar());
-
-			break;
+QString MathEvaluator::toStringOct() const {
+	if (itsIsValid) {
+		if (itsIsEvaluated) {
+			return Conversion::toString(Conversion::OCTAL, *itsSettings, *this);
+		} else {
+			return "Not evaluated!!!";
+		}
+	} else {
+		return itsErrStr;
 	}
 }
 

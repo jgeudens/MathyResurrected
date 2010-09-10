@@ -26,6 +26,7 @@ C parser/lexer/evaluator with C++ std::complex */
 #ifndef MATHY_RESURRECTED_MATH_BRIDGE
 #define MATHY_RESURRECTED_MATH_BRIDGE
 
+#include <antlr3.h>
 #include "math_bridge_API_types.h"
 
 #ifdef __cplusplus
@@ -101,8 +102,8 @@ ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val
 typedef enum {
 	MR_FUN2_ATAN2
 } MR_MATH_BINARY_FUNCTIONS;
-ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, 
-								  ComplexConstPtr arg1, ComplexConstPtr arg2);
+ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,  
+							   ComplexConstPtr arg1, ComplexConstPtr arg2);
 
 mrReal strToReal(const pANTLR3_STRING str);
 mrReal strHexToReal(const pANTLR3_STRING str);

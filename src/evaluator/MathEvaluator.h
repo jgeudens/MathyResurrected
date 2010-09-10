@@ -68,23 +68,9 @@ public:
 	QString toStringHex() const;
 	QString toStringOct() const;
 
-	static qint8 safe_convert_8b(mrReal val, bool& ok);
-	static qint16 safe_convert_16b(mrReal val, bool& ok);
-	static qint32 safe_convert_32b(mrReal val, bool& ok);
-	static qint64 safe_convert_64b(mrReal val, bool& ok);
-	static quint8 safe_convert_u8b(mrReal val, bool& ok);
-	static quint16 safe_convert_u16b(mrReal val, bool& ok);
-	static quint32 safe_convert_u32b(mrReal val, bool& ok);
-	static quint64 safe_convert_u64b(mrReal val, bool& ok);
-
 #ifdef _DEBUG
 	void printLexerErrors() const;
 #endif // _DEBUG
-
-	/*! This should return same character that was used in grammar */
-	static QChar internalDecimalPoint() { return QChar('@'); }
-	/*! This should return same character that was used in grammar */
-	static QChar internalArgSeparator() { return QChar('#'); }
 
 private:
 	// Evaluation state variables
@@ -109,11 +95,6 @@ private:
 	antlr8BitString_t itsExprString;
 	/*! Length of expression string in sizeof(char). */
 	unsigned int itsExprLen;
-
-	void numberToString(mrReal val, QString& retv, char baseTag) const;
-	void toString(char baseTag, QString& dest) const;
-	template <class intT>
-	static intT safe_convert(mrReal val, bool& ok);
 	
 	struct LexerParser;
 	friend struct LexerParser;
