@@ -22,6 +22,7 @@
 #ifdef _DEBUG
 #include <iostream>
 #endif // _DEBUG
+#include <QByteArray>
 #include "ComplexLexer.h"
 #include "ComplexParser.h"
 #include "ComplexEval.h"
@@ -61,8 +62,9 @@ void MathEvaluator::printLexerErrors() const {
 /*! Convenience class that is used to setup basic components of 
 ANTLR lexer and parser for use by evaluate() and validate() 
 methods. */
-struct MathEvaluator::LexerParser {
-	LexerParser(const antlr8BitString_t& expression, ANTLR3_UINT32 len);
+class MathEvaluator::LexerParser {
+public:
+	LexerParser(const QString& expression);
 	~LexerParser();
 	
 	pANTLR3_INPUT_STREAM inputStream;
@@ -78,11 +80,16 @@ struct MathEvaluator::LexerParser {
 
 /*! @note Assumes that @a expression has been preprocessed.
 @see MathEvaluator::itsExprString. */
-MathEvaluator::LexerParser::LexerParser(const antlr8BitString_t& expression, ANTLR3_UINT32 len) {
+MathEvaluator::LexerParser::LexerParser(const QString& expression) {
 	malloc_error = false;
 
-	inputStream = //antlr3NewAsciiStringCopyStream(tmp, len, NULL);
-		antlr3NewAsciiStringInPlaceStream(expression.get(), len, NULL);
+	// Possibly problematic cast!
+	// ANTLR expects UCS2 encoded string, and we provide UTF16 one.
+	// Should make no difference for strings that contain only math
+	// expressions.
+	inputStream = antlr3NewUCS2StringInPlaceStream(
+			(pANTLR3_UINT16)(expression.utf16()), 
+			expression.length(), NULL);
 	if (inputStream == NULL) {
 		malloc_error = true;
 	}
@@ -123,8 +130,7 @@ MathEvaluator::LexerParser::~LexerParser() {
 
 
 MathEvaluator::MathEvaluator(const Settings* app_settings) : 
- 	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false),
-	itsExprLen(0)
+ 	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false)
 {
 	changeEvaluatorSettings(app_settings);
 	real = imag = 0;
@@ -147,32 +153,17 @@ void MathEvaluator::setExpression(const QString& expression) {
 	itsIsValidated = false;
 	itsIsValid = false;
 	itsIsEvaluated = false;
-	itsExprString.reset();
-	itsExprLen = 0;
-
-	QString tmp_expr = expression;
-
+	
+	itsExprString = expression;
 	// Preprocessing expression...
-	tmp_expr.replace(itsSettings->decimalPointAsChar(), Conversion::internalDecimalPoint());
-	tmp_expr.replace(itsSettings->functionArgSeparatorAsChar(), Conversion::internalArgSeparator());
-
-	QByteArray tmp = tmp_expr.toAscii();
-	int iend = tmp.length();
-
-	antlr8BitString_t p (new ANTLR3_UINT8[iend+1]);
-	itsExprString = p;
-
-	for (int i = 0; i < iend; ++i) {
-		itsExprString[i] = tmp[i];
-	}
-	itsExprString[iend] = '\0';
-	itsExprLen = iend;
+	itsExprString.replace(itsSettings->decimalPointAsChar(), Conversion::internalDecimalPoint());
+	itsExprString.replace(itsSettings->functionArgSeparatorAsChar(), Conversion::internalArgSeparator());
 }
 
 bool MathEvaluator::validate() {
 	
 	if (!itsIsValidated) {
-		LexerParser lpr (itsExprString, itsExprLen);
+		LexerParser lpr (itsExprString);
 
 		if (!lpr.malloc_error) {
 			lpr.expressionAST = lpr.parser->prog(lpr.parser);
@@ -203,7 +194,7 @@ bool MathEvaluator::evaluate() {
 
 			itsErrStr.clear();
 
-			LexerParser lpr (itsExprString, itsExprLen);
+			LexerParser lpr (itsExprString);
 
 			if (!lpr.malloc_error) {
 				// No need to check if this fails because it was done during 

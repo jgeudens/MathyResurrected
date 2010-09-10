@@ -78,123 +78,76 @@ intT Conversion::safe_convert(mrReal val, bool& ok) {
 	return retv;
 }
 
-/*! Parsing of numeric types. */
-mrReal Conversion::strToReal (const pANTLR3_STRING strin) {
-	string str;
-	ANTLR3_UINT32 len = strin->len;
-
-	/*! This naive implementation works only if str contains
-	just digits, dot as decimal separator, sign and 'e' or 'E'.
-	For other possibilities (for example, Arabic decimal separator)
-	it will not work. This is inherent limitation of
-	ANTLR3_STRING which could be overcome by looking into input
-	stream directly, while using position of token that ANTLR
-	provides, thus avoiding ANTLR3_STRING completely.
-
-	Instead of doing this complicated implementation, input preprocessor
-	will be implemented that will replace all locale specific characters
-	with internal representation, before input is handed to parser. 
-	This replacement will occur somewhere high in application so that
-	parser and lexer will always get clear string expressions in which
-	decimal separator will always be Conversion::internalDecimalPoint */
-
-	char removeCh = Conversion::internalDecimalPoint().toAscii();
-	char current;
-	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		current = static_cast<char>(strin->charAt(strin, i));
-		if (current == removeCh) {
-			str += '.';
-		} else {
-			str += current;
-		}
-	}
-
+mrReal Conversion::strToReal (const QByteArray& strin) {
 	mrReal retv;
-	try {
-		retv = numeric_cast<mrReal>(lexical_cast<mrReal, string>(str));
-	}
-	catch (bad_lexical_cast&) {
-		throw NumericConversionError("NaN: " + str);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Range error: " + str);
+	bool okFlag;
+	retv = strin.toDouble(&okFlag);
+
+	if (!okFlag) {
+		throw NumericConversionError("Input conversion error: " + 
+			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 	return retv;
 }
 
-mrReal Conversion::strHexToReal (const pANTLR3_STRING strin) {
-	ANTLR3_UINT32 len = strin->len;
-	QString str;
-	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));;
-	}
-
+mrReal Conversion::strHexToReal (const QByteArray& strin) {
 	mrReal retv;
-
 	quint64 tempRetv;
 	bool okFlag;
-	tempRetv = str.toULongLong(&okFlag, 16);
+	tempRetv = strin.toULongLong(&okFlag, 16);
 
 	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + str.toStdString());
+		throw NumericConversionError("Input conversion error: " + 
+			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 	try {
 		retv = numeric_cast<mrReal>(tempRetv);
 	}
 	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + str.toStdString());
+		throw NumericConversionError("Input range error: " + 
+			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 
 	return retv;
 }
 
-mrReal Conversion::strOctToReal (const pANTLR3_STRING strin) {
-	ANTLR3_UINT32 len = strin->len;
-	QString str;
-	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));;
-	}
-
+mrReal Conversion::strOctToReal (const QByteArray& strin) {
 	mrReal retv;
-
 	quint64 tempRetv;
 	bool okFlag;
-	tempRetv = str.toULongLong(&okFlag, 8);
+	tempRetv = strin.toULongLong(&okFlag, 8);
 
 	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + str.toStdString());
+		throw NumericConversionError("Input conversion error: " + 
+			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 	try {
 		retv = numeric_cast<mrReal>(tempRetv);
 	}
 	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + str.toStdString());
+		throw NumericConversionError("Input range error: " + 
+			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 
 	return retv;
 }
 
-mrReal Conversion::strBinToReal (const pANTLR3_STRING strin) {
-	ANTLR3_UINT32 len = strin->len;
-	QString str;
-	for (ANTLR3_UINT32 i = 2; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));;
-	}
-
+mrReal Conversion::strBinToReal (const QByteArray& strin) {
 	mrReal retv;
-
 	quint64 tempRetv;
 	bool okFlag;
-	tempRetv = str.toULongLong(&okFlag, 2);
+	tempRetv = strin.toULongLong(&okFlag, 2);
 
 	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + str.toStdString());
+		throw NumericConversionError("Input conversion error: " + 
+			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 	try {
 		retv = numeric_cast<mrReal>(tempRetv);
 	}
 	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + str.toStdString());
+		throw NumericConversionError("Input range error: " + 
+			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 
 	return retv;

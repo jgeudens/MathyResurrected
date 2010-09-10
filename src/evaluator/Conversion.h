@@ -22,7 +22,7 @@
 #define MATHY_RESURRECTED_CONVERSION_H
 
 #include <QString>
-#include <antlr3.h>
+#include <QByteArray>
 #include "math_bridge_API_types.h"
 
 namespace mathy_resurrected {
@@ -42,10 +42,10 @@ public:
 	static quint32 safe_convert_u32b(mrReal val, bool& ok);
 	static quint64 safe_convert_u64b(mrReal val, bool& ok);
 
-	static mrReal strToReal(const pANTLR3_STRING str);
-	static mrReal strHexToReal(const pANTLR3_STRING str);
-	static mrReal strOctToReal(const pANTLR3_STRING str);
-	static mrReal strBinToReal(const pANTLR3_STRING str);
+	static mrReal strToReal(const QByteArray& str);
+	static mrReal strHexToReal(const QByteArray& str);
+	static mrReal strOctToReal(const QByteArray& str);
+	static mrReal strBinToReal(const QByteArray& str);
 
 	enum NumberBase {
 		DECIMAL, HEXADECIMAL, BINARY, OCTAL

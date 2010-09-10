@@ -22,7 +22,6 @@
 #define MATHY_RESURRECTED_EVALUATOR
 
 #include <QString>
-#include <boost/smart_ptr/shared_array.hpp>
 #include "math_bridge_API_types.h"
 
 namespace mathy_resurrected {
@@ -79,25 +78,16 @@ private:
 	bool itsIsEvaluated;	/*!< true if expression has been evaluated */
 	QString itsErrStr;		/*!< Error string */
 
-	/** Evaluator settings. Non-owned pointer to const object. */
-	const Settings* itsSettings;
-
-	// Input expression variables
-	/*! Type to hold expression that will be passed to lexer and parser. */
-	typedef boost::shared_array < unsigned char > antlr8BitString_t;
-	/*! Expression as string. 
-		- Should be ASCII encoded. 
-		- Locale or application specific decimal point should be replaced with 
+	const Settings* itsSettings; /**< Evaluator settings. Non-owned pointer to const object. */
+	/**< - Locale or application specific decimal point should be replaced with 
 		  internalDecimalPoint() before handing this string to lexer/parser
 		- Locale or application specific function argument separator should be 
 		  replaced with internalArgSeparator() before handing this string to 
 		  lexer/parser */
-	antlr8BitString_t itsExprString;
-	/*! Length of expression string in sizeof(char). */
-	unsigned int itsExprLen;
-	
-	struct LexerParser;
-	friend struct LexerParser;
+	QString itsExprString; 
+
+	class LexerParser;
+	friend class LexerParser;
 };
 
 } // mathy_resurrected

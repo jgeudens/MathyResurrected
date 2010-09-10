@@ -529,17 +529,32 @@ ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
 }
 
 mrReal strToReal(const pANTLR3_STRING str) {
-	return Conversion::strToReal(str);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	
+	QString temp = QString::fromUtf8((const char*)utf8Str->chars, utf8Str->len);
+	temp.replace(Conversion::internalDecimalPoint(), QChar('.'));
+
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	return Conversion::strToReal(temp.toUtf8());
 }
 
 mrReal strHexToReal(const pANTLR3_STRING str) {
-	return Conversion::strHexToReal(str);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	return Conversion::strHexToReal(bArray);
 }
 
 mrReal strOctToReal(const pANTLR3_STRING str) {
-	return Conversion::strOctToReal(str);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	return Conversion::strOctToReal(bArray);
 }
 
 mrReal strBinToReal(const pANTLR3_STRING str) {
-	return Conversion::strBinToReal(str);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	return Conversion::strBinToReal(bArray);
 }
