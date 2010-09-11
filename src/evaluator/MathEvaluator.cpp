@@ -17,18 +17,19 @@
 * You should have received a copy of the GNU General Public License 
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
+#include "ComplexLexer.h"
+#include "ComplexParser.h"
+#include "ComplexEval.h"
 
-#include "MathEvaluator.h"
 #ifdef _DEBUG
 #include <iostream>
 #endif // _DEBUG
 #include <QByteArray>
-#include "ComplexLexer.h"
-#include "ComplexParser.h"
-#include "ComplexEval.h"
+
+#include "MathEvaluator.h"
+#include "math_bridge_globals.h"
 #include "Settings.h"
 #include "Exceptions.h"
-#include "math_bridge_globals.h"
 #include "Conversion.h"
 
 using namespace std;
@@ -129,7 +130,8 @@ MathEvaluator::LexerParser::~LexerParser() {
 }
 
 
-MathEvaluator::MathEvaluator(const Settings* app_settings) : 
+MathEvaluator::MathEvaluator(const Settings* app_settings, QObject* parent) : 
+	QObject(parent),
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false)
 {
 	changeEvaluatorSettings(app_settings);

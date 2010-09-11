@@ -27,30 +27,47 @@ namespace mathy_resurrected {
 TestAppMainWindow::TestAppMainWindow(QWidget* parent) : 
 	QMainWindow(parent) {
 	setupUi(this);
-	Settings *sett = new Settings(this);
-	frameSettings->connectSettings(sett);
-
-	// 	QString tmp;
-	// 	Settings sett;
-	// 	sett.setOutputFormat(Settings::FIXED);
-	// 	sett.setPrecision(2);
-	// 	MathEvaluator calc(&sett);
-	// 
-	// 	for (int i = 0; i < 10000; ++i) {
-	// 		calc.setExpression("234+2i");
-	// 		calc.evaluate();
-	// 		//	tmp = calc.toString();
-	// 
-	// 		tmp = calc.toString();
-	// 		tmp = calc.toStringHex();
-	// 		tmp = calc.toStringBin();
-	// 		tmp = calc.toStringOct();
-	// 		progressBar->setValue(i+1);
-	// 	}
+	itsSettings = new Settings(this);
+	frameSettings->connectSettings(itsSettings);
+	itsCalculator = new MathEvaluator(itsSettings, this);
 }
 
 TestAppMainWindow::~TestAppMainWindow() {
 	setupUi(this);
+}
+
+void TestAppMainWindow::on_lineEditExpression_editingFinished() {
+	itsCalculator->setExpression(lineEditExpression->text());
+	if (itsCalculator->evaluate()) {
+		if (itsSettings->showBinOutput()) {
+			lineEditResultBin->setText(itsCalculator->toStringBin());
+		} else {
+			lineEditResultBin->clear();
+		}
+
+		if (itsSettings->showDecOutput()) {
+			lineEditResultDec->setText(itsCalculator->toString());
+		} else {
+			lineEditResultDec->clear();
+		}
+
+		if (itsSettings->showHexOutput()) {
+			lineEditResultHex->setText(itsCalculator->toStringHex());
+		} else {
+			lineEditResultHex->clear();
+		}
+
+		if (itsSettings->showOctOutput()) {
+			lineEditResultOct->setText(itsCalculator->toStringOct());
+		} else {
+			lineEditResultOct->clear();
+		}
+	} else {
+		lineEditResultDec->clear();
+		lineEditResultBin->clear();
+		lineEditResultHex->clear();
+		lineEditResultOct->clear();
+	}
 }
 
 } // namespace mathy_resurrected

@@ -26,6 +26,9 @@
 
 namespace mathy_resurrected {
 
+class MathEvaluator;
+class Settings;
+
 class TestAppMainWindow : public QMainWindow, private Ui::TestAppMainWindow {
 
 	Q_OBJECT
@@ -33,6 +36,13 @@ class TestAppMainWindow : public QMainWindow, private Ui::TestAppMainWindow {
 public:
 	TestAppMainWindow(QWidget* parent = 0);
 	virtual ~TestAppMainWindow();
+
+private slots:
+	void on_lineEditExpression_editingFinished();
+
+private:
+	MathEvaluator *itsCalculator;
+	Settings *itsSettings;
 };
 
 } // namespace mathy_resurrected

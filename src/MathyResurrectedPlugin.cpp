@@ -22,6 +22,7 @@
 #include <QtCore>
 #include <QClipboard>
 #include "Settings.h"
+#include "MathEvaluator.h"
 
 using namespace mathy_resurrected;
 
@@ -31,8 +32,7 @@ MathyResurrectedPlugin::MathyResurrectedPlugin() {
 	HASH_MATHYRESURRECTED = qHash(QString("MathyResurrected"));
 	itsName = "MathyResurrected";
 	itsSettings = new Settings(this);
-	MathEvaluator* p = new MathEvaluator(itsSettings);
-	itsCalculator.reset(p);
+	itsCalculator = new MathEvaluator(itsSettings, this);
 }
 
 MathyResurrectedPlugin::~MathyResurrectedPlugin() {

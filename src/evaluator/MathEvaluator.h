@@ -22,6 +22,7 @@
 #define MATHY_RESURRECTED_EVALUATOR
 
 #include <QString>
+#include <QObject>
 #include "math_bridge_API_types.h"
 
 namespace mathy_resurrected {
@@ -37,22 +38,13 @@ variables for communication between this class and ANTLR generated
 evaluator. Because of that, only single instance of MathEvaluator
 should exist at any time in program. If this is not ensured, evaluation
 will result in unspecified behavior. */
-class MathEvaluator/* : public QObject */{
-public:
-	MathEvaluator(const Settings* app_settings);
-	void changeEvaluatorSettings(const Settings* settings);
+class MathEvaluator : public QObject {
 
-	/*! Sets expression to be evaluated. */
-	void setExpression (const QString& expression);
-	/*! Validates expression. Doesn't evaluate it. */
-	bool validate ();
-	/*! Validates expression if it hasn't been validated and 
-	evaluates it. Returns true if expression is valid. Results
-	can be read using Re() and Im() methods. */
-	bool evaluate ();
-	/** Stores current state of calculation for future use by "ans" 
-	variable in expression. */
-	void storeAns();
+	Q_OBJECT
+
+public:
+	MathEvaluator(const Settings* app_settings, QObject* parent = 0);
+
 	const Complex& ans() const;
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
@@ -71,6 +63,21 @@ public:
 	void printLexerErrors() const;
 #endif // _DEBUG
 
+public slots:
+	void changeEvaluatorSettings(const Settings* settings);
+
+	/*! Sets expression to be evaluated. */
+	void setExpression (const QString& expression);
+	/*! Validates expression. Doesn't evaluate it. */
+	bool validate ();
+	/*! Validates expression if it hasn't been validated and 
+	evaluates it. Returns true if expression is valid. Results
+	can be read using Re() and Im() methods. */
+	bool evaluate ();
+	/** Stores current state of calculation for future use by "ans" 
+	variable in expression. */
+	void storeAns();
+
 private:
 	// Evaluation state variables
 	bool itsIsValidated;	/*!< true if expression has been validated */
@@ -79,7 +86,7 @@ private:
 	QString itsErrStr;		/*!< Error string */
 
 	const Settings* itsSettings; /**< Evaluator settings. Non-owned pointer to const object. */
-	/**< - Locale or application specific decimal point should be replaced with 
+	/** - Locale or application specific decimal point should be replaced with 
 		  internalDecimalPoint() before handing this string to lexer/parser
 		- Locale or application specific function argument separator should be 
 		  replaced with internalArgSeparator() before handing this string to 
