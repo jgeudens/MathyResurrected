@@ -58,3 +58,18 @@ win32 {
 	LIBS += shell32.lib
 	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc
 }
+
+# Adding linking options for GNU BigNum library and related libraries
+# TODO: Find out if these libraries are portable to MacOS and how to link them there
+
+win32 {
+	LIBS += -lmpir -lmpirxx
+}
+
+unix {
+	LIBS += -lgmp -lgmpxx
+}
+
+LIBS += -lmpfr -lmpc
+
+
