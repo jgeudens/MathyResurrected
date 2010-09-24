@@ -33,6 +33,7 @@ MathyResurrectedPlugin::MathyResurrectedPlugin() {
 	itsName = "MathyResurrected";
 	itsSettings = new Settings(this);
 	itsCalculator = new MathEvaluator(itsSettings, this);
+	itsGUI = 0;
 }
 
 MathyResurrectedPlugin::~MathyResurrectedPlugin() {
@@ -53,7 +54,8 @@ void MathyResurrectedPlugin::init() {
 
 	itsSettings->readSettings(*(this->settings));
  	itsCalculator->changeEvaluatorSettings(itsSettings);
-	itsGUI.reset();
+	itsGUI->deleteLater();
+	itsGUI = 0;
 }
 
 void MathyResurrectedPlugin::getLabels(QList<InputData>* id) {
@@ -114,9 +116,8 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 
 void MathyResurrectedPlugin::doDialog(QWidget* parent, QWidget** newDlg) {
 	if (itsGUI == 0) {
-		OptionsDialog* p = new OptionsDialog(parent, itsSettings);
-		itsGUI.reset(p);
-		*newDlg = itsGUI.get();
+		itsGUI = new OptionsDialog(parent, itsSettings);
+		*newDlg = itsGUI;
 	}
 }
 
@@ -124,8 +125,10 @@ void MathyResurrectedPlugin::endDialog(bool accept) {
 	if (accept) {
 		itsSettings->writeSettings(*(this->settings));
 		init();
+	} else {
+		itsGUI->deleteLater();
+		itsGUI = 0;
 	}
-	itsGUI.reset();
 }
 
 QString MathyResurrectedPlugin::getIcon() {

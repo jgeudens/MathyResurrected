@@ -28,7 +28,7 @@ TestAppMainWindow::TestAppMainWindow(QWidget* parent) :
 	QMainWindow(parent) {
 	setupUi(this);
 	itsSettings = new Settings(this);
-	frameSettings->connectSettings(itsSettings);
+	frameSettings->setSettingsObject(itsSettings);
 	itsCalculator = new MathEvaluator(itsSettings, this);
 }
 

@@ -21,7 +21,6 @@
 #ifndef MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
 #define MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
 
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <QString>
 #include "OptionsDialog.h"
 #include "plugin_interface.h"
@@ -58,8 +57,8 @@ public:
 
 private:
 	mathy_resurrected::MathEvaluator *itsCalculator;
-	boost::shared_ptr<mathy_resurrected::OptionsDialog> itsGUI;
-	mathy_resurrected::Settings* itsSettings;
+	mathy_resurrected::OptionsDialog *itsGUI;
+	mathy_resurrected::Settings *itsSettings;
 	QString itsName;
 	QString libPath;
 };

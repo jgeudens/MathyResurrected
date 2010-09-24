@@ -62,14 +62,14 @@ win32 {
 # Adding linking options for GNU BigNum library and related libraries
 # TODO: Find out if these libraries are portable to MacOS and how to link them there
 
-win32 {
-	LIBS += -lmpir -lmpirxx
-}
+# win32 {
+#	LIBS += -lmpir -lmpirxx
+# }
 
-unix {
-	LIBS += -lgmp -lgmpxx
-}
+# unix {
+#	LIBS += -lgmp -lgmpxx
+# }
 
-LIBS += -lmpfr -lmpc
+# LIBS += -lmpfr -lmpc
 
 
