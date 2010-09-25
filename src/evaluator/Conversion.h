@@ -50,15 +50,15 @@ public:
 	enum NumberBase {
 		DECIMAL, HEXADECIMAL, BINARY, OCTAL
 	};
-	static QString toString(NumberBase base, const Settings& sett, const Complex& num);
+	static const QString toString(NumberBase base, const Settings& sett, const Complex& num);
 
 	/*! This should return same character that was used in grammar */
-	static QChar internalDecimalPoint() { return QChar('@'); }
+	static const QChar internalDecimalPoint() { return QChar('@'); }
 	/*! This should return same character that was used in grammar */
-	static QChar internalArgSeparator() { return QChar('#'); }
+	static const QChar internalArgSeparator() { return QChar('#'); }
 
 private:
-	static QString numberToString(NumberBase base, const Settings& sett, Real val);
+	static const QString numberToString(NumberBase base, const Settings& sett, Real val);
 	template <class intT>
 	static intT safe_convert(Real val, bool& ok);
 };

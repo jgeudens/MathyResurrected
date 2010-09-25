@@ -135,8 +135,13 @@ MathEvaluator::MathEvaluator(const Settings* app_settings, QObject* parent) :
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false)
 {
 	changeEvaluatorSettings(app_settings);
-	itsValue.real = itsValue.imag = 0;
+	mpc_init2(itsValue, BridgeAPIGlobals::NUMERIC_PRECISION);
+	mpc_set_ui_ui(itsValue, 0, 0, MPC_RNDNN);
 	storeAns();
+}
+
+MathEvaluator::~MathEvaluator() {
+	mpc_clear(itsValue);
 }
 
 void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
@@ -145,10 +150,6 @@ void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
 	}
 	itsSettings = app_settings;
 	BridgeAPIGlobals::setBitWidth(itsSettings->calculationBitWidth());
-}
-
-const Complex& MathEvaluator::ans() const { 
-	return *BridgeAPIGlobals::getAns(); 
 }
 
 void MathEvaluator::setExpression(const QString& expression) {
@@ -191,6 +192,8 @@ bool MathEvaluator::validate() {
 }
 
 bool MathEvaluator::evaluate() {
+	BridgeAPIGlobals::clearLexerErrors();
+
 	if (!itsIsEvaluated) {
 		if (validate()) {
 
@@ -222,8 +225,7 @@ bool MathEvaluator::evaluate() {
 
 				try {
 					retv_val = lpr.treeParser->prog(lpr.treeParser);
-					itsValue.real = retv_val->real;
-					itsValue.imag = retv_val->imag;
+					mpc_set(itsValue, retv_val, MPC_RNDNN);
 				}
 				catch (NumericConversionError& e) {
 					itsIsValid = false;
@@ -235,15 +237,16 @@ bool MathEvaluator::evaluate() {
 	}
 
 	BridgeAPIGlobals::clearComplexFactory();
-	BridgeAPIGlobals::clearLexerErrors();
 	return itsIsValid;
 }
 
 void MathEvaluator::storeAns() {
-	BridgeAPIGlobals::setAns(itsValue.real, itsValue.imag);
+	BridgeAPIGlobals::setAns(
+		mpc_realref(itsValue), mpc_imagref(itsValue)
+	);
 }
 
-QString MathEvaluator::toString() const {
+const QString MathEvaluator::toString() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
 			return Conversion::toString(Conversion::DECIMAL, *itsSettings, itsValue);
@@ -255,7 +258,7 @@ QString MathEvaluator::toString() const {
 	}
 }
 
-QString MathEvaluator::toStringBin() const {
+const QString MathEvaluator::toStringBin() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
 			return Conversion::toString(Conversion::BINARY, *itsSettings, itsValue);
@@ -267,7 +270,7 @@ QString MathEvaluator::toStringBin() const {
 	}
 }
 
-QString MathEvaluator::toStringHex() const {
+const QString MathEvaluator::toStringHex() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
 			return Conversion::toString(Conversion::HEXADECIMAL, *itsSettings, itsValue);
@@ -279,7 +282,7 @@ QString MathEvaluator::toStringHex() const {
 	}
 }
 
-QString MathEvaluator::toStringOct() const {
+const QString MathEvaluator::toStringOct() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
 			return Conversion::toString(Conversion::OCTAL, *itsSettings, itsValue);
@@ -290,5 +293,12 @@ QString MathEvaluator::toStringOct() const {
 		return itsErrStr;
 	}
 }
+
+/*! Returns result of evaluation. If expression hasn't been evaluated, 
+or is invalid, return value is unspecified. */
+const Real& MathEvaluator::Re() const { return mpc_realref(itsValue); }
+/*! Returns result of evaluation. If expression hasn't been evaluated, 
+or is invalid, return value is unspecified. */
+const Real& MathEvaluator::Im() const { return mpc_imagref(itsValue); }
 
 } // mathy_resurrected

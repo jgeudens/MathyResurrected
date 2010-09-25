@@ -82,7 +82,7 @@ void BridgeAPIGlobals::setAns(const Real& real, const Real& imag) {
 	mpc_set_fr_fr(getGlobals().itsAns, real, imag, MPC_RNDNN);
 }
 
-ComplexConstPtr BridgeAPIGlobals::getAns() {
+const ComplexPtr BridgeAPIGlobals::getAns() {
 	return getGlobals().itsAns;
 }
 

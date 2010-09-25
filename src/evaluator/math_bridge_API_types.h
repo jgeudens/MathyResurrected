@@ -34,15 +34,11 @@ typedef mpz_t Integer;
 
 /*! Multiple precision, floating point type */
 typedef mpfr_t Real;
+typedef mpfr_ptr RealPtr;
 
 /*! Multiple precision, complex number point type */
 typedef mpc_t Complex;
-
-/*! Pointer to Complex */ 
 typedef mpc_ptr ComplexPtr;
-
-/*! const pointer to const Complex */ 
-typedef mpc_srcptr ComplexConstPtr;
 
 typedef enum MR_LEXER_ERROR_TYPES_ {
 	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,

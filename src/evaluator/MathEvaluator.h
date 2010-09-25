@@ -44,20 +44,15 @@ class MathEvaluator : public QObject {
 
 public:
 	MathEvaluator(const Settings* app_settings, QObject* parent = 0);
+	virtual ~MathEvaluator();
 
-	const Complex& ans() const;
+	const Real& Re() const;
+	const Real& Im() const;
 
-	/*! Returns result of evaluation. If expression hasn't been evaluated, 
-	or is invalid, return value is unspecified. */
-	Real Re() const { return itsValue.real; }
-	/*! Returns result of evaluation. If expression hasn't been evaluated, 
-	or is invalid, return value is unspecified. */
-	Real Im() const { return itsValue.imag; }
-
-	QString toString() const;
-	QString toStringBin() const;
-	QString toStringHex() const;
-	QString toStringOct() const;
+	const QString toString() const;
+	const QString toStringBin() const;
+	const QString toStringHex() const;
+	const QString toStringOct() const;
 
 #ifdef _DEBUG
 	void printLexerErrors() const;
@@ -86,6 +81,7 @@ private:
 	QString itsErrStr;		/*!< Error string */
 
 	const Settings* itsSettings; /**< Evaluator settings. Non-owned pointer to const object. */
+
 	/** - Locale or application specific decimal point should be replaced with 
 		  internalDecimalPoint() before handing this string to lexer/parser
 		- Locale or application specific function argument separator should be 

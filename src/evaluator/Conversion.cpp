@@ -153,7 +153,7 @@ Real Conversion::strBinToReal (const QByteArray& strin) {
 	return retv;
 }
 
-QString Conversion::toString(NumberBase base, const Settings& sett, const Complex& num) {
+const QString Conversion::toString(NumberBase base, const Settings& sett, const Complex& num) {
 	QString im_sign;
 	QString re_str, im_str;
 	bool add_i = false;
@@ -194,7 +194,7 @@ QString Conversion::toString(NumberBase base, const Settings& sett, const Comple
 	return retv;
 }
 
-QString Conversion::numberToString(NumberBase base, const Settings& sett, Real val) {
+const QString Conversion::numberToString(NumberBase base, const Settings& sett, Real val) {
 	QLocale loc = QLocale::c();
 	bool ok_flag;
 	quint64 tmpI64;
@@ -386,7 +386,6 @@ QString Conversion::numberToString(NumberBase base, const Settings& sett, Real v
 
 	return retv;
 }
-
 
 } // namespace mathy_resurrected
 
