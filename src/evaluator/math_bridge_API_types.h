@@ -39,10 +39,10 @@ typedef mpfr_t Real;
 typedef mpc_t Complex;
 
 /*! Pointer to Complex */ 
-typedef Complex* ComplexPtr;
+typedef mpc_ptr ComplexPtr;
 
 /*! const pointer to const Complex */ 
-typedef const Complex* const ComplexConstPtr;
+typedef mpc_srcptr ComplexConstPtr;
 
 typedef enum MR_LEXER_ERROR_TYPES_ {
 	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,

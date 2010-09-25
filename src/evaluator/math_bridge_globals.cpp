@@ -25,8 +25,16 @@ C parser/lexer/evaluator with C++ std::complex */
 
 #include "math_bridge_globals.h"
 
+const int BridgeAPIGlobals::NUMERIC_PRECISION = 128;
+
 BridgeAPIGlobals::BridgeAPIGlobals() {
-	ans.real = ans.imag = 0;
+	mpc_init2(itsAns, NUMERIC_PRECISION);
+	mpc_set_ui_ui(itsAns, 0, 0, MPC_RNDNN);
+}
+
+BridgeAPIGlobals::~BridgeAPIGlobals() {
+	mpc_clear(itsAns);
+	clearComplexFactory();
 }
 
 BridgeAPIGlobals& BridgeAPIGlobals::getGlobals() {
@@ -35,45 +43,53 @@ BridgeAPIGlobals& BridgeAPIGlobals::getGlobals() {
 }
 
 ComplexPtr BridgeAPIGlobals::newMrComplex() {
-	ComplexPtr p = new Complex;
-	p->real = 0; p->imag = 0;
-	boost::shared_ptr< Complex > sp(p);
-	getGlobals().complexFactoryData.push_back(sp);
+	ComplexPtr p = new Complex();
+	mpc_init2(p, NUMERIC_PRECISION);
+	mpc_set_ui_ui(p, 0, 0, MPC_RNDNN);
+	getGlobals().itsComplexFactoryData.push_back(p);
 	return p;
 }
 
 void BridgeAPIGlobals::clearComplexFactory() {
-	getGlobals().complexFactoryData.clear();
+	ComplexVector::size_type i, iend;
+	ComplexVector& fact = getGlobals().itsComplexFactoryData;
+	i = 0; iend = fact.size();
+	
+	for (; i != iend; ++i) {
+		mpc_clear(fact[i]);
+		delete fact[i];
+	}
+
+	fact.clear();
 }
 
 void BridgeAPIGlobals::collectlexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err_type) {
 	mr_LexerErrorPair p;
 	p.char_index = char_index;
 	p.err_type = err_type;
-	getGlobals().lexerErrorsCollection.push_back(p);
+	getGlobals().itsLexerErrorsCollection.push_back(p);
 }
 
 void BridgeAPIGlobals::clearLexerErrors() {
-	getGlobals().lexerErrorsCollection.clear();
+	getGlobals().itsLexerErrorsCollection.clear();
 }
 
 const BridgeAPIGlobals::LexerErrorsCollection& BridgeAPIGlobals::getLexerErrors() {
-	return getGlobals().lexerErrorsCollection;
+	return getGlobals().itsLexerErrorsCollection;
 }
 
-void BridgeAPIGlobals::setAns(Real real, Real imag) {
-	getGlobals().ans.real = real;
-	getGlobals().ans.imag = imag;
+void BridgeAPIGlobals::setAns(const Real& real, const Real& imag) {
+	mpc_set_fr_fr(getGlobals().itsAns, real, imag, MPC_RNDNN);
 }
 
 ComplexConstPtr BridgeAPIGlobals::getAns() {
-	return &(getGlobals().ans);
+	return getGlobals().itsAns;
 }
 
 unsigned char BridgeAPIGlobals::bitWidth() {
-	return getGlobals().bit_width;
+	return getGlobals().itsBitWidth;
 }
 
 void BridgeAPIGlobals::setBitWidth(unsigned char nw) {
-	getGlobals().bit_width = nw;
+	getGlobals().itsBitWidth = nw;
 }
