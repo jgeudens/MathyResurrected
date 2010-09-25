@@ -18,10 +18,7 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*! @file
-Wrapper API for C++ complex math. ANTLR curently generates parsers
-for C only so this API is used to comunicate ANTLR generated,
-C parser/lexer/evaluator with C++ std::complex */
+/*! @file */
 
 #ifndef MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS
 #define MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS
