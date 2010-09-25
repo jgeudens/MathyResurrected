@@ -49,10 +49,10 @@ public:
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
-	mrReal Re() const { return itsValue.real; }
+	Real Re() const { return itsValue.real; }
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
-	mrReal Im() const { return itsValue.imag; }
+	Real Im() const { return itsValue.imag; }
 
 	QString toString() const;
 	QString toStringBin() const;

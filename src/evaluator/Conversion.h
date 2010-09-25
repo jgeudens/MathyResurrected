@@ -33,19 +33,19 @@ class Settings;
 string representation of numeric types*/
 class Conversion {
 public:
-	static qint8 safe_convert_8b(mrReal val, bool& ok);
-	static qint16 safe_convert_16b(mrReal val, bool& ok);
-	static qint32 safe_convert_32b(mrReal val, bool& ok);
-	static qint64 safe_convert_64b(mrReal val, bool& ok);
-	static quint8 safe_convert_u8b(mrReal val, bool& ok);
-	static quint16 safe_convert_u16b(mrReal val, bool& ok);
-	static quint32 safe_convert_u32b(mrReal val, bool& ok);
-	static quint64 safe_convert_u64b(mrReal val, bool& ok);
+	static qint8 safe_convert_8b(Real val, bool& ok);
+	static qint16 safe_convert_16b(Real val, bool& ok);
+	static qint32 safe_convert_32b(Real val, bool& ok);
+	static qint64 safe_convert_64b(Real val, bool& ok);
+	static quint8 safe_convert_u8b(Real val, bool& ok);
+	static quint16 safe_convert_u16b(Real val, bool& ok);
+	static quint32 safe_convert_u32b(Real val, bool& ok);
+	static quint64 safe_convert_u64b(Real val, bool& ok);
 
-	static mrReal strToReal(const QByteArray& str);
-	static mrReal strHexToReal(const QByteArray& str);
-	static mrReal strOctToReal(const QByteArray& str);
-	static mrReal strBinToReal(const QByteArray& str);
+	static Real strToReal(const QByteArray& str);
+	static Real strHexToReal(const QByteArray& str);
+	static Real strOctToReal(const QByteArray& str);
+	static Real strBinToReal(const QByteArray& str);
 
 	enum NumberBase {
 		DECIMAL, HEXADECIMAL, BINARY, OCTAL
@@ -58,9 +58,9 @@ public:
 	static QChar internalArgSeparator() { return QChar('#'); }
 
 private:
-	static QString numberToString(NumberBase base, const Settings& sett, mrReal val);
+	static QString numberToString(NumberBase base, const Settings& sett, Real val);
 	template <class intT>
-	static intT safe_convert(mrReal val, bool& ok);
+	static intT safe_convert(Real val, bool& ok);
 };
 
 } // namespace mathy_resurrected

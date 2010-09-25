@@ -32,40 +32,40 @@ using namespace boost::math;
 
 namespace mathy_resurrected {
 
-qint8 Conversion::safe_convert_8b(mrReal val, bool& ok) {
+qint8 Conversion::safe_convert_8b(Real val, bool& ok) {
 	return safe_convert<qint8>(val, ok);
 }
 
-qint16 Conversion::safe_convert_16b(mrReal val, bool& ok) {
+qint16 Conversion::safe_convert_16b(Real val, bool& ok) {
 	return safe_convert<qint8>(val, ok);
 }
 
-qint32 Conversion::safe_convert_32b(mrReal val, bool& ok) {
+qint32 Conversion::safe_convert_32b(Real val, bool& ok) {
 	return safe_convert<qint32>(val, ok);
 }
 
-qint64 Conversion::safe_convert_64b(mrReal val, bool& ok) {
+qint64 Conversion::safe_convert_64b(Real val, bool& ok) {
 	return safe_convert<qint64>(val, ok);
 }
 
-quint8 Conversion::safe_convert_u8b(mrReal val, bool& ok) {
+quint8 Conversion::safe_convert_u8b(Real val, bool& ok) {
 	return safe_convert<quint8>(val, ok);
 }
 
-quint16 Conversion::safe_convert_u16b(mrReal val, bool& ok) {
+quint16 Conversion::safe_convert_u16b(Real val, bool& ok) {
 	return safe_convert<quint16>(val, ok);
 }
 
-quint32 Conversion::safe_convert_u32b(mrReal val, bool& ok) {
+quint32 Conversion::safe_convert_u32b(Real val, bool& ok) {
 	return safe_convert<quint32>(val, ok);
 }
 
-quint64 Conversion::safe_convert_u64b(mrReal val, bool& ok) {
+quint64 Conversion::safe_convert_u64b(Real val, bool& ok) {
 	return safe_convert<quint64>(val, ok);
 }
 
 template <class intT>
-intT Conversion::safe_convert(mrReal val, bool& ok) {
+intT Conversion::safe_convert(Real val, bool& ok) {
 	intT retv;
 //	try {
 // 		retv = numeric_cast<intT>(val);
@@ -78,8 +78,8 @@ intT Conversion::safe_convert(mrReal val, bool& ok) {
 	return retv;
 }
 
-mrReal Conversion::strToReal (const QByteArray& strin) {
-	mrReal retv;
+Real Conversion::strToReal (const QByteArray& strin) {
+	Real retv;
 	bool okFlag;
 	retv = strin.toDouble(&okFlag);
 
@@ -90,8 +90,8 @@ mrReal Conversion::strToReal (const QByteArray& strin) {
 	return retv;
 }
 
-mrReal Conversion::strHexToReal (const QByteArray& strin) {
-	mrReal retv;
+Real Conversion::strHexToReal (const QByteArray& strin) {
+	Real retv;
 	quint64 tempRetv;
 	bool okFlag;
 	tempRetv = strin.toULongLong(&okFlag, 16);
@@ -101,7 +101,7 @@ mrReal Conversion::strHexToReal (const QByteArray& strin) {
 			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 	try {
-		retv = numeric_cast<mrReal>(tempRetv);
+		retv = numeric_cast<Real>(tempRetv);
 	}
 	catch (bad_numeric_cast&) {
 		throw NumericConversionError("Input range error: " + 
@@ -111,8 +111,8 @@ mrReal Conversion::strHexToReal (const QByteArray& strin) {
 	return retv;
 }
 
-mrReal Conversion::strOctToReal (const QByteArray& strin) {
-	mrReal retv;
+Real Conversion::strOctToReal (const QByteArray& strin) {
+	Real retv;
 	quint64 tempRetv;
 	bool okFlag;
 	tempRetv = strin.toULongLong(&okFlag, 8);
@@ -122,7 +122,7 @@ mrReal Conversion::strOctToReal (const QByteArray& strin) {
 			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 	try {
-		retv = numeric_cast<mrReal>(tempRetv);
+		retv = numeric_cast<Real>(tempRetv);
 	}
 	catch (bad_numeric_cast&) {
 		throw NumericConversionError("Input range error: " + 
@@ -132,8 +132,8 @@ mrReal Conversion::strOctToReal (const QByteArray& strin) {
 	return retv;
 }
 
-mrReal Conversion::strBinToReal (const QByteArray& strin) {
-	mrReal retv;
+Real Conversion::strBinToReal (const QByteArray& strin) {
+	Real retv;
 	quint64 tempRetv;
 	bool okFlag;
 	tempRetv = strin.toULongLong(&okFlag, 2);
@@ -143,7 +143,7 @@ mrReal Conversion::strBinToReal (const QByteArray& strin) {
 			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
 	}
 	try {
-		retv = numeric_cast<mrReal>(tempRetv);
+		retv = numeric_cast<Real>(tempRetv);
 	}
 	catch (bad_numeric_cast&) {
 		throw NumericConversionError("Input range error: " + 
@@ -161,7 +161,7 @@ QString Conversion::toString(NumberBase base, const Settings& sett, const Comple
 
 	// If number is close enough to zero, we make it zero 
 	// explicitly (but for display purposes only)
-	mrReal im_disp = num.imag, re_disp = num.real;
+	Real im_disp = num.imag, re_disp = num.real;
 	if (abs(im_disp) < pow(10.0, sett.zeroTresholdExp())) {
 		im_disp = 0;
 	}
@@ -178,7 +178,7 @@ QString Conversion::toString(NumberBase base, const Settings& sett, const Comple
 			} else { // if (imag < 0) {
 				im_sign = " - ";
 			}
-			mrReal tmp = abs(im_disp);
+			Real tmp = abs(im_disp);
 			im_str = numberToString(base, sett, tmp);
 		} else { // Display as any other base
 			im_sign = " + ";
@@ -194,7 +194,7 @@ QString Conversion::toString(NumberBase base, const Settings& sett, const Comple
 	return retv;
 }
 
-QString Conversion::numberToString(NumberBase base, const Settings& sett, mrReal val) {
+QString Conversion::numberToString(NumberBase base, const Settings& sett, Real val) {
 	QLocale loc = QLocale::c();
 	bool ok_flag;
 	quint64 tmpI64;
@@ -205,8 +205,8 @@ QString Conversion::numberToString(NumberBase base, const Settings& sett, mrReal
 // 	if (val < 0) {
 // 		bho_sign = "-";
 // 	}
-//	mrReal absVal = abs(val);
-	mrReal absVal = val;
+//	Real absVal = abs(val);
+	Real absVal = val;
 	switch (base) {
 		case BINARY:
 			switch (sett.calculationBitWidth()) {

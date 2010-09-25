@@ -30,7 +30,7 @@ using namespace boost::math;
 using namespace std;
 using namespace mathy_resurrected;
 
-typedef std::complex<mrReal> StdComplex;
+typedef std::complex<Real> StdComplex;
 
 ComplexPtr newMrComplex() {
 	return BridgeAPIGlobals::newMrComplex();
@@ -56,19 +56,19 @@ inline void STDCOMPLEX_2_MRCOMPLEX(ComplexPtr dest, const StdComplex& src) {
 	dest->imag = src.imag();
 }
 
-mrReal mr_pi() {
-	static const mrReal 
-		piVal = atan2((mrReal)(0.0), static_cast<mrReal>(-1.0));
+Real mr_pi() {
+	static const Real 
+		piVal = atan2((Real)(0.0), static_cast<Real>(-1.0));
 	return piVal;
 }
 
-mrReal mr_e() {
-	static const mrReal eVal = exp((mrReal)(1.0));
+Real mr_e() {
+	static const Real eVal = exp((Real)(1.0));
 	return eVal;
 }
 
-mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix) {
-	mrReal suff_val;
+Real si_ref(MR_MATH_SI_PREFIXES si_prefix) {
+	Real suff_val;
 
 	switch (si_prefix) {
 		case MR_MATH_SI_PREFIX_YOTTA:
@@ -182,7 +182,7 @@ ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which,
 			break;
 		case MR_MOD:
 			retv_c.imag(0);
-			retv_c.real(static_cast<mrReal>(fmod(lv->real, rv->real)));
+			retv_c.real(static_cast<Real>(fmod(lv->real, rv->real)));
 			break;
 		case MR_POW:
 			retv_c = pow(lv_c, rv_c);
@@ -528,7 +528,7 @@ ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
 	return retv;
 }
 
-mrReal strToReal(const pANTLR3_STRING str) {
+Real strToReal(const pANTLR3_STRING str) {
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
 	
 	QString temp = QString::fromUtf8((const char*)utf8Str->chars, utf8Str->len);
@@ -538,21 +538,21 @@ mrReal strToReal(const pANTLR3_STRING str) {
 	return Conversion::strToReal(temp.toUtf8());
 }
 
-mrReal strHexToReal(const pANTLR3_STRING str) {
+Real strHexToReal(const pANTLR3_STRING str) {
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
 	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
 	return Conversion::strHexToReal(bArray);
 }
 
-mrReal strOctToReal(const pANTLR3_STRING str) {
+Real strOctToReal(const pANTLR3_STRING str) {
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
 	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
 	return Conversion::strOctToReal(bArray);
 }
 
-mrReal strBinToReal(const pANTLR3_STRING str) {
+Real strBinToReal(const pANTLR3_STRING str) {
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
 	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);

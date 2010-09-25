@@ -8425,7 +8425,7 @@ imaginary_number(pComplexEval ctx)
 
 
 
-    	mrReal numb = 0;
+    	Real numb = 0;
     	char num_present = 0;
     	compl_retv= newMrComplex();
     	compl_retv->real = 0;

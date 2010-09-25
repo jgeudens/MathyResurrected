@@ -61,7 +61,7 @@ const BridgeAPIGlobals::LexerErrorsCollection& BridgeAPIGlobals::getLexerErrors(
 	return getGlobals().lexerErrorsCollection;
 }
 
-void BridgeAPIGlobals::setAns(mrReal real, mrReal imag) {
+void BridgeAPIGlobals::setAns(Real real, Real imag) {
 	getGlobals().ans.real = real;
 	getGlobals().ans.imag = imag;
 }
