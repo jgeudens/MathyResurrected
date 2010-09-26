@@ -29,16 +29,15 @@
 extern "C" {
 #endif
 
-/*! Multiple precision, signed integer type */
-typedef mpz_t Integer;
-
 /*! Multiple precision, floating point type */
 typedef mpfr_t Real;
 typedef mpfr_ptr RealPtr;
+typedef mpfr_srcptr RealConstPtr;
 
 /*! Multiple precision, complex number point type */
 typedef mpc_t Complex;
 typedef mpc_ptr ComplexPtr;
+typedef mpc_srcptr ComplexConstPtr;
 
 typedef enum MR_LEXER_ERROR_TYPES_ {
 	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,

@@ -32,6 +32,8 @@ public:
 	~BridgeAPIGlobals();
 	static ComplexPtr newMrComplex();
 	static void clearComplexFactory();
+	static RealPtr newMrReal();
+	static void clearRealFactory();
 	
 	typedef struct {
 		unsigned int char_index;
@@ -57,8 +59,10 @@ private:
 	static BridgeAPIGlobals& getGlobals();
 
 	typedef std::vector<ComplexPtr> ComplexVector;
+	typedef std::vector<RealPtr> RealVector;
 	/*! Data storage for factory produced objects. */
 	ComplexVector itsComplexFactoryData;
+	RealVector itsRealFactoryData;
 
 	/*! All lexer errors are collected here during lexing phase. After 
 	that and before parser is invoked, this can be used to generate error 

@@ -33,24 +33,20 @@ class Settings;
 string representation of numeric types*/
 class Conversion {
 public:
-	static qint8 safe_convert_8b(Real val, bool& ok);
-	static qint16 safe_convert_16b(Real val, bool& ok);
-	static qint32 safe_convert_32b(Real val, bool& ok);
-	static qint64 safe_convert_64b(Real val, bool& ok);
-	static quint8 safe_convert_u8b(Real val, bool& ok);
-	static quint16 safe_convert_u16b(Real val, bool& ok);
-	static quint32 safe_convert_u32b(Real val, bool& ok);
-	static quint64 safe_convert_u64b(Real val, bool& ok);
+	static quint8 safe_convert_u8b(RealConstPtr val, bool& ok);
+	static quint16 safe_convert_u16b(RealConstPtr val, bool& ok);
+	static quint32 safe_convert_u32b(RealConstPtr val, bool& ok);
+	static quint64 safe_convert_u64b(RealConstPtr val, bool& ok);
 
-	static Real strToReal(const QByteArray& str);
-	static Real strHexToReal(const QByteArray& str);
-	static Real strOctToReal(const QByteArray& str);
-	static Real strBinToReal(const QByteArray& str);
+	static RealPtr strToReal(const QByteArray& str);
+	static RealPtr strHexToReal(const QByteArray& str);
+	static RealPtr strOctToReal(const QByteArray& str);
+	static RealPtr strBinToReal(const QByteArray& str);
 
 	enum NumberBase {
 		DECIMAL, HEXADECIMAL, BINARY, OCTAL
 	};
-	static const QString toString(NumberBase base, const Settings& sett, const Complex& num);
+	static const QString toString(NumberBase base, const Settings& sett, const ComplexConstPtr& num);
 
 	/*! This should return same character that was used in grammar */
 	static const QChar internalDecimalPoint() { return QChar('@'); }
@@ -58,9 +54,11 @@ public:
 	static const QChar internalArgSeparator() { return QChar('#'); }
 
 private:
-	static const QString numberToString(NumberBase base, const Settings& sett, Real val);
-	template <class intT>
-	static intT safe_convert(Real val, bool& ok);
+	static const QString numberToString(NumberBase base, const Settings& sett, RealConstPtr val);
+	template <class unsignedIntegerType>
+	static unsignedIntegerType safe_convert(RealConstPtr val, bool& ok);
+
+	static bool isBelowZeroTreshold(RealConstPtr val, int treshExp);
 };
 
 } // namespace mathy_resurrected

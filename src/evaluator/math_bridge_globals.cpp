@@ -35,6 +35,8 @@ BridgeAPIGlobals::BridgeAPIGlobals() {
 BridgeAPIGlobals::~BridgeAPIGlobals() {
 	mpc_clear(itsAns);
 	clearComplexFactory();
+	clearRealFactory();
+	mpfr_free_cache();
 }
 
 BridgeAPIGlobals& BridgeAPIGlobals::getGlobals() {
@@ -60,6 +62,26 @@ void BridgeAPIGlobals::clearComplexFactory() {
 		delete fact[i];
 	}
 
+	fact.clear();
+}
+
+RealPtr BridgeAPIGlobals::newMrReal() {
+	RealPtr p = new Real();
+	mpfr_init2(p, NUMERIC_PRECISION);
+	mpfr_set_ui(p, 0, MPFR_RNDN);
+	getGlobals().itsRealFactoryData.push_back(p);
+	return p;
+}
+
+void BridgeAPIGlobals::clearRealFactory() {
+	RealVector::size_type i, iend;
+	RealVector& fact = getGlobals().itsRealFactoryData;
+	i = 0; iend = fact.size();
+
+	for (; i != iend; ++i) {
+		mpfr_clear(fact[i]);
+		delete fact[i];
+	}
 	fact.clear();
 }
 
