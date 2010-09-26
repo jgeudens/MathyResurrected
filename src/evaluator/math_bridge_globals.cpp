@@ -18,12 +18,10 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*! @file
-Wrapper API for C++ complex math. ANTLR curently generates parsers
-for C only so this API is used to comunicate ANTLR generated,
-C parser/lexer/evaluator with C++ std::complex */
+/*! @file */
 
 #include "math_bridge_globals.h"
+#include <cassert>
 
 const int BridgeAPIGlobals::NUMERIC_PRECISION = 128;
 
@@ -104,8 +102,9 @@ void BridgeAPIGlobals::setAns(const Real& real, const Real& imag) {
 	mpc_set_fr_fr(getGlobals().itsAns, real, imag, MPC_RNDNN);
 }
 
-const ComplexPtr BridgeAPIGlobals::getAns() {
-	return getGlobals().itsAns;
+void BridgeAPIGlobals::getAns(ComplexPtr dest) {
+	assert(dest != 0);
+	mpc_set(dest, getGlobals().itsAns, MPC_RNDNN);
 }
 
 unsigned char BridgeAPIGlobals::bitWidth() {

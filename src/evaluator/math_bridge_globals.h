@@ -47,7 +47,7 @@ public:
 	static const LexerErrorsCollection& getLexerErrors();
 
 	static void setAns(const Real& real, const Real& imag);
-	static const ComplexPtr getAns();
+	static void getAns(ComplexPtr dest);
 
 	static unsigned char bitWidth();
 	static void setBitWidth(unsigned char nw);

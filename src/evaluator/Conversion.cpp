@@ -20,6 +20,7 @@
 
 #include "Conversion.h"
 #include <QLocale>
+#include <cassert>
 #include "Settings.h"
 #include "math_bridge_globals.h"
 
@@ -65,38 +66,32 @@ unsignedIntegerType Conversion::safe_convert(RealConstPtr val, bool& ok) {
 	return retv;
 }
 
-RealPtr Conversion::strToReal (const QByteArray& strin) {
-	RealPtr retv = BridgeAPIGlobals::newMrReal();
-	mpfr_set_str(retv, strin.constData(), 10, MPFR_RNDN);
-	return retv;
+void Conversion::strToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 10, MPFR_RNDN);
 }
 
-RealPtr Conversion::strHexToReal (const QByteArray& strin) {
-	RealPtr retv = BridgeAPIGlobals::newMrReal();
-	mpfr_set_str(retv, strin.constData(), 16, MPFR_RNDN);
-	return retv;
+void Conversion::strHexToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 16, MPFR_RNDN);
 }
 
-RealPtr Conversion::strOctToReal (const QByteArray& strin) {
-	RealPtr retv = BridgeAPIGlobals::newMrReal();
-	mpfr_set_str(retv, strin.constData(), 8, MPFR_RNDN);
-	return retv;
+void Conversion::strOctToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 8, MPFR_RNDN);
 }
 
-RealPtr Conversion::strBinToReal (const QByteArray& strin) {
-	RealPtr retv = BridgeAPIGlobals::newMrReal();
-	mpfr_set_str(retv, strin.constData(), 2, MPFR_RNDN);
-	return retv;
+void Conversion::strBinToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 2, MPFR_RNDN);
 }
 
 bool Conversion::isBelowZeroTreshold(RealConstPtr val, int treshExp) {
-	Real valCopy, tres;
+	Real tres;
 	bool retv;
-	mpfr_init_set(valCopy, val, MPFR_RNDN);
 	mpfr_init_set_ui(tres, 10, MPFR_RNDN);
-	mpfr_pow_ui(tres, tres, treshExp, MPFR_RNDN);
-	retv = mpfr_cmpabs(valCopy, tres) <= 0;
-	mpfr_clear(valCopy);
+	mpfr_pow_si(tres, tres, treshExp, MPFR_RNDN);
+	retv = mpfr_cmpabs(val, tres) <= 0;
 	mpfr_clear(tres);
 	return retv;
 }
@@ -112,18 +107,18 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 	Real im_disp, re_disp;
 	mpfr_init_set(re_disp, mpc_realref(num), MPFR_RNDN);
 	mpfr_init_set(im_disp, mpc_imagref(num), MPFR_RNDN);
+
 	if (isBelowZeroTreshold(im_disp, sett.zeroTresholdExp())) {
-		mpfr_init_set_ui(im_disp, 0, MPFR_RNDN);
+		mpfr_set_ui(im_disp, 0, MPFR_RNDN);
 	}
 	if (isBelowZeroTreshold(re_disp, sett.zeroTresholdExp())) {
-		mpfr_init_set_ui(re_disp, 0, MPFR_RNDN);
+		mpfr_set_ui(re_disp, 0, MPFR_RNDN);
 	}
 
 	// Formating output of imaginary part
-	if (mpfr_zero_p(im_disp) != 0) {
-		// Display as decimal
+	if (mpfr_sgn(im_disp) != 0) {
 		if (base == DECIMAL) {
-			if (mpfr_sgn(im_disp) >= 0) {
+			if (mpfr_sgn(im_disp) > 0) {
 				im_sign = " + ";
 			} else {
 				im_sign = " - ";
@@ -321,7 +316,11 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 			// not likely to be used for that purpose in any 
 			// existing locale. 
 			int decPointPos = retv.lastIndexOf(loc.decimalPoint());
-			retv[decPointPos] = internalDecimalPoint();
+			if (decPointPos != -1) {
+				retv[decPointPos] = internalDecimalPoint();
+			} else {
+				decPointPos = retv.size();
+			}
 
 			// Post processing group separator. 
 			if (sett.outputDigitGrouping() && sett.outputFormat() == Settings::FIXED) {
@@ -331,7 +330,11 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 			}
 
 			// Post processing decimal point. 
-			retv[retv.lastIndexOf(internalDecimalPoint())] = sett.decimalPointAsChar();
+			decPointPos = retv.lastIndexOf(internalDecimalPoint());
+			if (decPointPos != -1) {
+				retv[decPointPos] = sett.decimalPointAsChar();
+			}
+			
 			break;
 	}
 

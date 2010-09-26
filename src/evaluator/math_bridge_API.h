@@ -37,12 +37,12 @@ extern "C" {
 be deleted directly, it is handled automatically. */
 ComplexPtr newMrComplex();
 void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-ComplexConstPtr getAns();
+void getAns(ComplexPtr dest);
 
 /*! Return value of PI */
-RealConstPtr mr_pi();
+void mr_pi(ComplexPtr dest);
 /*! Return value of e */
-RealConstPtr mr_e();
+void mr_e(ComplexPtr dest);
 
 /*! To avoid passing around ANTLR3_STRING as much as possible
 and to simplify implementation of SI unit conversion, this enum 
@@ -64,7 +64,7 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
-RealPtr si_ref(MR_MATH_SI_PREFIXES si_prefix);
+void si_ref(MR_MATH_SI_PREFIXES si_prefix, ComplexPtr dest);
 
 typedef enum {
 	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
@@ -82,7 +82,7 @@ ComplexPtr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which,
 									   ComplexConstPtr lv, ComplexConstPtr rv);
 
 typedef enum {
-	MR_BITWISE_NOT
+	MR_BITWISE_NOT, MR_UNARY_MINUS
 } MR_MATH_UNARY_OPERATORS;
 ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val);
 
@@ -105,10 +105,10 @@ typedef enum {
 ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,  
 							   ComplexConstPtr arg1, ComplexConstPtr arg2);
 
-RealPtr strToReal(const pANTLR3_STRING str);
-RealPtr strHexToReal(const pANTLR3_STRING str);
-RealPtr strOctToReal(const pANTLR3_STRING str);
-RealPtr strBinToReal(const pANTLR3_STRING str);
+void strToReal(const pANTLR3_STRING str, RealPtr dest);
+void strHexToReal(const pANTLR3_STRING str, RealPtr dest);
+void strOctToReal(const pANTLR3_STRING str, RealPtr dest);
+void strBinToReal(const pANTLR3_STRING str, RealPtr dest);
 
 #ifdef __cplusplus
 }
