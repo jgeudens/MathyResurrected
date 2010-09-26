@@ -40,9 +40,9 @@ void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
 ComplexConstPtr getAns();
 
 /*! Return value of PI */
-Real mr_pi();
+RealConstPtr mr_pi();
 /*! Return value of e */
-Real mr_e();
+RealConstPtr mr_e();
 
 /*! To avoid passing around ANTLR3_STRING as much as possible
 and to simplify implementation of SI unit conversion, this enum 
@@ -64,7 +64,7 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
-Real si_ref(MR_MATH_SI_PREFIXES si_prefix);
+RealPtr si_ref(MR_MATH_SI_PREFIXES si_prefix);
 
 typedef enum {
 	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
@@ -105,10 +105,10 @@ typedef enum {
 ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,  
 							   ComplexConstPtr arg1, ComplexConstPtr arg2);
 
-Real strToReal(const pANTLR3_STRING str);
-Real strHexToReal(const pANTLR3_STRING str);
-Real strOctToReal(const pANTLR3_STRING str);
-Real strBinToReal(const pANTLR3_STRING str);
+RealPtr strToReal(const pANTLR3_STRING str);
+RealPtr strHexToReal(const pANTLR3_STRING str);
+RealPtr strOctToReal(const pANTLR3_STRING str);
+RealPtr strBinToReal(const pANTLR3_STRING str);
 
 #ifdef __cplusplus
 }
