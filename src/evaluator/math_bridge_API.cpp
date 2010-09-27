@@ -268,19 +268,18 @@ ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val
 			mpc_norm(mpc_realref(retv), val, MPFR_RNDN);
 			break;
 		case MR_FUN_POLAR:
-			Real rho, theta, fn;
-			mpfr_init_set(rho, mpc_realref(val), MPFR_RNDN);
-			mpfr_init_set(theta, mpc_imagref(val), MPFR_RNDN);
-			mpfr_init2(fn, BridgeAPIGlobals::NUMERIC_PRECISION);
+			RealPtr rho, theta, fn;
+			rho = BridgeAPIGlobals::newMrReal();
+			theta = BridgeAPIGlobals::newMrReal();
+			fn = BridgeAPIGlobals::newMrReal();
+
+			mpfr_set(rho, mpc_realref(val), MPFR_RNDN);
+			mpfr_set(theta, mpc_imagref(val), MPFR_RNDN);
 
 			mpfr_cos(fn, theta, MPFR_RNDN);
 			mpfr_mul(mpc_realref(retv), rho, fn, MPFR_RNDN);
 			mpfr_sin(fn, theta, MPFR_RNDN);
 			mpfr_mul(mpc_imagref(retv), rho, fn, MPFR_RNDN);
-
-			mpfr_clear(rho);
-			mpfr_clear(theta);
-			mpfr_clear(fn);
 			break;
 	}
 	return retv;
@@ -377,10 +376,7 @@ ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val
 				}
 				break;
 			case MR_UNARY_MINUS:
-				Real tempReal;
-				mpfr_init_set_ui(tempReal, -1, MPFR_RNDN);
-				mpc_mul_fr(retv, val, tempReal, MPC_RNDNN);
-				mpfr_clear(tempReal);
+				mpc_mul_si(retv, val, -1, MPC_RNDNN);
 				break;
 		}
 	}

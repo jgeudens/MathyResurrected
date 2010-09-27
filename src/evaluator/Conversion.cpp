@@ -87,12 +87,11 @@ void Conversion::strBinToReal (const QByteArray& strin, RealPtr dest) {
 }
 
 bool Conversion::isBelowZeroTreshold(RealConstPtr val, int treshExp) {
-	Real tres;
+	RealPtr tres = BridgeAPIGlobals::newMrReal();
 	bool retv;
-	mpfr_init_set_ui(tres, 10, MPFR_RNDN);
+	mpfr_set_ui(tres, 10, MPFR_RNDN);
 	mpfr_pow_si(tres, tres, treshExp, MPFR_RNDN);
 	retv = mpfr_cmpabs(val, tres) <= 0;
-	mpfr_clear(tres);
 	return retv;
 }
 
@@ -104,9 +103,11 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 
 	// If number is close enough to zero, we make it zero 
 	// explicitly (but for display purposes only)
-	Real im_disp, re_disp;
-	mpfr_init_set(re_disp, mpc_realref(num), MPFR_RNDN);
-	mpfr_init_set(im_disp, mpc_imagref(num), MPFR_RNDN);
+	RealPtr im_disp, re_disp;
+	re_disp = BridgeAPIGlobals::newMrReal();
+	im_disp = BridgeAPIGlobals::newMrReal();
+	mpfr_set(re_disp, mpc_realref(num), MPFR_RNDN);
+	mpfr_set(im_disp, mpc_imagref(num), MPFR_RNDN);
 
 	if (isBelowZeroTreshold(im_disp, sett.zeroTresholdExp())) {
 		mpfr_set_ui(im_disp, 0, MPFR_RNDN);
@@ -136,8 +137,6 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 		retv +=  im_sign + im_str + "i";
 	}
 
-	mpfr_clear(re_disp);
-	mpfr_clear(im_disp);
 	return retv;
 }
 
@@ -149,8 +148,8 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 	quint16 tmpI16;
 	quint8 tmpI8;
 	QString bho_prefix, retv;
-	Real absVal;
-	mpfr_init_set(absVal, val, MPFR_RNDN);
+	RealPtr absVal = BridgeAPIGlobals::newMrReal();
+	mpfr_set(absVal, val, MPFR_RNDN);
 	mpfr_abs(absVal, absVal, MPFR_RNDN);
 
 	switch (base) {
@@ -297,7 +296,7 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 			break;
 		case DECIMAL:
 		default:
-			char dec[100];
+			char dec[100]; // 100 should be more than enough
 			if (sett.outputFormat() == Settings::AUTOMATIC) { 
 				mpfr_snprintf(&dec[0], 100, "%.*RNg", sett.precision(), absVal);
 			} else if (sett.outputFormat() == Settings::SCIENTIFFIC) {
@@ -334,11 +333,8 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 			if (decPointPos != -1) {
 				retv[decPointPos] = sett.decimalPointAsChar();
 			}
-			
 			break;
 	}
-
-	mpfr_clear(absVal);
 	return retv;
 }
 
