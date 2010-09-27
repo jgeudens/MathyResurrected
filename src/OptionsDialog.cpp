@@ -25,7 +25,7 @@ using namespace std;
 
 namespace mathy_resurrected {
 
-void OptionsDialog::connectSettings(Settings* settings) {
+void OptionsDialog::setSettingsObject(Settings* settings) {
 	itsSettings = settings;
 	setupUiBySettings();
 }

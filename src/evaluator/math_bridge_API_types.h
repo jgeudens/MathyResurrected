@@ -21,23 +21,23 @@
 #ifndef MATHY_RESURRECTED_MATH_BRIDGE_TYPES
 #define MATHY_RESURRECTED_MATH_BRIDGE_TYPES
 
+#include <gmp.h>
+#include <mpfr.h>
+#include <mpc.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*! Numeric type used for all math calculations */
-typedef double mrReal;
+/*! Multiple precision, floating point type */
+typedef mpfr_t Real;
+typedef mpfr_ptr RealPtr;
+typedef mpfr_srcptr RealConstPtr;
 
-/*! This is a replacement for std::complex<T>. ANTLR doesn't have C++ API
-so actions inside grammar use this type to pass around complex numbers. */
-typedef struct {
-	mrReal real, imag;
-} Complex;
-
-/*! Pointer to Complex */ 
-typedef Complex* ComplexPtr;
-/*! const pointer to const Complex */ 
-typedef const Complex* const ComplexConstPtr;
+/*! Multiple precision, complex number point type */
+typedef mpc_t Complex;
+typedef mpc_ptr ComplexPtr;
+typedef mpc_srcptr ComplexConstPtr;
 
 typedef enum MR_LEXER_ERROR_TYPES_ {
 	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,

@@ -79,9 +79,7 @@ expr returns [ComplexPtr compl_retv]
 	
 unary returns [ComplexPtr compl_retv]
   : ^(UNARY MINUS atom) {
-		Complex tmp;
-		tmp.real = -1; tmp.imag = 0;
-		$compl_retv = mr_binary_operator(MR_MULTI, &tmp, $atom.compl_retv);
+		$compl_retv = mr_unary_operator(MR_UNARY_MINUS, $atom.compl_retv); 
     }
   | ^(UNARY PLUS atom) {
 		$compl_retv = $atom.compl_retv;
@@ -184,132 +182,127 @@ funct_ref2 returns [ComplexPtr compl_retv]
 	;
 
 constant_ref returns [ComplexPtr compl_retv]
+@init { 
+	$compl_retv = newMrComplex(); 
+}
 	: ^(CONSTANT_REF CONSTANTS_PI) {
-		$compl_retv = newMrComplex(); 
-		$compl_retv->imag = 0.0; 
-		$compl_retv->real = mr_pi();
+		mr_pi($compl_retv);
     	}
 	| ^(CONSTANT_REF CONSTANTS_E) {
-		$compl_retv = newMrComplex(); 
-		$compl_retv->imag = 0.0; 
-		$compl_retv->real = mr_e();
+		mr_e($compl_retv);
     	}
     | ^(CONSTANT_REF CONSTANTS_ANS) {
-		$compl_retv = newMrComplex(); 
-		$compl_retv->imag = getAns()->imag; 
-		$compl_retv->real = getAns()->real;
+		getAns($compl_retv);
     	}
     	;
 
 si_unit_ref returns [ComplexPtr compl_retv]
 @init { 
-	$compl_retv = newMrComplex(); 
-	$compl_retv->imag = 0.0; 
+	$compl_retv = newMrComplex();
 }
 	: ^(SI_CONVERT SI_PREFIX_YOTTA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_YOTTA);
+		si_ref(MR_MATH_SI_PREFIX_YOTTA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_ZETTA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ZETTA);
+		si_ref(MR_MATH_SI_PREFIX_ZETTA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_EXA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_EXA);
+		si_ref(MR_MATH_SI_PREFIX_EXA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_PETA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_PETA);
+		si_ref(MR_MATH_SI_PREFIX_PETA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_TERA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_TERA);
+		si_ref(MR_MATH_SI_PREFIX_TERA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_GIGA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_GIGA);
+		si_ref(MR_MATH_SI_PREFIX_GIGA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_MEGA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MEGA);
+		si_ref(MR_MATH_SI_PREFIX_MEGA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_KILO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_KILO);
+		si_ref(MR_MATH_SI_PREFIX_KILO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_HECTO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_HECTO);
+		si_ref(MR_MATH_SI_PREFIX_HECTO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_DECA) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_DECA);
+		si_ref(MR_MATH_SI_PREFIX_DECA, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_DECI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_DECI);
+		si_ref(MR_MATH_SI_PREFIX_DECI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_CENTI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_CENTI);
+		si_ref(MR_MATH_SI_PREFIX_CENTI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_MILLI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MILLI);
+		si_ref(MR_MATH_SI_PREFIX_MILLI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_MICRO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MICRO);
+		si_ref(MR_MATH_SI_PREFIX_MICRO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_NANO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_NANO);
+		si_ref(MR_MATH_SI_PREFIX_NANO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_PICO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_PICO);
+		si_ref(MR_MATH_SI_PREFIX_PICO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_FEMTO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_FEMTO);
+		si_ref(MR_MATH_SI_PREFIX_FEMTO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_ATTO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ATTO);
+		si_ref(MR_MATH_SI_PREFIX_ATTO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_ZEPTO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ZEPTO);
+		si_ref(MR_MATH_SI_PREFIX_ZEPTO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_YOCTO) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_YOCTO);
+		si_ref(MR_MATH_SI_PREFIX_YOCTO, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_KIBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_KIBI);
+		si_ref(MR_MATH_SI_PREFIX_KIBI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_MEBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_MEBI);
+		si_ref(MR_MATH_SI_PREFIX_MEBI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_GIBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_GIBI);
+		si_ref(MR_MATH_SI_PREFIX_GIBI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_TEBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_TEBI);
+		si_ref(MR_MATH_SI_PREFIX_TEBI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_PEBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_PEBI);
+		si_ref(MR_MATH_SI_PREFIX_PEBI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_EXBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_EXBI);
+		si_ref(MR_MATH_SI_PREFIX_EXBI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_ZEBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_ZEBI);
+		si_ref(MR_MATH_SI_PREFIX_ZEBI, $compl_retv);
 	}
 	| ^(SI_CONVERT SI_PREFIX_YOBI) {
-		$compl_retv->real = si_ref(MR_MATH_SI_PREFIX_YOBI);
+		si_ref(MR_MATH_SI_PREFIX_YOBI, $compl_retv);
 	}
 	;
 
 imaginary_number returns [ComplexPtr compl_retv]
 @init {
-	mrReal numb = 0;
+	ComplexPtr numb;
 	char num_present = 0;
 	$compl_retv = newMrComplex();
-	$compl_retv->real = 0;
 }
 	: ^(IM (
 			real_number {
-				 numb = $real_number.compl_retv->real;
+				 numb = $real_number.compl_retv;
 				 num_present = 1;
 			}
 		)? COMPLEX_UNIT)
 	{
 		if (num_present == 0) {
-			$compl_retv->imag = 1.0;
+			mpfr_set_ui(mpc_imagref($compl_retv), 1, MPFR_RNDN);
 		} else {
-			$compl_retv->imag = numb;
+			mpfr_set(mpc_imagref($compl_retv), mpc_realref(numb), MPFR_RNDN);
 		}
     }
     ;
@@ -328,59 +321,55 @@ real_number returns [ComplexPtr compl_retv]
 dec_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT dec_num) {
         $compl_retv = $dec_num.compl_retv;
-		$compl_retv->real = $compl_retv->real / 100; 
+		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
     };
 	
 hex_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT hex_num) {
         $compl_retv = $hex_num.compl_retv;
-		$compl_retv->real = $compl_retv->real / 100; 
+		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
     };
 	
 oct_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT oct_num) {
         $compl_retv = $oct_num.compl_retv;
-		$compl_retv->real = $compl_retv->real / 100; 
+		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
     };
 	
 bin_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT bin_num) {
         $compl_retv = $bin_num.compl_retv;
-		$compl_retv->real = $compl_retv->real / 100; 
+		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
     };
 
 dec_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
-	$compl_retv->imag = 0.0; 
 }
     : ^(RE FLOAT_NUMBER) {
-    	$compl_retv->real = strToReal ($FLOAT_NUMBER->getText($FLOAT_NUMBER));
+		strToReal ($FLOAT_NUMBER->getText($FLOAT_NUMBER), mpc_realref($compl_retv));
     };
 	
 hex_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
-	$compl_retv->imag = 0.0; 
 }
     : ^(HEX HEX_NUMBER) {
-    	$compl_retv->real = strHexToReal ($HEX_NUMBER->getText($HEX_NUMBER));
+    	strHexToReal ($HEX_NUMBER->getText($HEX_NUMBER), mpc_realref($compl_retv));
     };
 	
 oct_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
-	$compl_retv->imag = 0.0; 
 }
     : ^(OCT OCTAL_NUMBER) {
-    	$compl_retv->real = strOctToReal ($OCTAL_NUMBER->getText($OCTAL_NUMBER));
+    	strOctToReal ($OCTAL_NUMBER->getText($OCTAL_NUMBER), mpc_realref($compl_retv));
     };
 	
 bin_num returns [ComplexPtr compl_retv]
 @init { 
 	$compl_retv = newMrComplex(); 
-	$compl_retv->imag = 0.0; 
 }
     : ^(BIN BINARY_NUMBER) {
-    	$compl_retv->real = strBinToReal ($BINARY_NUMBER->getText($BINARY_NUMBER));
+    	strBinToReal ($BINARY_NUMBER->getText($BINARY_NUMBER), mpc_realref($compl_retv));
     };

@@ -19,141 +19,83 @@
 */
 
 #include "Conversion.h"
-#include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/numeric/conversion/cast.hpp>
-#include <boost/lexical_cast.hpp>
 #include <QLocale>
-#include "Exceptions.h"
+#include <cassert>
 #include "Settings.h"
+#include "math_bridge_globals.h"
 
 using namespace std;
-using namespace boost;
-using namespace boost::math;
 
 namespace mathy_resurrected {
 
-qint8 Conversion::safe_convert_8b(mrReal val, bool& ok) {
-	return safe_convert<qint8>(val, ok);
-}
-
-qint16 Conversion::safe_convert_16b(mrReal val, bool& ok) {
-	return safe_convert<qint8>(val, ok);
-}
-
-qint32 Conversion::safe_convert_32b(mrReal val, bool& ok) {
-	return safe_convert<qint32>(val, ok);
-}
-
-qint64 Conversion::safe_convert_64b(mrReal val, bool& ok) {
-	return safe_convert<qint64>(val, ok);
-}
-
-quint8 Conversion::safe_convert_u8b(mrReal val, bool& ok) {
+quint8 Conversion::safe_convert_u8b(RealConstPtr val, bool& ok) {
 	return safe_convert<quint8>(val, ok);
 }
 
-quint16 Conversion::safe_convert_u16b(mrReal val, bool& ok) {
+quint16 Conversion::safe_convert_u16b(RealConstPtr val, bool& ok) {
 	return safe_convert<quint16>(val, ok);
 }
 
-quint32 Conversion::safe_convert_u32b(mrReal val, bool& ok) {
+quint32 Conversion::safe_convert_u32b(RealConstPtr val, bool& ok) {
 	return safe_convert<quint32>(val, ok);
 }
 
-quint64 Conversion::safe_convert_u64b(mrReal val, bool& ok) {
+quint64 Conversion::safe_convert_u64b(RealConstPtr val, bool& ok) {
 	return safe_convert<quint64>(val, ok);
 }
 
-template <class intT>
-intT Conversion::safe_convert(mrReal val, bool& ok) {
-	intT retv;
-//	try {
-// 		retv = numeric_cast<intT>(val);
-// 		ok = true;
-// 	}
-// 	catch (bad_numeric_cast&) {
-// 		ok = false;
-// 	}
-	retv = val; ok = true;
+/** @todo Currently always sets @a ok to true. */
+template <class unsignedIntegerType>
+unsignedIntegerType Conversion::safe_convert(RealConstPtr val, bool& ok) {
+	unsignedIntegerType retv, tmp;
+	mpz_t intOut, intTemp;
+
+	mpz_init(intOut);
+	mpfr_get_z(intOut, val, MPFR_RNDN);
+
+	// This simulates cyclic arithmetic of fixed precision integers
+	tmp = -1;
+	mpz_init_set_ui(intTemp, tmp);
+	mpz_mod(intOut, intOut, intTemp);
+
+	retv = static_cast<unsignedIntegerType>(mpz_get_ui(intOut));
+
+	mpz_clear(intOut);
+	mpz_clear(intTemp);
+	ok = true;
 	return retv;
 }
 
-mrReal Conversion::strToReal (const QByteArray& strin) {
-	mrReal retv;
-	bool okFlag;
-	retv = strin.toDouble(&okFlag);
+void Conversion::strToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 10, MPFR_RNDN);
+}
 
-	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + 
-			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
-	}
+void Conversion::strHexToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 16, MPFR_RNDN);
+}
+
+void Conversion::strOctToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 8, MPFR_RNDN);
+}
+
+void Conversion::strBinToReal (const QByteArray& strin, RealPtr dest) {
+	assert(dest != 0);
+	mpfr_set_str(dest, strin.constData(), 2, MPFR_RNDN);
+}
+
+bool Conversion::isBelowZeroTreshold(RealConstPtr val, int treshExp) {
+	RealPtr tres = BridgeAPIGlobals::newMrReal();
+	bool retv;
+	mpfr_set_ui(tres, 10, MPFR_RNDN);
+	mpfr_pow_si(tres, tres, treshExp, MPFR_RNDN);
+	retv = mpfr_cmpabs(val, tres) <= 0;
 	return retv;
 }
 
-mrReal Conversion::strHexToReal (const QByteArray& strin) {
-	mrReal retv;
-	quint64 tempRetv;
-	bool okFlag;
-	tempRetv = strin.toULongLong(&okFlag, 16);
-
-	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + 
-			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
-	}
-	try {
-		retv = numeric_cast<mrReal>(tempRetv);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + 
-			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
-	}
-
-	return retv;
-}
-
-mrReal Conversion::strOctToReal (const QByteArray& strin) {
-	mrReal retv;
-	quint64 tempRetv;
-	bool okFlag;
-	tempRetv = strin.toULongLong(&okFlag, 8);
-
-	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + 
-			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
-	}
-	try {
-		retv = numeric_cast<mrReal>(tempRetv);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + 
-			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
-	}
-
-	return retv;
-}
-
-mrReal Conversion::strBinToReal (const QByteArray& strin) {
-	mrReal retv;
-	quint64 tempRetv;
-	bool okFlag;
-	tempRetv = strin.toULongLong(&okFlag, 2);
-
-	if (!okFlag) {
-		throw NumericConversionError("Input conversion error: " + 
-			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
-	}
-	try {
-		retv = numeric_cast<mrReal>(tempRetv);
-	}
-	catch (bad_numeric_cast&) {
-		throw NumericConversionError("Input range error: " + 
-			QString::fromUtf8(strin.constData(), strin.length()).toStdString());
-	}
-
-	return retv;
-}
-
-QString Conversion::toString(NumberBase base, const Settings& sett, const Complex& num) {
+const QString Conversion::toString(NumberBase base, const Settings& sett, const ComplexConstPtr& num) {
 	QString im_sign;
 	QString re_str, im_str;
 	bool add_i = false;
@@ -161,29 +103,32 @@ QString Conversion::toString(NumberBase base, const Settings& sett, const Comple
 
 	// If number is close enough to zero, we make it zero 
 	// explicitly (but for display purposes only)
-	mrReal im_disp = num.imag, re_disp = num.real;
-	if (abs(im_disp) < pow(10.0, sett.zeroTresholdExp())) {
-		im_disp = 0;
+	RealPtr im_disp, re_disp;
+	re_disp = BridgeAPIGlobals::newMrReal();
+	im_disp = BridgeAPIGlobals::newMrReal();
+	mpfr_set(re_disp, mpc_realref(num), MPFR_RNDN);
+	mpfr_set(im_disp, mpc_imagref(num), MPFR_RNDN);
+
+	if (isBelowZeroTreshold(im_disp, sett.zeroTresholdExp())) {
+		mpfr_set_ui(im_disp, 0, MPFR_RNDN);
 	}
-	if (abs(re_disp) < pow(10.0, sett.zeroTresholdExp())) {
-		re_disp = 0;
+	if (isBelowZeroTreshold(re_disp, sett.zeroTresholdExp())) {
+		mpfr_set_ui(re_disp, 0, MPFR_RNDN);
 	}
 
 	// Formating output of imaginary part
-	if ((boost::math::fpclassify)(im_disp) != FP_ZERO) {
-		// Display as decimal
+	if (mpfr_sgn(im_disp) != 0) {
 		if (base == DECIMAL) {
-			if (im_disp > 0) {
+			if (mpfr_sgn(im_disp) > 0) {
 				im_sign = " + ";
-			} else { // if (imag < 0) {
+			} else {
 				im_sign = " - ";
 			}
-			mrReal tmp = abs(im_disp);
-			im_str = numberToString(base, sett, tmp);
+			mpfr_abs(im_disp, im_disp, MPFR_RNDN);
 		} else { // Display as any other base
 			im_sign = " + ";
-			im_str = numberToString(base, sett, im_disp);
 		}
+		im_str = numberToString(base, sett, im_disp);
 		add_i = true;
 	}
 	re_str = numberToString(base, sett, re_disp);
@@ -191,22 +136,22 @@ QString Conversion::toString(NumberBase base, const Settings& sett, const Comple
 	if (add_i) {
 		retv +=  im_sign + im_str + "i";
 	}
+
 	return retv;
 }
 
-QString Conversion::numberToString(NumberBase base, const Settings& sett, mrReal val) {
+const QString Conversion::numberToString(NumberBase base, const Settings& sett, RealConstPtr val) {
 	QLocale loc = QLocale::c();
 	bool ok_flag;
 	quint64 tmpI64;
 	quint32 tmpI32;
 	quint16 tmpI16;
 	quint8 tmpI8;
-	QString bho_sign, bho_prefix, retv;
-// 	if (val < 0) {
-// 		bho_sign = "-";
-// 	}
-//	mrReal absVal = abs(val);
-	mrReal absVal = val;
+	QString bho_prefix, retv;
+	RealPtr absVal = BridgeAPIGlobals::newMrReal();
+	mpfr_set(absVal, val, MPFR_RNDN);
+	mpfr_abs(absVal, absVal, MPFR_RNDN);
+
 	switch (base) {
 		case BINARY:
 			switch (sett.calculationBitWidth()) {
@@ -258,7 +203,6 @@ QString Conversion::numberToString(NumberBase base, const Settings& sett, mrReal
 			if (sett.showBasePrefix()) {
 				retv.insert(0, "0b");
 			}
-			retv.insert(0, bho_sign);
 			break;
 		case HEXADECIMAL:
 			switch (sett.calculationBitWidth()) {
@@ -310,7 +254,6 @@ QString Conversion::numberToString(NumberBase base, const Settings& sett, mrReal
 			if (sett.showBasePrefix()) {
 				retv.insert(0, "0x");
 			}
-			retv.insert(0, bho_sign);
 			break;
 		case OCTAL:
 			switch (sett.calculationBitWidth()) {
@@ -350,17 +293,19 @@ QString Conversion::numberToString(NumberBase base, const Settings& sett, mrReal
 			if (sett.showBasePrefix()) {
 				retv.insert(0, "0");
 			}
-			retv.insert(0, bho_sign);
 			break;
 		case DECIMAL:
 		default:
+			char dec[100]; // 100 should be more than enough
 			if (sett.outputFormat() == Settings::AUTOMATIC) { 
-				retv = loc.toString(val, 'g', sett.precision());
+				mpfr_snprintf(&dec[0], 100, "%.*RNg", sett.precision(), absVal);
 			} else if (sett.outputFormat() == Settings::SCIENTIFFIC) {
-				retv = loc.toString(val, 'e', sett.precision());
+				mpfr_snprintf(&dec[0], 100, "%.*RNe", sett.precision(), absVal);
 			} else if (sett.outputFormat() == Settings::FIXED) {
-				retv = loc.toString(val, 'f', sett.precision());		
+				mpfr_snprintf(&dec[0], 100, "%.*RNf", sett.precision(), absVal);	
 			}
+
+			retv = QString::fromAscii(&dec[0]);
 
 			// Post processing
 
@@ -369,24 +314,29 @@ QString Conversion::numberToString(NumberBase base, const Settings& sett, mrReal
 			// character for decimal point representation is 
 			// not likely to be used for that purpose in any 
 			// existing locale. 
-			retv.replace(loc.decimalPoint(), internalDecimalPoint());
+			int decPointPos = retv.lastIndexOf(loc.decimalPoint());
+			if (decPointPos != -1) {
+				retv[decPointPos] = internalDecimalPoint();
+			} else {
+				decPointPos = retv.size();
+			}
 
 			// Post processing group separator. 
-			if (!sett.outputDigitGrouping()) {
-				retv.remove(loc.groupSeparator());
-			} else {
-				retv.replace(loc.groupSeparator(), sett.digitGroupingCharacterAsChar());
+			if (sett.outputDigitGrouping() && sett.outputFormat() == Settings::FIXED) {
+				for (decPointPos -= 3; decPointPos > 0; decPointPos -= 3) {
+					retv.insert(decPointPos, sett.digitGroupingCharacterAsChar());
+				} 
 			}
 
 			// Post processing decimal point. 
-			retv.replace(internalDecimalPoint(), sett.decimalPointAsChar());
-
+			decPointPos = retv.lastIndexOf(internalDecimalPoint());
+			if (decPointPos != -1) {
+				retv[decPointPos] = sett.decimalPointAsChar();
+			}
 			break;
 	}
-
 	return retv;
 }
-
 
 } // namespace mathy_resurrected
 

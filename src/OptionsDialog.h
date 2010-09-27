@@ -33,15 +33,15 @@ class OptionsDialog : public QFrame, private Ui::MathyResurrectedOptions {
 	Q_OBJECT
 
 public:
-	/** Ctor. Throws invalid_srgument if @a settings is 0. 
-	@param [in] settings - Settings object that is used as container for dialog settings.
-	Dialog doesn't own this object, it only displays it and manipulates it according to user 
-	actions. */
+	/**
+	@param [in] settings - Settings object that is used as container
+	for dialog settings. Dialog doesn't own this object, it only displays 
+	it and manipulates it according to user actions. */
 	OptionsDialog(QWidget* parent = 0, Settings* settings = 0);
 	virtual ~OptionsDialog();
 
 public slots: 
-	void connectSettings(Settings* settings);
+	void setSettingsObject(Settings* settings);
 
 private slots:
 	void on_radioButtonDecSepSystem_clicked();

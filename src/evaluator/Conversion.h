@@ -33,34 +33,32 @@ class Settings;
 string representation of numeric types*/
 class Conversion {
 public:
-	static qint8 safe_convert_8b(mrReal val, bool& ok);
-	static qint16 safe_convert_16b(mrReal val, bool& ok);
-	static qint32 safe_convert_32b(mrReal val, bool& ok);
-	static qint64 safe_convert_64b(mrReal val, bool& ok);
-	static quint8 safe_convert_u8b(mrReal val, bool& ok);
-	static quint16 safe_convert_u16b(mrReal val, bool& ok);
-	static quint32 safe_convert_u32b(mrReal val, bool& ok);
-	static quint64 safe_convert_u64b(mrReal val, bool& ok);
+	static quint8 safe_convert_u8b(RealConstPtr val, bool& ok);
+	static quint16 safe_convert_u16b(RealConstPtr val, bool& ok);
+	static quint32 safe_convert_u32b(RealConstPtr val, bool& ok);
+	static quint64 safe_convert_u64b(RealConstPtr val, bool& ok);
 
-	static mrReal strToReal(const QByteArray& str);
-	static mrReal strHexToReal(const QByteArray& str);
-	static mrReal strOctToReal(const QByteArray& str);
-	static mrReal strBinToReal(const QByteArray& str);
+	static void strToReal(const QByteArray& str, RealPtr dest);
+	static void strHexToReal(const QByteArray& str, RealPtr dest);
+	static void strOctToReal(const QByteArray& str, RealPtr dest);
+	static void strBinToReal(const QByteArray& str, RealPtr dest);
 
 	enum NumberBase {
 		DECIMAL, HEXADECIMAL, BINARY, OCTAL
 	};
-	static QString toString(NumberBase base, const Settings& sett, const Complex& num);
+	static const QString toString(NumberBase base, const Settings& sett, const ComplexConstPtr& num);
 
 	/*! This should return same character that was used in grammar */
-	static QChar internalDecimalPoint() { return QChar('@'); }
+	static const QChar internalDecimalPoint() { return QChar('@'); }
 	/*! This should return same character that was used in grammar */
-	static QChar internalArgSeparator() { return QChar('#'); }
+	static const QChar internalArgSeparator() { return QChar('#'); }
 
 private:
-	static QString numberToString(NumberBase base, const Settings& sett, mrReal val);
-	template <class intT>
-	static intT safe_convert(mrReal val, bool& ok);
+	static const QString numberToString(NumberBase base, const Settings& sett, RealConstPtr val);
+	template <class unsignedIntegerType>
+	static unsignedIntegerType safe_convert(RealConstPtr val, bool& ok);
+
+	static bool isBelowZeroTreshold(RealConstPtr val, int treshExp);
 };
 
 } // namespace mathy_resurrected

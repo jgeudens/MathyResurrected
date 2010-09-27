@@ -18,23 +18,22 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*! @file
-Wrapper API for C++ complex math. ANTLR curently generates parsers
-for C only so this API is used to comunicate ANTLR generated,
-C parser/lexer/evaluator with C++ std::complex */
+/*! @file */
 
 #ifndef MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS
 #define MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS
 
 #include <vector>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include "math_bridge_API_types.h"
 
 /** Structure that holds global variables needed by math bridge API. */
 class BridgeAPIGlobals {
 public:
+	~BridgeAPIGlobals();
 	static ComplexPtr newMrComplex();
 	static void clearComplexFactory();
+	static RealPtr newMrReal();
+	static void clearRealFactory();
 	
 	typedef struct {
 		unsigned int char_index;
@@ -47,26 +46,31 @@ public:
 	static void clearLexerErrors();
 	static const LexerErrorsCollection& getLexerErrors();
 
-	static void setAns(mrReal real, mrReal imag);
-	static ComplexConstPtr getAns();
+	static void setAns(const Real& real, const Real& imag);
+	static void getAns(ComplexPtr dest);
 
 	static unsigned char bitWidth();
 	static void setBitWidth(unsigned char nw);
+
+	static const int NUMERIC_PRECISION;
 
 private:
 	BridgeAPIGlobals();
 	static BridgeAPIGlobals& getGlobals();
 
+	typedef std::vector<ComplexPtr> ComplexVector;
+	typedef std::vector<RealPtr> RealVector;
 	/*! Data storage for factory produced objects. */
-	std::vector< boost::shared_ptr< Complex > > complexFactoryData;
+	ComplexVector itsComplexFactoryData;
+	RealVector itsRealFactoryData;
 
 	/*! All lexer errors are collected here during lexing phase. After 
 	that and before parser is invoked, this can be used to generate error 
 	message. */
-	LexerErrorsCollection lexerErrorsCollection;
+	LexerErrorsCollection itsLexerErrorsCollection;
 
-	Complex ans;
-	unsigned char bit_width;
+	Complex itsAns;
+	unsigned char itsBitWidth;
 };
 
 #endif // MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS

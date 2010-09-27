@@ -49,6 +49,9 @@ public:
 	enum ArgumentSeparatorType { 
 		ARG_SEPARATOR_COLON, ARG_SEPARATOR_SEMICOLON, ARG_SEPARATOR_COMA 
 	};
+	// This is bit width for calculations involving bases other than 
+	// decimal. Decimal calculations are always preformed using 
+	// BridgeAPIGlobals::NUMERIC_PRECISION
 	enum CalculationBitWidth {
 		BW8 = 8, BW16 = 16, BW32 = 32, BW64 = 64
 	};
