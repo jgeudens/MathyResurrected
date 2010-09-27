@@ -227,7 +227,7 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 					break;
 			}
 			if (sett.outputDigitGrouping()) {
-				insertFromBack(retv, retv.length(), 4, ' ');
+				insertFromBack(retv, retv.length(), 2, ' ');
 				if (sett.showBasePrefix()) {
 					retv.insert(0, "0x ");
 				}
@@ -242,22 +242,34 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 				case Settings::BW64:
 					tmpI64 = convert_u64b(absVal);
 					retv += QString::number(tmpI64, 8);
+					if (sett.showLeadingZeroesOct()) {
+						retv = retv.rightJustified(48, '0');
+					}
 					break;
 				case Settings::BW32:
 					tmpI32 = convert_u32b(absVal);
 					retv += QString::number(tmpI32, 8);
+					if (sett.showLeadingZeroesOct()) {
+						retv = retv.rightJustified(24, '0');
+					}
 					break;
 				case Settings::BW16:
 					tmpI16 = convert_u16b(absVal);
 					retv += QString::number(tmpI16, 8);
+					if (sett.showLeadingZeroesOct()) {
+						retv = retv.rightJustified(12, '0');
+					}
 					break;
 				case Settings::BW8:
 					tmpI8 = convert_u8b(absVal);
 					retv += QString::number(tmpI8, 8);
+					if (sett.showLeadingZeroesOct()) {
+						retv = retv.rightJustified(6, '0');
+					}
 					break;
 			}
 			if (sett.outputDigitGrouping()) {
-				insertFromBack(retv, retv.length(), 3, ' ');
+				insertFromBack(retv, retv.length(), 6, ' ');
 				if (sett.showBasePrefix()) {
 					retv.insert(0, "0 ");
 				}

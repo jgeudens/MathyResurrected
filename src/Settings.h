@@ -73,6 +73,7 @@ public:
 	static bool defaultShowBasePrefix() { return true; }
 	static bool defaultShowLeadingZeroesBin() { return true; }
 	static bool defaultShowLeadingZeroesHex() { return true; }
+	static bool defaultShowLeadingZeroesOct() { return true; }
 	static CalculationBitWidth defaultCalculationBitWidth() { return BW16; }
 
 	static QChar systemDecimalPoint();
@@ -99,6 +100,7 @@ public:
 	bool showBasePrefix() const { return itsFlags.itsShowBasePrefix; }
 	bool showLeadingZeroesBin() const { return itsFlags.itsShowLeadingZeroesBin; }
 	bool showLeadingZeroesHex() const { return itsFlags.itsShowLeadingZeroesHex; }
+	bool showLeadingZeroesOct() const { return itsFlags.itsShowLeadingZeroesOct; }
 	CalculationBitWidth calculationBitWidth() const { return itsCalculationBitWidth; }
 
 	static QString keyNameDecimalPoint() {return QString("MathyResurrected/DecimalPoint"); }
@@ -118,6 +120,7 @@ public:
 	static QString keyNameShowBasePrefix() {return QString("MathyResurrected/OutputBaseShowPrefix"); }
 	static QString keyNameShowLeadingZeroesBin() {return QString("MathyResurrected/ShowLeadingZeroesBin"); }
 	static QString keyNameShowLeadingZeroesHex() {return QString("MathyResurrected/ShowLeadingZeroesHex"); }
+	static QString keyNameShowLeadingZeroesOct() {return QString("MathyResurrected/ShowLeadingZeroesOct"); }
 	static QString keyNameCalculationBitWidth() {return QString("MathyResurrected/BitWidth"); }
 
 public Q_SLOTS:
@@ -138,6 +141,7 @@ public Q_SLOTS:
 	void setShowBasePrefix(bool newVal);
 	void setShowLeadingZeroesBin(bool newVal);
 	void setShowLeadingZeroesHex(bool newVal);
+	void setShowLeadingZeroesOct(bool newVal);
 	void setCalculationBitWidth(CalculationBitWidth newVal);
 
 	void setDefaults();
@@ -165,6 +169,7 @@ private:
 		bool itsShowBasePrefix : 1;
 		bool itsShowLeadingZeroesBin : 1;
 		bool itsShowLeadingZeroesHex : 1;
+		bool itsShowLeadingZeroesOct : 1;
 	};
 	Flags itsFlags;
 };

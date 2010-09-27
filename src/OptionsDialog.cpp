@@ -106,17 +106,14 @@ void OptionsDialog::on_checkBoxDecOut_clicked(bool flag) {
 	itsSettings->setShowDecOutput(flag);
 }
 
-void OptionsDialog::on_checkBoxOctOut_clicked(bool flag) { 
-	itsSettings->setShowOctOutput(flag);
-	setBaseOptionsEnabledState();
-}
-
 void OptionsDialog::setBaseOptionsEnabledState() {
 	bool showOtherBases = itsSettings == 0 ? true :
 		itsSettings->showBinOutput() ||
 		itsSettings->showHexOutput() ||
 		itsSettings->showOctOutput();
 	groupBoxBW->setEnabled(showOtherBases);
+	checkBoxShowBasePrefix->setEnabled(showOtherBases);
+	checkBoxShowLeadingZerosOct->setEnabled(showOtherBases);
 	checkBoxShowLeadingZerosHex->setEnabled(showOtherBases);
 	checkBoxShowLeadingZerosBin->setEnabled(showOtherBases);
 }
@@ -128,6 +125,11 @@ void OptionsDialog::on_checkBoxHexOut_clicked(bool flag) {
 
 void OptionsDialog::on_checkBoxBinOut_clicked(bool flag) { 
 	itsSettings->setShowBinOutput(flag);
+	setBaseOptionsEnabledState();
+}
+
+void OptionsDialog::on_checkBoxOctOut_clicked(bool flag) { 
+	itsSettings->setShowOctOutput(flag);
 	setBaseOptionsEnabledState();
 }
 

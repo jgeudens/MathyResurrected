@@ -104,6 +104,7 @@ void Settings::setDefaults() {
 	itsFlags.itsShowBasePrefix = defaultShowBasePrefix();
 	itsFlags.itsShowLeadingZeroesBin = defaultShowLeadingZeroesBin();
 	itsFlags.itsShowLeadingZeroesHex = defaultShowLeadingZeroesHex();
+	itsFlags.itsShowLeadingZeroesOct = defaultShowLeadingZeroesOct();
 	itsCalculationBitWidth = defaultCalculationBitWidth();
 }
 
@@ -178,6 +179,7 @@ void Settings::writeSettings(QSettings* dest) const {
 		dest->setValue(keyNameShowBasePrefix(), itsFlags.itsShowBasePrefix);
 		dest->setValue(keyNameShowLeadingZeroesBin(), itsFlags.itsShowLeadingZeroesBin);
 		dest->setValue(keyNameShowLeadingZeroesHex(), itsFlags.itsShowLeadingZeroesHex);
+		dest->setValue(keyNameShowLeadingZeroesOct(), itsFlags.itsShowLeadingZeroesOct);
 		dest->setValue(keyNameCalculationBitWidth(), itsCalculationBitWidth);
 	}
 }
@@ -283,6 +285,8 @@ void Settings::readSettings(const QSettings* settings) {
 			keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
 		itsFlags.itsShowLeadingZeroesBin = settings->value(
 			keyNameShowLeadingZeroesBin(), defaultShowLeadingZeroesBin()).toBool();
+		itsFlags.itsShowLeadingZeroesOct = settings->value(
+			keyNameShowLeadingZeroesOct(), defaultShowLeadingZeroesOct()).toBool();
 		itsFlags.itsShowLeadingZeroesHex = settings->value(
 			keyNameShowLeadingZeroesHex(), defaultShowLeadingZeroesHex()).toBool();
 	}
@@ -344,6 +348,9 @@ void Settings::setShowLeadingZeroesBin(bool newVal) {
 }
 void Settings::setShowLeadingZeroesHex(bool newVal) {
 	itsFlags.itsShowLeadingZeroesHex = newVal;
+}
+void Settings::setShowLeadingZeroesOct(bool newVal) {
+	itsFlags.itsShowLeadingZeroesOct = newVal;
 }
 void Settings::setCalculationBitWidth(CalculationBitWidth newVal) {
 	itsCalculationBitWidth = newVal;
