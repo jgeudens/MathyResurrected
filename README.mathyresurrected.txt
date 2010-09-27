@@ -55,7 +55,7 @@ Features
     - Configurable thousands separator
     - Configurable result format
     - SI and binary unit prefixes
-    - binary, hexadecimal nad octal input and output
+    - binary, hexadecimal and octal input and output
 
 ===========================================================================
                              Numeric input
@@ -134,8 +134,8 @@ symbol       long symbol      description                        usage
 	
 	Operator precedence is same as in C/C++. For common operators like +, -, etc.
 this is also the precedence that is well known outside of programing world. 
-	Exception are operators that are not present( orcommon) in either C/C++ 
-(nand, nor, xnor) or in the non-programing world. Because of that following table
+	Exception are operators that are not present(or common) in either C/C++ 
+(nand, nor, xnor) or in the non-programing world. Because of that, following table
 shows operator precedence:
 
             operator            precedence            associativity
@@ -152,7 +152,7 @@ shows operator precedence:
     Higher precedence means lower order of evaluation: if operator op1 has 
 precedence 3 and operator op2 precedence 4, op1 will be evaluated before op2.
 	It can be seen that exponentiation and some bitwise operators not existing
-in C/C++ grammar have been added. 
+in C/C++ grammar have been added to this table. 
 	
 ===========================================================================
                        SI and binary unit prefixes
@@ -295,17 +295,6 @@ Miscellaneous functions
                 Re(x) = r and Im(x) = t;
 				
 				
-Bitwise functions
-=================
-
-    All these functions are implemented to work with real part of expression only.
-This means that for any function f from this group, f(x) = f(Re(x)) no matter what
-the value of Im{x} is.
-
-    nand(x,y)   - bitwise nand: not(x and y)
-    nor(x,y)    - bitwise nor: not(x or y)
-    xnor(x,y)   - bitwise xnor: not(x xor y)
-
 ===========================================================================
                              Variables
 ===========================================================================
