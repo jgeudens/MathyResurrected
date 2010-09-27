@@ -184,8 +184,15 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 					}
 					break;
 			}
-			if (sett.showBasePrefix()) {
-				retv.insert(0, "0b");
+			if (sett.outputDigitGrouping()) {
+				insertFromBack(retv, retv.length(), 8, ' ');
+				if (sett.showBasePrefix()) {
+					retv.insert(0, "0b ");
+				}
+			} else {
+				if (sett.showBasePrefix()) {
+					retv.insert(0, "0b");
+				}
 			}
 			break;
 		case HEXADECIMAL:
@@ -219,8 +226,15 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 					}
 					break;
 			}
-			if (sett.showBasePrefix()) {
-				retv.insert(0, "0x");
+			if (sett.outputDigitGrouping()) {
+				insertFromBack(retv, retv.length(), 4, ' ');
+				if (sett.showBasePrefix()) {
+					retv.insert(0, "0x ");
+				}
+			} else {
+				if (sett.showBasePrefix()) {
+					retv.insert(0, "0x");
+				}
 			}
 			break;
 		case OCTAL:
@@ -242,8 +256,15 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 					retv += QString::number(tmpI8, 8);
 					break;
 			}
-			if (sett.showBasePrefix()) {
-				retv.insert(0, "0");
+			if (sett.outputDigitGrouping()) {
+				insertFromBack(retv, retv.length(), 3, ' ');
+				if (sett.showBasePrefix()) {
+					retv.insert(0, "0 ");
+				}
+			} else {
+				if (sett.showBasePrefix()) {
+					retv.insert(0, "0");
+				}
 			}
 			break;
 		case DECIMAL:
@@ -289,7 +310,7 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 }
 
 void Conversion::insertFromBack(QString& dest, int startPos, int step, const QChar& what) {
-	if (startPos >= 0 && startPos < dest.length()) {
+	if (startPos >= 0 && startPos <= dest.length()) {
 		for (startPos -= step; startPos > 0; startPos -= step) {
 			dest.insert(startPos, what);
 		}
