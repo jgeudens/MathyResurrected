@@ -33,10 +33,10 @@ class Settings;
 string representation of numeric types*/
 class Conversion {
 public:
-	static quint8 safe_convert_u8b(RealConstPtr val, bool& ok);
-	static quint16 safe_convert_u16b(RealConstPtr val, bool& ok);
-	static quint32 safe_convert_u32b(RealConstPtr val, bool& ok);
-	static quint64 safe_convert_u64b(RealConstPtr val, bool& ok);
+	static quint8 convert_u8b(RealConstPtr val);
+	static quint16 convert_u16b(RealConstPtr val);
+	static quint32 convert_u32b(RealConstPtr val);
+	static quint64 convert_u64b(RealConstPtr val);
 
 	static void strToReal(const QByteArray& str, RealPtr dest);
 	static void strHexToReal(const QByteArray& str, RealPtr dest);
@@ -56,9 +56,10 @@ public:
 private:
 	static const QString numberToString(NumberBase base, const Settings& sett, RealConstPtr val);
 	template <class unsignedIntegerType>
-	static unsignedIntegerType safe_convert(RealConstPtr val, bool& ok);
+	static unsignedIntegerType convert(RealConstPtr val);
 
 	static bool isBelowZeroTreshold(RealConstPtr val, int treshExp);
+	static void insertFromBack(QString& dest, int startPos, int step, const QChar& what); 
 };
 
 } // namespace mathy_resurrected

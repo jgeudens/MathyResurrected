@@ -28,25 +28,27 @@ using namespace std;
 
 namespace mathy_resurrected {
 
-quint8 Conversion::safe_convert_u8b(RealConstPtr val, bool& ok) {
-	return safe_convert<quint8>(val, ok);
+quint8 Conversion::convert_u8b(RealConstPtr val) {
+	return convert<quint8>(val);
 }
 
-quint16 Conversion::safe_convert_u16b(RealConstPtr val, bool& ok) {
-	return safe_convert<quint16>(val, ok);
+quint16 Conversion::convert_u16b(RealConstPtr val) {
+	return convert<quint16>(val);
 }
 
-quint32 Conversion::safe_convert_u32b(RealConstPtr val, bool& ok) {
-	return safe_convert<quint32>(val, ok);
+quint32 Conversion::convert_u32b(RealConstPtr val) {
+	return convert<quint32>(val);
 }
 
-quint64 Conversion::safe_convert_u64b(RealConstPtr val, bool& ok) {
-	return safe_convert<quint64>(val, ok);
+quint64 Conversion::convert_u64b(RealConstPtr val) {
+	return convert<quint64>(val);
 }
 
-/** @todo Currently always sets @a ok to true. */
+/** Converts Real number to unsigned, fixed precision integer. 
+Rounds to nearest integer first. If @a val is to be to fit into
+return value, cyclic arithmetic of 2's complement is simulated */
 template <class unsignedIntegerType>
-unsignedIntegerType Conversion::safe_convert(RealConstPtr val, bool& ok) {
+unsignedIntegerType Conversion::convert(RealConstPtr val) {
 	unsignedIntegerType retv, tmp;
 	mpz_t intOut, intTemp;
 
@@ -62,7 +64,6 @@ unsignedIntegerType Conversion::safe_convert(RealConstPtr val, bool& ok) {
 
 	mpz_clear(intOut);
 	mpz_clear(intTemp);
-	ok = true;
 	return retv;
 }
 
@@ -142,7 +143,6 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 
 const QString Conversion::numberToString(NumberBase base, const Settings& sett, RealConstPtr val) {
 	QLocale loc = QLocale::c();
-	bool ok_flag;
 	quint64 tmpI64;
 	quint32 tmpI32;
 	quint16 tmpI16;
@@ -156,47 +156,31 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		case BINARY:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 2);
-						if (sett.showLeadingZeroesBin()) {
-							retv = retv.rightJustified(64, '0');
-						}
-					} else {
-						retv = "64b int range error";
+					tmpI64 = convert_u64b(absVal);
+					retv += QString::number(tmpI64, 2);
+					if (sett.showLeadingZeroesBin()) {
+						retv = retv.rightJustified(64, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 2);
-						if (sett.showLeadingZeroesBin()) {
-							retv = retv.rightJustified(32, '0');
-						}
-					} else {
-						retv = "32b int range error";
+					tmpI32 = convert_u32b(absVal);
+					retv += QString::number(tmpI32, 2);
+					if (sett.showLeadingZeroesBin()) {
+						retv = retv.rightJustified(32, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 2);
-						if (sett.showLeadingZeroesBin()) {
-							retv = retv.rightJustified(16, '0');
-						}
-					} else {
-						retv = "16b int range error";
+					tmpI16 = convert_u16b(absVal);
+					retv += QString::number(tmpI16, 2);
+					if (sett.showLeadingZeroesBin()) {
+						retv = retv.rightJustified(16, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 2);
-						if (sett.showLeadingZeroesBin()) {
-							retv = retv.rightJustified(8, '0');
-						}
-					} else {
-						retv = "8b int range error";
+					tmpI8 = convert_u8b(absVal);
+					retv += QString::number(tmpI8, 2);
+					if (sett.showLeadingZeroesBin()) {
+						retv = retv.rightJustified(8, '0');
 					}
 					break;
 			}
@@ -207,47 +191,31 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		case HEXADECIMAL:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 16).toUpper();
-						if (sett.showLeadingZeroesHex()) {
-							retv = retv.rightJustified(16, '0');
-						}
-					} else {
-						retv = "64b int range error";
+					tmpI64 = convert_u64b(absVal);
+					retv += QString::number(tmpI64, 16).toUpper();
+					if (sett.showLeadingZeroesHex()) {
+						retv = retv.rightJustified(16, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 16).toUpper();
-						if (sett.showLeadingZeroesHex()) {
-							retv = retv.rightJustified(8, '0');
-						}
-					} else {
-						retv = "32b int range error";
+					tmpI32 = convert_u32b(absVal);
+					retv += QString::number(tmpI32, 16).toUpper();
+					if (sett.showLeadingZeroesHex()) {
+						retv = retv.rightJustified(8, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 16).toUpper();
-						if (sett.showLeadingZeroesHex()) {
-							retv = retv.rightJustified(4, '0');
-						}
-					} else {
-						retv = "16b int range error";
+					tmpI16 = convert_u16b(absVal);
+					retv += QString::number(tmpI16, 16).toUpper();
+					if (sett.showLeadingZeroesHex()) {
+						retv = retv.rightJustified(4, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 16).toUpper();
-						if (sett.showLeadingZeroesHex()) {
-							retv = retv.rightJustified(2, '0');
-						}
-					} else {
-						retv = "8b int range error";
+					tmpI8 = convert_u8b(absVal);
+					retv += QString::number(tmpI8, 16).toUpper();
+					if (sett.showLeadingZeroesHex()) {
+						retv = retv.rightJustified(2, '0');
 					}
 					break;
 			}
@@ -258,36 +226,20 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		case OCTAL:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 8);
-					} else {
-						retv = "64b int range error";
-					}
+					tmpI64 = convert_u64b(absVal);
+					retv += QString::number(tmpI64, 8);
 					break;
 				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 8);
-					} else {
-						retv = "32b int range error";
-					}
+					tmpI32 = convert_u32b(absVal);
+					retv += QString::number(tmpI32, 8);
 					break;
 				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 8);
-					} else {
-						retv = "16b int range error";
-					}
+					tmpI16 = convert_u16b(absVal);
+					retv += QString::number(tmpI16, 8);
 					break;
 				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 8);
-					} else {
-						retv = "8b int range error";
-					}
+					tmpI8 = convert_u8b(absVal);
+					retv += QString::number(tmpI8, 8);
 					break;
 			}
 			if (sett.showBasePrefix()) {
@@ -323,9 +275,7 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 
 			// Post processing group separator. 
 			if (sett.outputDigitGrouping() && sett.outputFormat() == Settings::FIXED) {
-				for (decPointPos -= 3; decPointPos > 0; decPointPos -= 3) {
-					retv.insert(decPointPos, sett.digitGroupingCharacterAsChar());
-				} 
+				insertFromBack(retv, decPointPos, 3, sett.digitGroupingCharacterAsChar());
 			}
 
 			// Post processing decimal point. 
@@ -336,6 +286,14 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 			break;
 	}
 	return retv;
+}
+
+void Conversion::insertFromBack(QString& dest, int startPos, int step, const QChar& what) {
+	if (startPos >= 0 && startPos < dest.length()) {
+		for (startPos -= step; startPos > 0; startPos -= step) {
+			dest.insert(startPos, what);
+		}
+	} 
 }
 
 } // namespace mathy_resurrected
