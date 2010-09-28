@@ -272,33 +272,33 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 					tmpI64 = convert_u64b(val);
 					retv += QString::number(tmpI64, 8);
 					if (sett.showLeadingZeroesOct()) {
-						retv = retv.rightJustified(48, '0');
+						retv = retv.rightJustified(24, '0');
 					}
 					break;
 				case Settings::BW32:
 					tmpI32 = convert_u32b(val);
 					retv += QString::number(tmpI32, 8);
 					if (sett.showLeadingZeroesOct()) {
-						retv = retv.rightJustified(24, '0');
+						retv = retv.rightJustified(12, '0');
 					}
 					break;
 				case Settings::BW16:
 					tmpI16 = convert_u16b(val);
 					retv += QString::number(tmpI16, 8);
 					if (sett.showLeadingZeroesOct()) {
-						retv = retv.rightJustified(12, '0');
+						retv = retv.rightJustified(6, '0');
 					}
 					break;
 				case Settings::BW8:
 					tmpI8 = convert_u8b(val);
 					retv += QString::number(tmpI8, 8);
 					if (sett.showLeadingZeroesOct()) {
-						retv = retv.rightJustified(6, '0');
+						retv = retv.rightJustified(3, '0');
 					}
 					break;
 			}
 			if (sett.outputDigitGrouping()) {
-				insertFromBack(retv, retv.length(), 6, ' ');
+				insertFromBack(retv, retv.length(), 3, ' ');
 				if (sett.showBasePrefix()) {
 					retv.insert(0, "0 ");
 				}
