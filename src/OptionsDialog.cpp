@@ -106,7 +106,7 @@ void OptionsDialog::on_checkBoxDecOut_clicked(bool flag) {
 	itsSettings->setShowDecOutput(flag);
 }
 
-void OptionsDialog::setBaseOptionsEnabledState() {
+void OptionsDialog::setNumberBaseOptionsEnabledState() {
 	bool showOtherBases = itsSettings == 0 ? true :
 		itsSettings->showBinOutput() ||
 		itsSettings->showHexOutput() ||
@@ -120,17 +120,17 @@ void OptionsDialog::setBaseOptionsEnabledState() {
 
 void OptionsDialog::on_checkBoxHexOut_clicked(bool flag) { 
 	itsSettings->setShowHexOutput(flag);
-	setBaseOptionsEnabledState();
+	setNumberBaseOptionsEnabledState();
 }
 
 void OptionsDialog::on_checkBoxBinOut_clicked(bool flag) { 
 	itsSettings->setShowBinOutput(flag);
-	setBaseOptionsEnabledState();
+	setNumberBaseOptionsEnabledState();
 }
 
 void OptionsDialog::on_checkBoxOctOut_clicked(bool flag) { 
 	itsSettings->setShowOctOutput(flag);
-	setBaseOptionsEnabledState();
+	setNumberBaseOptionsEnabledState();
 }
 
 void OptionsDialog::on_radioButtonBW8_clicked() { 
@@ -166,8 +166,7 @@ void OptionsDialog::on_checkBoxShowLeadingZerosBin_clicked(bool flag) {
 	itsSettings->setShowLeadingZeroesBin(flag);
 }
 
-OptionsDialog::
-OptionsDialog(QWidget* parent, Settings* settings) : 
+OptionsDialog::OptionsDialog(QWidget* parent, Settings* settings) : 
 	QFrame(parent), itsSettings(settings)
 {
 	setupUi(this);
@@ -257,9 +256,10 @@ void OptionsDialog::setupUiBySettings() {
 		checkBoxShowBasePrefix->setChecked(itsSettings->showBasePrefix());
 
 		checkBoxShowLeadingZerosHex->setChecked(itsSettings->showLeadingZeroesHex());
+		checkBoxShowLeadingZerosOct->setChecked(itsSettings->showLeadingZeroesOct());
 		checkBoxShowLeadingZerosBin->setChecked(itsSettings->showLeadingZeroesBin());
 
-		setBaseOptionsEnabledState();
+		setNumberBaseOptionsEnabledState();
 
 		switch (itsSettings->calculationBitWidth()) {
 			case Settings::BW64:

@@ -45,25 +45,57 @@ quint64 Conversion::convert_u64b(RealConstPtr val) {
 }
 
 /** Converts Real number to unsigned, fixed precision integer. 
-Rounds to nearest integer first. If @a val is to be to fit into
+Rounds to nearest integer first. If @a val is to big to fit into
 return value, cyclic arithmetic of 2's complement is simulated */
 template <class unsignedIntegerType>
 unsignedIntegerType Conversion::convert(RealConstPtr val) {
-	unsignedIntegerType retv, tmp;
-	mpz_t intOut, intTemp;
+	unsignedIntegerType retv;
+	
+	// First, we need to get multiple precision integer from Real
+	mpz_t roundedInt;
+	mpz_init(roundedInt);
+	mpfr_get_z(roundedInt, val, MPFR_RNDN);
 
-	mpz_init(intOut);
-	mpfr_get_z(intOut, val, MPFR_RNDN);
+	// max value that can fit into unsignedIntegerType
+	// mpz_init_set_ui(intTemp, tmp); -> This won't work for 64bit integers on all platforms
+	// they could get truncated while using mpz_init_ui and similar methods. Instead we use 
+	// Qt strings for intermediary data type. These strings allow conversion from/to long long
+	QByteArray intStr = QByteArray::number(static_cast<unsignedIntegerType>(-1), 10);
+	mpz_t maxUnsigned;
+	mpz_init_set_str(maxUnsigned, intStr.constData(), 10);
 
-	// This simulates cyclic arithmetic of fixed precision integers
-	tmp = -1;
-	mpz_init_set_ui(intTemp, tmp);
-	mpz_mod(intOut, intOut, intTemp);
+	// Now we need to convert it to fixed width unsigned integer
+	// simulating fixed width integers behavior (cyclic arithmetic)
+	if (mpz_sgn(roundedInt) >= 0) {
+		if (mpz_cmp(roundedInt, maxUnsigned) > 0) {
+			mpz_mod(roundedInt, roundedInt, maxUnsigned);
+			mpz_get_str(intStr.data(), 10, roundedInt);
+			retv = static_cast<unsignedIntegerType>(intStr.toULongLong()) - 1;
+		} else {
+			mpz_get_str(intStr.data(), 10, roundedInt);
+			retv = static_cast<unsignedIntegerType>(intStr.toULongLong());
+		}
+	} else {
+		mpz_t intervalNum;
+		mpz_init(intervalNum);
+		mpz_mul_si(maxUnsigned, maxUnsigned, -1);
+		mpz_tdiv_q(intervalNum, roundedInt, maxUnsigned);
+		mpz_add(roundedInt, roundedInt, intervalNum);
+		mpz_mul_si(maxUnsigned, maxUnsigned, -1);
+		mpz_mul(intervalNum, intervalNum, maxUnsigned);
+		mpz_add(roundedInt, roundedInt, intervalNum);
 
-	retv = static_cast<unsignedIntegerType>(mpz_get_ui(intOut));
+		if (mpz_sgn(roundedInt) < 0) {
+			mpz_add(roundedInt, roundedInt, maxUnsigned);
+			mpz_add_ui(roundedInt, roundedInt, 1);
+		}
 
-	mpz_clear(intOut);
-	mpz_clear(intTemp);
+		mpz_get_str(intStr.data(), 10, roundedInt);
+		retv = static_cast<unsignedIntegerType>(intStr.toULongLong());
+		mpz_clear(intervalNum);
+	}
+	mpz_clear(maxUnsigned);
+	mpz_clear(roundedInt);
 	return retv;
 }
 
@@ -148,36 +180,33 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 	quint16 tmpI16;
 	quint8 tmpI8;
 	QString bho_prefix, retv;
-	RealPtr absVal = BridgeAPIGlobals::newMrReal();
-	mpfr_set(absVal, val, MPFR_RNDN);
-	mpfr_abs(absVal, absVal, MPFR_RNDN);
 
 	switch (base) {
 		case BINARY:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = convert_u64b(absVal);
+					tmpI64 = convert_u64b(val);
 					retv += QString::number(tmpI64, 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(64, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = convert_u32b(absVal);
+					tmpI32 = convert_u32b(val);
 					retv += QString::number(tmpI32, 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(32, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = convert_u16b(absVal);
+					tmpI16 = convert_u16b(val);
 					retv += QString::number(tmpI16, 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(16, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = convert_u8b(absVal);
+					tmpI8 = convert_u8b(val);
 					retv += QString::number(tmpI8, 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(8, '0');
@@ -198,28 +227,28 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		case HEXADECIMAL:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = convert_u64b(absVal);
+					tmpI64 = convert_u64b(val);
 					retv += QString::number(tmpI64, 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(16, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = convert_u32b(absVal);
+					tmpI32 = convert_u32b(val);
 					retv += QString::number(tmpI32, 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(8, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = convert_u16b(absVal);
+					tmpI16 = convert_u16b(val);
 					retv += QString::number(tmpI16, 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(4, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = convert_u8b(absVal);
+					tmpI8 = convert_u8b(val);
 					retv += QString::number(tmpI8, 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(2, '0');
@@ -240,28 +269,28 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		case OCTAL:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = convert_u64b(absVal);
+					tmpI64 = convert_u64b(val);
 					retv += QString::number(tmpI64, 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(48, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = convert_u32b(absVal);
+					tmpI32 = convert_u32b(val);
 					retv += QString::number(tmpI32, 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(24, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = convert_u16b(absVal);
+					tmpI16 = convert_u16b(val);
 					retv += QString::number(tmpI16, 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(12, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = convert_u8b(absVal);
+					tmpI8 = convert_u8b(val);
 					retv += QString::number(tmpI8, 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(6, '0');
@@ -283,11 +312,11 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		default:
 			char dec[100]; // 100 should be more than enough
 			if (sett.outputFormat() == Settings::AUTOMATIC) { 
-				mpfr_snprintf(&dec[0], 100, "%.*RNg", sett.precision(), absVal);
+				mpfr_snprintf(&dec[0], 100, "%.*RNg", sett.precision(), val);
 			} else if (sett.outputFormat() == Settings::SCIENTIFFIC) {
-				mpfr_snprintf(&dec[0], 100, "%.*RNe", sett.precision(), absVal);
+				mpfr_snprintf(&dec[0], 100, "%.*RNe", sett.precision(), val);
 			} else if (sett.outputFormat() == Settings::FIXED) {
-				mpfr_snprintf(&dec[0], 100, "%.*RNf", sett.precision(), absVal);	
+				mpfr_snprintf(&dec[0], 100, "%.*RNf", sett.precision(), val);	
 			}
 
 			retv = QString::fromAscii(&dec[0]);

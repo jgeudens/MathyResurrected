@@ -332,52 +332,27 @@ void strBinToReal(const pANTLR3_STRING str, RealPtr dest) {
 ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val) {
 	ComplexPtr retv = newMrComplex();
 
-	quint64 tmpI64;
-	quint32 tmpI32;
-	quint16 tmpI16;
-	quint8 tmpI8;
-
-	switch (BridgeAPIGlobals::bitWidth()) {
-		case 64:
-			tmpI64 = Conversion::convert_u64b(mpc_realref(val));
-			break;
-		case 32:
-			tmpI32 = Conversion::convert_u32b(mpc_realref(val));
-			break;
-		case 16:
-			tmpI16 = Conversion::convert_u16b(mpc_realref(val));
-			break;
-		case 8:
-			tmpI8 = Conversion::convert_u8b(mpc_realref(val));
-			break;
-	}
-
-	switch (which) {
-		case  MR_BITWISE_NOT:
-			switch (BridgeAPIGlobals::bitWidth()) {
-		case 64:
+	if (which == MR_BITWISE_NOT) {
+		if(BridgeAPIGlobals::bitWidth() == 64) {
+			quint64 tmpI64 = Conversion::convert_u64b(mpc_realref(val));
 			tmpI64 = ~tmpI64;
 			mpfr_set_ui(mpc_realref(retv), tmpI64, MPFR_RNDN);
-			break;
-		case 32:
+		} else if(BridgeAPIGlobals::bitWidth() == 32) {
+			quint32 tmpI32 = Conversion::convert_u32b(mpc_realref(val));
 			tmpI32 = ~tmpI32;
 			mpfr_set_ui(mpc_realref(retv), tmpI32, MPFR_RNDN);
-			break;
-		case 16:
+		} else if(BridgeAPIGlobals::bitWidth() == 16) {
+			quint16 tmpI16 = Conversion::convert_u16b(mpc_realref(val));
 			tmpI16 = ~tmpI16;
 			mpfr_set_ui(mpc_realref(retv), tmpI16, MPFR_RNDN);
-			break;
-		case 8:
+		} else if(BridgeAPIGlobals::bitWidth() == 8) {
+			quint8 tmpI8 = Conversion::convert_u8b(mpc_realref(val));
 			tmpI8 = ~tmpI8;
 			mpfr_set_ui(mpc_realref(retv), tmpI8, MPFR_RNDN);
-			break;
-			}
-			break;
-		case MR_UNARY_MINUS:
-			mpc_mul_si(retv, val, -1, MPC_RNDNN);
-			break;
+		}
+	} else if (which == MR_UNARY_MINUS) {
+		mpc_mul_si(retv, val, -1, MPC_RNDNN);
 	}
-
 	return retv;
 }
 

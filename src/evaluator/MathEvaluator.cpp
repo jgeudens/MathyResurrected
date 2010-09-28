@@ -193,7 +193,6 @@ bool MathEvaluator::validate() {
 
 bool MathEvaluator::evaluate() {
 	BridgeAPIGlobals::clearLexerErrors();
-
 	if (!itsIsEvaluated) {
 		if (validate()) {
 

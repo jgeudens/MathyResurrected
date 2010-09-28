@@ -78,7 +78,7 @@ private slots:
 private:
 	Settings* itsSettings; // Non-owned pointer
 	void setupUiBySettings();
-	void setBaseOptionsEnabledState();
+	void setNumberBaseOptionsEnabledState();
 };
 
 } // namespace mathy_resurrected
