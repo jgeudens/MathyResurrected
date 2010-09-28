@@ -323,6 +323,12 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 
 			// Post processing
 
+			bool minusRemoved = false;
+			if (retv[0] == '-') {
+				retv.remove(0, 1);
+				minusRemoved = true;
+			}
+
 			// First, "saving" decimal point from modification.
 			// This is relatively safe because internally used 
 			// character for decimal point representation is 
@@ -338,6 +344,10 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 			// Post processing group separator. 
 			if (sett.outputDigitGrouping() && sett.outputFormat() == Settings::FIXED) {
 				insertFromBack(retv, decPointPos, 3, sett.digitGroupingCharacterAsChar());
+			}
+
+			if (minusRemoved) {
+				retv.insert(0, '-');
 			}
 
 			// Post processing decimal point. 
