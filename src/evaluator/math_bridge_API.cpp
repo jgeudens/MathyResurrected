@@ -246,20 +246,19 @@ ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val
 			mpc_conj(retv, val, MPC_RNDNN);
 			break;
 		case MR_FUN_DEG:
-			mpc_set_fr(retv, mpc_realref(val), MPC_RNDNN);
+			mpfr_set(mpc_realref(retv), mpc_realref(val), MPFR_RNDN);
 			mpfr_const_pi(mpc_imagref(retv), MPFR_RNDN); // Temporarily, so we don't need to create another Real
-			mpc_mul_ui(retv, retv, 180, MPC_RNDNN);
-			mpc_div_fr(retv, retv, mpc_imagref(retv), MPC_RNDNN);
+			mpfr_mul_ui(mpc_realref(retv), mpc_realref(retv), 180, MPFR_RNDN);
+			mpfr_div(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
 			mpfr_set_ui(mpc_imagref(retv), 360, MPFR_RNDN); // Temporarily, so we don't need to create another Real
 			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
 			mpfr_set_ui(mpc_imagref(retv), 0, MPFR_RNDN);
 			break;
 		case MR_FUN_RAD:
-			mpc_set_fr(retv, mpc_realref(val), MPC_RNDNN);
+			mpfr_set(mpc_realref(retv), mpc_realref(val), MPFR_RNDN);
 			mpfr_const_pi(mpc_imagref(retv), MPFR_RNDN); // Temporarily, so we don't need to create another Real
-			mpc_mul_fr(retv, retv, mpc_imagref(retv), MPC_RNDNN);
-			mpc_div_ui(retv, retv, 180, MPC_RNDNN);
-			mpfr_const_pi(mpc_imagref(retv), MPFR_RNDN); // Temporarily, so we don't need to create another Real
+			mpfr_mul(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
+			mpfr_div_ui(mpc_realref(retv), mpc_realref(retv), 180, MPFR_RNDN);
 			mpfr_mul_ui(mpc_imagref(retv), mpc_imagref(retv), 2, MPFR_RNDN);
 			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
 			mpfr_set_ui(mpc_imagref(retv), 0, MPFR_RNDN);
