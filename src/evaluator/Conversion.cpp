@@ -99,6 +99,12 @@ unsignedIntegerType Conversion::convert(RealConstPtr val) {
 	return retv;
 }
 
+void Conversion::mpfr_set_quint64(RealPtr dest, const quint64& src) {
+	assert(dest != 0);
+	QByteArray numStr = QByteArray::number(src, 10);
+	mpfr_set_str(dest, numStr.constData(), 10, MPFR_RNDN);
+}
+
 void Conversion::strToReal (const QByteArray& strin, RealPtr dest) {
 	assert(dest != 0);
 	mpfr_set_str(dest, strin.constData(), 10, MPFR_RNDN);
@@ -120,6 +126,7 @@ void Conversion::strBinToReal (const QByteArray& strin, RealPtr dest) {
 }
 
 bool Conversion::isBelowZeroTreshold(RealConstPtr val, int treshExp) {
+	assert(val != 0);
 	RealPtr tres = BridgeAPIGlobals::newMrReal();
 	bool retv;
 	mpfr_set_ui(tres, 10, MPFR_RNDN);
@@ -174,6 +181,7 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 }
 
 const QString Conversion::numberToString(NumberBase base, const Settings& sett, RealConstPtr val) {
+	assert(val != 0);
 	QLocale loc = QLocale::c();
 	quint64 tmpI64;
 	quint32 tmpI32;

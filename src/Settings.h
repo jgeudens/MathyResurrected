@@ -103,26 +103,6 @@ public:
 	bool showLeadingZeroesOct() const { return itsFlags.itsShowLeadingZeroesOct; }
 	CalculationBitWidth calculationBitWidth() const { return itsCalculationBitWidth; }
 
-	static QString keyNameDecimalPoint() {return QString("MathyResurrected/DecimalPoint"); }
-	static QString keyNameFunctionArgSeparator() {return QString("MathyResurrected/ArgSeparator"); }
-	static QString keyNameUseSimpleInputMatching() {return QString("MathyResurrected/SimpleInputMatching"); }
-	static QString keyNameOutputFormat() {return QString("MathyResurrected/OutputFormat"); }
-	static QString keyNameOutputDigitGrouping() {return QString("MathyResurrected/ShowDigitGroupChar"); }
-	static QString keyNameDigitGroupingCharacter() {return QString("MathyResurrected/ThousandSeparator"); }
-	static QString keyNamePrecision() {return QString("MathyResurrected/Precision"); }
-	static QString keyNameShowSmallNumbersAsZero() {return QString("MathyResurrected/ShouldUseZeroTreshold"); }
-	static QString keyNameZeroTresholdExp() {return QString("MathyResurrected/ZeroTresholdExponent"); }
-	static QString keyNameUseEnterToCopy() {return QString("MathyResurrected/CopyToClipboardWithEnterKey"); }
-	static QString keyNameShowDecOutput() {return QString("MathyResurrected/OutputDecimal"); }
-	static QString keyNameShowBinOutput() {return QString("MathyResurrected/OutputBinary"); }
-	static QString keyNameShowHexOutput() {return QString("MathyResurrected/OutputHexadecimal"); }
-	static QString keyNameShowOctOutput() {return QString("MathyResurrected/OutputOctal"); }
-	static QString keyNameShowBasePrefix() {return QString("MathyResurrected/OutputBaseShowPrefix"); }
-	static QString keyNameShowLeadingZeroesBin() {return QString("MathyResurrected/ShowLeadingZeroesBin"); }
-	static QString keyNameShowLeadingZeroesHex() {return QString("MathyResurrected/ShowLeadingZeroesHex"); }
-	static QString keyNameShowLeadingZeroesOct() {return QString("MathyResurrected/ShowLeadingZeroesOct"); }
-	static QString keyNameCalculationBitWidth() {return QString("MathyResurrected/BitWidth"); }
-
 public Q_SLOTS:
 	void setDecimalPoint(DecimalPointType newVal);
 	void setFunctionArgSeparator(ArgumentSeparatorType newVal);
@@ -172,6 +152,26 @@ private:
 		bool itsShowLeadingZeroesOct : 1;
 	};
 	Flags itsFlags;
+
+	static QString keyNameDecimalPoint() {return QString("MathyResurrected/DecimalPoint"); }
+	static QString keyNameFunctionArgSeparator() {return QString("MathyResurrected/ArgSeparator"); }
+	static QString keyNameUseSimpleInputMatching() {return QString("MathyResurrected/SimpleInputMatching"); }
+	static QString keyNameOutputFormat() {return QString("MathyResurrected/OutputFormat"); }
+	static QString keyNameOutputDigitGrouping() {return QString("MathyResurrected/ShowDigitGroupChar"); }
+	static QString keyNameDigitGroupingCharacter() {return QString("MathyResurrected/ThousandSeparator"); }
+	static QString keyNamePrecision() {return QString("MathyResurrected/Precision"); }
+	static QString keyNameShowSmallNumbersAsZero() {return QString("MathyResurrected/ShouldUseZeroTreshold"); }
+	static QString keyNameZeroTresholdExp() {return QString("MathyResurrected/ZeroTresholdExponent"); }
+	static QString keyNameUseEnterToCopy() {return QString("MathyResurrected/CopyToClipboardWithEnterKey"); }
+	static QString keyNameShowDecOutput() {return QString("MathyResurrected/OutputDecimal"); }
+	static QString keyNameShowBinOutput() {return QString("MathyResurrected/OutputBinary"); }
+	static QString keyNameShowHexOutput() {return QString("MathyResurrected/OutputHexadecimal"); }
+	static QString keyNameShowOctOutput() {return QString("MathyResurrected/OutputOctal"); }
+	static QString keyNameShowBasePrefix() {return QString("MathyResurrected/OutputBaseShowPrefix"); }
+	static QString keyNameShowLeadingZeroesBin() {return QString("MathyResurrected/ShowLeadingZeroesBin"); }
+	static QString keyNameShowLeadingZeroesHex() {return QString("MathyResurrected/ShowLeadingZeroesHex"); }
+	static QString keyNameShowLeadingZeroesOct() {return QString("MathyResurrected/ShowLeadingZeroesOct"); }
+	static QString keyNameCalculationBitWidth() {return QString("MathyResurrected/BitWidth"); }
 };
 
 } // namespace mathy_resurrected

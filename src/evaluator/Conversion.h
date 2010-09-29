@@ -53,6 +53,8 @@ public:
 	/*! This should return same character that was used in grammar */
 	static const QChar internalArgSeparator() { return QChar('#'); }
 
+	static void mpfr_set_quint64(RealPtr dest, const quint64& src);
+
 private:
 	static const QString numberToString(NumberBase base, const Settings& sett, RealConstPtr val);
 	template <class unsignedIntegerType>

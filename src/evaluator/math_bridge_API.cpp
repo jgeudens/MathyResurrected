@@ -268,18 +268,12 @@ ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val
 			mpc_norm(mpc_realref(retv), val, MPFR_RNDN);
 			break;
 		case MR_FUN_POLAR:
-			RealPtr rho, theta, fn;
-			rho = BridgeAPIGlobals::newMrReal();
-			theta = BridgeAPIGlobals::newMrReal();
+			RealPtr fn;
 			fn = BridgeAPIGlobals::newMrReal();
-
-			mpfr_set(rho, mpc_realref(val), MPFR_RNDN);
-			mpfr_set(theta, mpc_imagref(val), MPFR_RNDN);
-
-			mpfr_cos(fn, theta, MPFR_RNDN);
-			mpfr_mul(mpc_realref(retv), rho, fn, MPFR_RNDN);
-			mpfr_sin(fn, theta, MPFR_RNDN);
-			mpfr_mul(mpc_imagref(retv), rho, fn, MPFR_RNDN);
+			mpfr_cos(fn, mpc_imagref(val), MPFR_RNDN);
+			mpfr_mul(mpc_realref(retv), mpc_realref(val), fn, MPFR_RNDN);
+			mpfr_sin(fn, mpc_imagref(val), MPFR_RNDN);
+			mpfr_mul(mpc_imagref(retv), mpc_realref(val), fn, MPFR_RNDN);
 			break;
 	}
 	return retv;
@@ -333,22 +327,31 @@ ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val
 	ComplexPtr retv = newMrComplex();
 
 	if (which == MR_BITWISE_NOT) {
-		if(BridgeAPIGlobals::bitWidth() == 64) {
-			quint64 tmpI64 = Conversion::convert_u64b(mpc_realref(val));
-			tmpI64 = ~tmpI64;
-			mpfr_set_ui(mpc_realref(retv), tmpI64, MPFR_RNDN);
-		} else if(BridgeAPIGlobals::bitWidth() == 32) {
-			quint32 tmpI32 = Conversion::convert_u32b(mpc_realref(val));
-			tmpI32 = ~tmpI32;
-			mpfr_set_ui(mpc_realref(retv), tmpI32, MPFR_RNDN);
-		} else if(BridgeAPIGlobals::bitWidth() == 16) {
-			quint16 tmpI16 = Conversion::convert_u16b(mpc_realref(val));
-			tmpI16 = ~tmpI16;
-			mpfr_set_ui(mpc_realref(retv), tmpI16, MPFR_RNDN);
-		} else if(BridgeAPIGlobals::bitWidth() == 8) {
-			quint8 tmpI8 = Conversion::convert_u8b(mpc_realref(val));
-			tmpI8 = ~tmpI8;
-			mpfr_set_ui(mpc_realref(retv), tmpI8, MPFR_RNDN);
+		switch (BridgeAPIGlobals::bitWidth()) {
+			case 64:
+				quint64 tmpI64;
+				tmpI64 = Conversion::convert_u64b(mpc_realref(val));
+				tmpI64 = ~tmpI64;
+				Conversion::mpfr_set_quint64(mpc_realref(retv), tmpI64);
+				break;
+			case 32:
+				quint32 tmpI32;
+				tmpI32 = Conversion::convert_u32b(mpc_realref(val));
+				tmpI32 = ~tmpI32;
+				mpfr_set_ui(mpc_realref(retv), tmpI32, MPFR_RNDN);
+				break;
+			case 16:
+				quint16 tmpI16;
+				tmpI16 = Conversion::convert_u16b(mpc_realref(val));
+				tmpI16 = ~tmpI16;
+				mpfr_set_ui(mpc_realref(retv), tmpI16, MPFR_RNDN);
+				break;
+			case 8:
+				quint8 tmpI8;
+				tmpI8 = Conversion::convert_u8b(mpc_realref(val));
+				tmpI8 = ~tmpI8;
+				mpfr_set_ui(mpc_realref(retv), tmpI8, MPFR_RNDN);
+				break;
 		}
 	} else if (which == MR_UNARY_MINUS) {
 		mpc_mul_si(retv, val, -1, MPC_RNDNN);
@@ -389,7 +392,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_AND:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), lv64 & rv64, MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 & rv64);
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), lv32 & rv32, MPFR_RNDN);
@@ -406,7 +409,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_OR:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), lv64 | rv64, MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 | rv64);
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), lv32 | rv32, MPFR_RNDN);
@@ -423,7 +426,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_NAND:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), ~(lv64 & rv64), MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 & rv64));
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), ~(lv32 & rv32), MPFR_RNDN);
@@ -440,7 +443,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_NOR:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), ~(lv64 | rv64), MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 | rv64));
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), ~(lv32 | rv32), MPFR_RNDN);
@@ -457,7 +460,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_XOR:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), lv64 ^ rv64, MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 ^ rv64);
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), lv32 ^ rv32, MPFR_RNDN);
@@ -474,7 +477,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_XNOR:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), ~(lv64 ^ rv64), MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 ^ rv64));
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), ~(lv32 ^ rv32), MPFR_RNDN);
@@ -491,7 +494,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_SHL:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), lv64 << rv64, MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 << rv64);
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), lv32 << rv32, MPFR_RNDN);
@@ -508,7 +511,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConst
 		case  MR_BITWISE_SHR:
 			switch (BridgeAPIGlobals::bitWidth()) {
 				case 64:	
-					mpfr_set_ui(mpc_realref(retv), lv64 >> rv64, MPFR_RNDN);
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 >> rv64);
 					break;
 				case 32:
 					mpfr_set_ui(mpc_realref(retv), lv32 >> rv32, MPFR_RNDN);
