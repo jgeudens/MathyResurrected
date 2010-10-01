@@ -23,7 +23,7 @@
 #include "math_bridge_globals.h"
 #include <cassert>
 
-const int BridgeAPIGlobals::NUMERIC_PRECISION = 128;
+const int BridgeAPIGlobals::NUMERIC_PRECISION = 164;
 
 BridgeAPIGlobals::BridgeAPIGlobals() {
 	mpc_init2(itsAns, NUMERIC_PRECISION);

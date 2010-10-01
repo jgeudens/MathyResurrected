@@ -125,13 +125,17 @@ void Conversion::strBinToReal (const QByteArray& strin, RealPtr dest) {
 	mpfr_set_str(dest, strin.constData(), 2, MPFR_RNDN);
 }
 
-bool Conversion::isBelowZeroTreshold(RealConstPtr val, int treshExp) {
+bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {
 	assert(val != 0);
-	RealPtr tres = BridgeAPIGlobals::newMrReal();
 	bool retv;
-	mpfr_set_ui(tres, 10, MPFR_RNDN);
-	mpfr_pow_si(tres, tres, treshExp, MPFR_RNDN);
-	retv = mpfr_cmpabs(val, tres) <= 0;
+	if (sett.showSmallNumbersAsZero()) {
+		RealPtr tres = BridgeAPIGlobals::newMrReal();
+		mpfr_set_ui(tres, 10, MPFR_RNDN);
+		mpfr_pow_si(tres, tres, sett.zeroTresholdExp(), MPFR_RNDN);
+		retv = mpfr_cmpabs(val, tres) <= 0;
+	} else {
+		retv = false;
+	}
 	return retv;
 }
 
@@ -149,10 +153,13 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 	mpfr_set(re_disp, mpc_realref(num), MPFR_RNDN);
 	mpfr_set(im_disp, mpc_imagref(num), MPFR_RNDN);
 
-	if (isBelowZeroTreshold(im_disp, sett.zeroTresholdExp())) {
+// 	char c[100];
+// 	mpfr_snprintf(&dec[0], 100, "%.*RNf", sett.precision(), val);
+
+	if (isBelowZeroTreshold(im_disp, sett)) {
 		mpfr_set_ui(im_disp, 0, MPFR_RNDN);
 	}
-	if (isBelowZeroTreshold(re_disp, sett.zeroTresholdExp())) {
+	if (isBelowZeroTreshold(re_disp, sett)) {
 		mpfr_set_ui(re_disp, 0, MPFR_RNDN);
 	}
 

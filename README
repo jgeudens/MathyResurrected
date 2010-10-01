@@ -1,0 +1,68 @@
+General
+=======
+
+Mathy resurrected is advanced calculator plugin for Launchy 
+(http://www.launchy.net/). It is authored by Tomislav Adamić (a.k.a. El Gruñón) 
+and hosted on Sourceforge.net: 
+
+	http://sourceforge.net/projects/mathyresurected/
+
+History
+=======
+
+During the Launchy v1.x.x. era Mathy plugin apeared. It featured everything that
+users needed and didn't get from Launchy's standard calculator. Now, Launchy 
+being program launcher, nobody probably assumed that this calculator feature 
+would be so wanted or popular. Well, anyone who tries using Launchy with 
+calculator for it's every day job in let's say finance, accounting or 
+programming will witness how usefull this is. And will become addicted to 
+Launchy + Calculator option. 
+
+The problem with Launchy plugins is that they need to be rebuilt ever time new 
+Launchy version comes out. This is not really a big problem, as long as plugin 
+users and plugin developers are avare of it existing. And this is where Mathy 
+story ended. Mathy project stopped being developed and when Launchy 2.0 came
+out, there was no this great calculator that everybody (including me) liked so 
+much...
+
+After Launchy 2.0 there was choice to either use Launchy 1.x with Mathy, or use
+Launchy 2.0 without your favorite and so much needed plugin. Mathy Resurrected 
+was started to change that fact. The ultimate goal is to produce stable, well 
+featured calculator plugin for Launchy that will replicate almost all features 
+of prevoius plugin Mathy, and also add it's own.
+
+Features
+========
+	- Complex number arithmetic – All claculations are done on complex numbers.
+	  Where this is inapropriate, it is documented. 
+	- Many built-in math functions
+	- Some predefined math constants
+	- Configurable decimal separator and function argument separator
+	- Syntax for automatic SI units and binary units conversion
+	- Input and output of binary, hexadecimal nad octal numbers
+	- High precision of calculation (supporting calculation and decimal 
+	  representation of  numbers from [1e-70, 1e70]
+	  
+Building and installation
+=========================
+Pre-built plugin .dll is available for MS Windows systems, and source code for 
+others. On windows, installing it means simply copying .dll file into plugins 
+directory of Launchy install dir. On other systems plugin must be built from 
+source and installed to appropriate place fro that system. For detailed 
+instructions see INSTALL in Mathy Resurrected source tree. 
+
+Support
+=======
+
+All questions regarding plugin should be asked at SourceForge project site:
+
+	http://sourceforge.net/projects/mathyresurrected/         
+	
+Or at Launchy project site, "Plugins 2.0+" subforum:
+
+	http://sourceforge.net/projects/launchy/
+
+Bugs can be reported, or features requested on plugin official project support 
+page:
+
+	http://sourceforge.net/projects/mathyresurected/support

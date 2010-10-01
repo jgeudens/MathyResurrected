@@ -60,7 +60,7 @@ private:
 	template <class unsignedIntegerType>
 	static unsignedIntegerType convert(RealConstPtr val);
 
-	static bool isBelowZeroTreshold(RealConstPtr val, int treshExp);
+	static bool isBelowZeroTreshold(RealConstPtr val, const Settings& sett);
 	static void insertFromBack(QString& dest, int startPos, int step, const QChar& what); 
 };
 
