@@ -153,9 +153,6 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 	mpfr_set(re_disp, mpc_realref(num), MPFR_RNDN);
 	mpfr_set(im_disp, mpc_imagref(num), MPFR_RNDN);
 
-// 	char c[100];
-// 	mpfr_snprintf(&dec[0], 100, "%.*RNf", sett.precision(), val);
-
 	if (isBelowZeroTreshold(im_disp, sett)) {
 		mpfr_set_ui(im_disp, 0, MPFR_RNDN);
 	}

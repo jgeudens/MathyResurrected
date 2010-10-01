@@ -107,7 +107,10 @@ void OptionsDialog::on_checkBoxDecOut_clicked(bool flag) {
 }
 
 void OptionsDialog::setNumberBaseOptionsEnabledState() {
-	bool showOtherBases = itsSettings == 0 ? true :
+	bool showOtherBases = itsSettings == 0 ? 
+		Settings::defaultShowBinOutput() ||
+		Settings::defaultShowHexOutput() ||
+		Settings::defaultShowOctOutput() :
 		itsSettings->showBinOutput() ||
 		itsSettings->showHexOutput() ||
 		itsSettings->showOctOutput();

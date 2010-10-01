@@ -9,7 +9,7 @@ win32 {
 	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc
 }
 
-DISTFILES += AUTHORS COPYING HISTORY INSTALL README.mathyresurrected.txt TODO \
+DISTFILES += AUTHORS COPYING HISTORY INSTALL README README.odt TODO \
 	src/antlr/ComplexEval.g \
 	src/antlr/ComplexLexer.g \
 	src/antlr/ComplexParser.g \

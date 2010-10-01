@@ -552,16 +552,16 @@
   <connection>
    <sender>checkBoxZeroTreshold</sender>
    <signal>toggled(bool)</signal>
-   <receiver>checkBoxZeroTreshold</receiver>
+   <receiver>spinBoxZeroTreshold</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>432</x>
-     <y>180</y>
+     <x>116</x>
+     <y>179</y>
     </hint>
     <hint type="destinationlabel">
-     <x>432</x>
-     <y>180</y>
+     <x>200</x>
+     <y>181</y>
     </hint>
    </hints>
   </connection>
