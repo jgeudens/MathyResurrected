@@ -26,6 +26,8 @@
 using namespace std;
 using namespace mathy_resurrected;
 
+/*! Returns pointer to new Complex. This pointer should never 
+be deleted directly, it is handled automatically. */
 ComplexPtr newMrComplex() {
 	return BridgeAPIGlobals::newMrComplex();
 }
@@ -39,12 +41,14 @@ void getAns(ComplexPtr dest) {
 	BridgeAPIGlobals::getAns(dest);
 }
 
+/*! Return value of PI */
 void mr_pi(ComplexPtr dest) {
 	assert(dest != 0);
 	mpfr_const_pi(mpc_realref(dest), MPFR_RNDN);
 	mpfr_set_ui(mpc_imagref(dest), 0, MPFR_RNDN);
 }
 
+/*! Return value of e */
 void mr_e(ComplexPtr dest) {
 	assert(dest != 0);
 	mpfr_set_ui(mpc_realref(dest), 1, MPFR_RNDN);

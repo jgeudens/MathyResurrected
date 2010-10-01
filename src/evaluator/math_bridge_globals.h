@@ -26,7 +26,10 @@
 #include <vector>
 #include "math_bridge_API_types.h"
 
-/** Structure that holds global variables needed by math bridge API. */
+/** Structure that holds global variables needed by math bridge API. 
+This is a connection between ANTLR generated lexer/parser and 
+MathEvaluator object. There is single BridgeAPIGlobals object in whole
+program, so */
 class BridgeAPIGlobals {
 public:
 	~BridgeAPIGlobals();
