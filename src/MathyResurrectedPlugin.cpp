@@ -22,6 +22,7 @@
 #include <QtCore>
 #include <QClipboard>
 #include "Settings.h"
+#include "OptionsDialog.h"
 #include "MathEvaluator.h"
 
 using namespace mathy_resurrected;

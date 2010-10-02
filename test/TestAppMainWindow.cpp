@@ -21,7 +21,6 @@
 #include "TestAppMainWindow.h"
 #include "MathEvaluator.h"
 #include "Settings.h"
-#include "math_bridge_globals.h"
 
 namespace mathy_resurrected {
 
@@ -30,7 +29,6 @@ TestAppMainWindow::TestAppMainWindow(QWidget* parent) :
 	setupUi(this);
 	itsSettings = new Settings(this);
 	itsSettings->setCalculationBitWidth(Settings::BW8);
-	BridgeAPIGlobals::setBitWidth(8);
 
 	itsSettings->setShowBinOutput(true);
 	itsSettings->setShowDecOutput(true);

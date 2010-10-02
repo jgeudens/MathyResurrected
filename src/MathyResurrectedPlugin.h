@@ -22,12 +22,12 @@
 #define MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
 
 #include <QString>
-#include "OptionsDialog.h"
 #include "plugin_interface.h"
 
 namespace mathy_resurrected {
 	class Settings;
 	class MathEvaluator;
+	class OptionsDialog;
 }
 
 class MathyResurrectedPlugin : public QObject, public PluginInterface

@@ -22,7 +22,7 @@
 #include <QLocale>
 #include <cassert>
 #include "Settings.h"
-#include "math_bridge_globals.h"
+#include "MathEvaluator.h"
 
 using namespace std;
 
@@ -129,10 +129,12 @@ bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {
 	assert(val != 0);
 	bool retv;
 	if (sett.showSmallNumbersAsZero()) {
-		RealPtr tres = BridgeAPIGlobals::newMrReal();
+		Real tres;
+		mpfr_init2(tres, MathEvaluator::NUMERIC_PRECISION);
 		mpfr_set_ui(tres, 10, MPFR_RNDN);
 		mpfr_pow_si(tres, tres, sett.zeroTresholdExp(), MPFR_RNDN);
 		retv = mpfr_cmpabs(val, tres) <= 0;
+		mpfr_clear(tres);
 	} else {
 		retv = false;
 	}
@@ -147,9 +149,9 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 
 	// If number is close enough to zero, we make it zero 
 	// explicitly (but for display purposes only)
-	RealPtr im_disp, re_disp;
-	re_disp = BridgeAPIGlobals::newMrReal();
-	im_disp = BridgeAPIGlobals::newMrReal();
+	Real re_disp, im_disp;
+	mpfr_init2(re_disp, MathEvaluator::NUMERIC_PRECISION);
+	mpfr_init2(im_disp, MathEvaluator::NUMERIC_PRECISION);
 	mpfr_set(re_disp, mpc_realref(num), MPFR_RNDN);
 	mpfr_set(im_disp, mpc_imagref(num), MPFR_RNDN);
 
@@ -180,6 +182,9 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 	if (add_i) {
 		retv +=  im_sign + im_str + "i";
 	}
+
+	mpfr_clear(re_disp);
+	mpfr_clear(im_disp);
 
 	return retv;
 }

@@ -19,7 +19,6 @@
 */
 
 #include "Settings.h"
-#include "math_bridge_globals.h"
 #include <QLocale>
 #include <QSettings>
 
@@ -355,7 +354,6 @@ void Settings::setShowLeadingZeroesOct(bool newVal) {
 }
 void Settings::setCalculationBitWidth(CalculationBitWidth newVal) {
 	itsCalculationBitWidth = newVal;
-	BridgeAPIGlobals::setBitWidth(newVal);
 }
 
 } // namespace mathy_resurrected

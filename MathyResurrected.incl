@@ -22,7 +22,6 @@ SOURCES += $${_PRO_FILE_PWD_}/../src/OptionsDialog.cpp \
 	$${_PRO_FILE_PWD_}/../src/evaluator/MathEvaluator.cpp \
 	$${_PRO_FILE_PWD_}/../src/evaluator/Exceptions.cpp \
 	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.cpp \
-	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_globals.cpp \
 	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API.cpp
 HEADERS += $${_PRO_FILE_PWD_}/../src/OptionsDialog.h \
 	$${_PRO_FILE_PWD_}/../src/Settings.h \
@@ -30,7 +29,6 @@ HEADERS += $${_PRO_FILE_PWD_}/../src/OptionsDialog.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/MathEvaluator.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/Exceptions.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.h \
-	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_globals.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API_types.h
 INCLUDEPATH += $${_PRO_FILE_PWD_}/../src $${_PRO_FILE_PWD_}/../src/evaluator

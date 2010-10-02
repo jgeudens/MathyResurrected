@@ -33,6 +33,8 @@ C parser/lexer/evaluator with C++ std::complex */
 extern "C" {
 #endif
 
+void setEvaluator(void* evaluatorObject);
+
 ComplexPtr newMrComplex();
 void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
 void getAns(ComplexPtr dest);

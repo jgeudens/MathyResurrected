@@ -39,7 +39,7 @@ typedef mpc_t Complex;
 typedef mpc_ptr ComplexPtr;
 typedef mpc_srcptr ComplexConstPtr;
 
-typedef enum MR_LEXER_ERROR_TYPES_ {
+typedef enum {
 	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,
 	LEX_ERR_BAD_INPUT
 } MR_LEXER_ERROR_TYPES;
@@ -48,9 +48,6 @@ typedef enum {
 	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
 } MR_MATH_BINARY_OPERATORS;
 
-/*! To avoid passing around ANTLR3_STRING as much as possible
-and to simplify implementation of SI unit conversion, this enum 
-is used.*/
 typedef enum {
 	MR_MATH_SI_PREFIX_YOTTA, MR_MATH_SI_PREFIX_ZETTA, 
 	MR_MATH_SI_PREFIX_EXA, MR_MATH_SI_PREFIX_PETA, 
