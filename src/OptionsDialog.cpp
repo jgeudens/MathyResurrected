@@ -107,18 +107,27 @@ void OptionsDialog::on_checkBoxDecOut_clicked(bool flag) {
 }
 
 void OptionsDialog::setNumberBaseOptionsEnabledState() {
-	bool showOtherBases = itsSettings == 0 ? 
-		Settings::defaultShowBinOutput() ||
-		Settings::defaultShowHexOutput() ||
+	bool showBin, showHex, showOct;
+
+	showBin = itsSettings == 0 ? 
+		Settings::defaultShowBinOutput() :
+		itsSettings->showBinOutput();
+
+	showHex = itsSettings == 0 ? 
+		Settings::defaultShowHexOutput() :
+		itsSettings->showHexOutput();
+
+	showOct = itsSettings == 0 ? 
 		Settings::defaultShowOctOutput() :
-		itsSettings->showBinOutput() ||
-		itsSettings->showHexOutput() ||
 		itsSettings->showOctOutput();
+
+	bool showOtherBases = showBin || showHex || showOct;
+
 	groupBoxBW->setEnabled(showOtherBases);
 	checkBoxShowBasePrefix->setEnabled(showOtherBases);
-	checkBoxShowLeadingZerosOct->setEnabled(showOtherBases);
-	checkBoxShowLeadingZerosHex->setEnabled(showOtherBases);
-	checkBoxShowLeadingZerosBin->setEnabled(showOtherBases);
+	checkBoxShowLeadingZerosOct->setEnabled(showOct);
+	checkBoxShowLeadingZerosHex->setEnabled(showHex);
+	checkBoxShowLeadingZerosBin->setEnabled(showBin);
 }
 
 void OptionsDialog::on_checkBoxHexOut_clicked(bool flag) { 
