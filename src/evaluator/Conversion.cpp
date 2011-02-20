@@ -105,24 +105,38 @@ void Conversion::mpfr_set_quint64(RealPtr dest, const quint64& src) {
 	mpfr_set_str(dest, numStr.constData(), 10, MPFR_RNDN);
 }
 
-void Conversion::strToReal (const QByteArray& strin, RealPtr dest) {
+void Conversion::strToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
-	mpfr_set_str(dest, strin.constData(), 10, MPFR_RNDN);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	QString temp = QString::fromUtf8((const char*)utf8Str->chars, utf8Str->len);
+	temp.replace(Conversion::internalDecimalPoint(), QChar('.'));
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	mpfr_set_str(dest, temp.toUtf8().constData(), 8, MPFR_RNDN);
 }
 
-void Conversion::strHexToReal (const QByteArray& strin, RealPtr dest) {
+void Conversion::strHexToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
-	mpfr_set_str(dest, strin.constData(), 16, MPFR_RNDN);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	mpfr_set_str(dest, bArray.constData(), 16, MPFR_RNDN);
 }
 
-void Conversion::strOctToReal (const QByteArray& strin, RealPtr dest) {
+void Conversion::strOctToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
-	mpfr_set_str(dest, strin.constData(), 8, MPFR_RNDN);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	mpfr_set_str(dest, bArray.constData(), 8, MPFR_RNDN);
 }
 
-void Conversion::strBinToReal (const QByteArray& strin, RealPtr dest) {
+void Conversion::strBinToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
-	mpfr_set_str(dest, strin.constData(), 2, MPFR_RNDN);
+	assert(dest != 0);
+	pANTLR3_STRING utf8Str = str->toUTF8(str);
+	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
+	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
+	mpfr_set_str(dest, bArray.constData(), 2, MPFR_RNDN);
 }
 
 bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {

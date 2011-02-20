@@ -36,104 +36,18 @@
 using namespace std;
 using namespace mathy_resurrected;
 
-/** Evaluator object that currently uses bridge 
-@see setEvaluator */
-mathy_resurrected::MathEvaluator* currentEvaluator;
-
-/** Sets @a evaluatorObject as current MathEvaluator instance for bridge API.
-This should be called by MathEvaluator every time it tries to do evaluation 
-of expression using ANTLR generated lexer/parser. @a evaluatorObject
-is never deleted by bridge API methods, it's only purpose it to enable 
-communication between bridge API and evaluator instance that is currently 
-using bridge API through ANTLR generated code. */
-void setEvaluator(void* evaluatorObject) {
-	currentEvaluator = (MathEvaluator*)evaluatorObject;
-}
-
-/*! Returns pointer to new Complex. This pointer should never 
-be deleted directly, it is handled automatically. */
-ComplexPtr newMrComplex() {
-	return currentEvaluator->newComplex();
-}
-
-void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type) {
-	currentEvaluator->collectlexerError(char_index, err_type);
-}
-
-void getAns(ComplexPtr dest) {
-	assert(dest != 0);
-	currentEvaluator->ans(dest);
-}
-
-void mr_pi(ComplexPtr dest) {
-	MathEvaluator::pi(dest);
-}
-
-void mr_e(ComplexPtr dest) {
-	MathEvaluator::e(dest);
-}
-
-void si_ref(MR_MATH_SI_PREFIXES si_prefix, ComplexPtr dest){
-	currentEvaluator->SIUnit(si_prefix, dest);
-}
-
-ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which,
-							   ComplexConstPtr lv, ComplexConstPtr rv) {
-								   return currentEvaluator->binaryOperator(which, lv, rv);
-}
-
-ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val) {
-	return currentEvaluator->unaryFunction(which, val);
-}
-
-ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
-							   ComplexConstPtr arg1, ComplexConstPtr arg2) {
-								   return currentEvaluator->binaryFunction(which, arg1, arg2);
-}
-
-ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val) {
-	return currentEvaluator->unaryOperator(which, val);
-}
-
-ComplexPtr 
-mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv) {
-	return currentEvaluator->bitwiseOperator(which, lv, rv);
-}
-
-void strToReal(const pANTLR3_STRING str, RealPtr dest) {
-	assert(dest != 0);
-	pANTLR3_STRING utf8Str = str->toUTF8(str);
-	QString temp = QString::fromUtf8((const char*)utf8Str->chars, utf8Str->len);
-	temp.replace(Conversion::internalDecimalPoint(), QChar('.'));
-	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	Conversion::strToReal(temp.toUtf8(), dest);
-}
-
-void strHexToReal(const pANTLR3_STRING str, RealPtr dest) {
-	assert(dest != 0);
-	pANTLR3_STRING utf8Str = str->toUTF8(str);
-	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
-	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	Conversion::strHexToReal(bArray, dest);
-}
-
-void strOctToReal(const pANTLR3_STRING str, RealPtr dest) {
-	assert(dest != 0);
-	pANTLR3_STRING utf8Str = str->toUTF8(str);
-	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
-	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	Conversion::strOctToReal(bArray, dest);
-}
-
-void strBinToReal(const pANTLR3_STRING str, RealPtr dest) {
-	assert(dest != 0);
-	pANTLR3_STRING utf8Str = str->toUTF8(str);
-	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
-	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	Conversion::strBinToReal(bArray, dest);
-}
-
 namespace mathy_resurrected {
+
+/** Evaluator object that currently uses ANTLR parser/lexer. 
+ANTLR parser lexer uses evaluator instance as factory object and for
+retrieving ans() data. Thus, any evaluator operation that needs to 
+use ANTLR generated lexer/parser must ensure that it is registered
+through this pointer before calling ANTLR functions. */
+MathEvaluator* currentEvaluator;
+
+MathEvaluator* getEvaluatorInstance() {
+	return currentEvaluator;
+}
 
 /** Number of bits uses for all number representations. */
 const int MathEvaluator::NUMERIC_PRECISION = 164;
@@ -236,7 +150,7 @@ MathEvaluator::MathEvaluator(const Settings* app_settings, QObject* parent) :
 	QObject(parent),
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false)
 {
-	setEvaluator(this);
+	currentEvaluator = this;
 	
 	if (app_settings == 0) {
 		throw invalid_argument("Null pointer to evaluator settings!");
@@ -304,7 +218,7 @@ can be read using Re() and Im() methods. */
 bool MathEvaluator::evaluate() {
 	itsLexerErrorsCollection.clear();
 	// Connect to bridge API
-	setEvaluator(this);
+	currentEvaluator = this;
 	if (!itsIsEvaluated) {
 		if (validate()) {
 

@@ -17,10 +17,9 @@ tokens {
 	OCT;
 }
 
-@lexer::includes {
-	#define INCLUDED_FROM_ANTLR_GENERATED_CODE
+@postinclude  {
     #include "MathEvaluator.h"
-	#undef INCLUDED_FROM_ANTLR_GENERATED_CODE
+	using namespace mathy_resurrected;
 }
 
 PLUS             : '+';
@@ -146,7 +145,8 @@ fragment FLOAT_MANTISSA
                 |
                 {
                     $type = LEXER_ERROR;
-                    collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA);
+                    getEvaluatorInstance()
+					->collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA);
                 }
             )
         )?
@@ -155,7 +155,8 @@ fragment FLOAT_MANTISSA
         |
         {
             $type = LEXER_ERROR;
-            collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA);
+            getEvaluatorInstance()
+			->collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_MANTISSA);
         }
     )
     ;
@@ -166,7 +167,8 @@ fragment EXPONENT
         |
         {
             $type = LEXER_ERROR;
-            collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_EXPONENT);
+            getEvaluatorInstance()
+			->collectlexerError(GETCHARINDEX()-1, LEX_ERR_MALFORMED_EXPONENT);
         }
     )
     ;
@@ -181,5 +183,6 @@ illegal input */
 OTHER_CHAR
     :. {
         $type = LEXER_ERROR;
-        collectlexerError(GETCHARINDEX()-1, LEX_ERR_BAD_INPUT);
+        getEvaluatorInstance()
+		->collectlexerError(GETCHARINDEX()-1, LEX_ERR_BAD_INPUT);
     };

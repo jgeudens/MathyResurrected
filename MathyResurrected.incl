@@ -29,7 +29,9 @@ HEADERS += $${_PRO_FILE_PWD_}/../src/OptionsDialog.h \
 	$${_PRO_FILE_PWD_}/../src/MathyResurrectedPlugin.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/MathEvaluator.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/Exceptions.h \
-	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.h
+	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.h \
+	$${_PRO_FILE_PWD_}/../src/evaluator/MathTypes.h
+	
 INCLUDEPATH += $${_PRO_FILE_PWD_}/../src $${_PRO_FILE_PWD_}/../src/evaluator
 
 # Plugin API sources

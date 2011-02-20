@@ -38,10 +38,10 @@ public:
 	static quint32 convert_u32b(RealConstPtr val);
 	static quint64 convert_u64b(RealConstPtr val);
 
-	static void strToReal(const QByteArray& str, RealPtr dest);
-	static void strHexToReal(const QByteArray& str, RealPtr dest);
-	static void strOctToReal(const QByteArray& str, RealPtr dest);
-	static void strBinToReal(const QByteArray& str, RealPtr dest);
+	static void strToReal(const pANTLR3_STRING str, RealPtr dest);
+	static void strHexToReal(const pANTLR3_STRING str, RealPtr dest);
+	static void strOctToReal(const pANTLR3_STRING str, RealPtr dest);
+	static void strBinToReal(const pANTLR3_STRING str, RealPtr dest);
 
 	enum NumberBase {
 		DECIMAL, HEXADECIMAL, BINARY, OCTAL
