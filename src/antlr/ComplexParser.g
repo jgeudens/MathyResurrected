@@ -12,50 +12,50 @@ prog
     ;
 
 expr
-  : bitor
+  : bitorExpr
   ;
 
-bitor
-  : bitxor ( (BW_OR | BW_OR2)^ bitxor )*
+bitorExpr
+  : bitxorExpr ( (BW_OR | BW_OR2)^ bitxorExpr )*
   ;
   
-bitxor
-  : bitand ( (BW_XOR | BW_XOR2)^ bitand )*
+bitxorExpr
+  : bitandExpr ( (BW_XOR | BW_XOR2)^ bitandExpr )*
   ;
   
-bitand
-  : bitoper ( (BW_AND | BW_AND2)^ bitoper )*
+bitandExpr
+  : bitoperExpr ( (BW_AND | BW_AND2)^ bitoperExpr )*
   ;
   
-bitoper
-  : bitshift ( (BW_NAND | BW_NOR | BW_XNOR)^ bitshift )*
+bitoperExpr
+  : bitshiftExpr ( (BW_NAND | BW_NOR | BW_XNOR)^ bitshiftExpr )*
   ;
   
-bitshift
-  : addition ( (BW_SHLEFT | BW_SHRIGHT | BW_SHLEFT2 | BW_SHRIGHT2)^ addition)*
+bitshiftExpr
+  : additionExpr ( (BW_SHLEFT | BW_SHRIGHT | BW_SHLEFT2 | BW_SHRIGHT2)^ additionExpr)*
   ;
   
-addition
-    : multiplication ( (PLUS|MINUS)^ multiplication )*
+additionExpr
+    : multiplicationExpr ( (PLUS|MINUS)^ multiplicationExpr )*
     ;
 
-multiplication
-    : exponentiation ( (MULT|DIV|MOD)^ exponentiation )*
+multiplicationExpr
+    : exponentiationExpr ( (MULT|DIV|MOD)^ exponentiationExpr )*
     ;
 
-exponentiation
-    : unary ( POW^ exponentiation )?
+exponentiationExpr
+    : unaryExpr ( POW^ exponentiationExpr )?
     ;
 
-unary
-    : MINUS atom    -> ^(UNARY MINUS atom)
-    | PLUS atom     -> ^(UNARY PLUS atom)
-    | BW_NOT atom   -> ^(UNARY BW_NOT atom)
-	| BW_NOT2 atom   -> ^(UNARY BW_NOT atom)
-    | atom
+unaryExpr
+    : MINUS atomExpr    -> ^(UNARY MINUS atomExpr)
+    | PLUS atomExpr     -> ^(UNARY PLUS atomExpr)
+    | BW_NOT atomExpr   -> ^(UNARY BW_NOT atomExpr)
+	| BW_NOT2 atomExpr   -> ^(UNARY BW_NOT atomExpr)
+    | atomExpr
     ;
 
-atom
+atomExpr
     :  real_number                  -> ^(ATOM real_number)
     |  imaginary_number             -> ^(ATOM imaginary_number)
     |  real_number si_unit_ref      -> ^(ATOM real_number si_unit_ref)

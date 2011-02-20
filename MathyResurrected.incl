@@ -1,4 +1,4 @@
-# no:keywords needed because ANTLR uses 'emit' in it's headers. 
+# no_keywords needed because ANTLR uses 'emit' in it's headers. 
 CONFIG += no_keywords
 
 CONFIG(release, debug|release) { # general release build options
@@ -41,9 +41,9 @@ SOURCES += $${_PRO_FILE_PWD_}/../src/pluginAPI/plugin_interface.cpp
 INCLUDEPATH += $${_PRO_FILE_PWD_}/../src/pluginAPI
 
 # ANTLR generated math lexer, parser and evaluator
-SOURCES += $${_PRO_FILE_PWD_}/../src/antlr/ComplexEval.c \
-	$${_PRO_FILE_PWD_}/../src/antlr/ComplexLexer.c \
-	$${_PRO_FILE_PWD_}/../src/antlr/ComplexParser.c
+SOURCES += $${_PRO_FILE_PWD_}/../src/antlr/ComplexEval.cpp \
+	$${_PRO_FILE_PWD_}/../src/antlr/ComplexLexer.cpp \
+	$${_PRO_FILE_PWD_}/../src/antlr/ComplexParser.cpp
 HEADERS += $${_PRO_FILE_PWD_}/../src/antlr/ComplexEval.h \
 	$${_PRO_FILE_PWD_}/../src/antlr/ComplexLexer.h \
 	$${_PRO_FILE_PWD_}/../src/antlr/ComplexParser.h

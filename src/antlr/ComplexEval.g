@@ -79,27 +79,27 @@ expr returns [ComplexPtr compl_retv]
 	| ^(POW a = expr b = expr) {
 		$compl_retv = getEvaluatorInstance()->binaryOperator(MR_POW, $a.compl_retv, $b.compl_retv);
 	}
-	| unary {
-		$compl_retv = $unary.compl_retv;
+	| unaryExpr {
+		$compl_retv = $unaryExpr.compl_retv;
 	}
 	;
 	
-unary returns [ComplexPtr compl_retv]
-  : ^(UNARY MINUS atom) {
-		$compl_retv = getEvaluatorInstance()->unaryOperator(MR_UNARY_MINUS, $atom.compl_retv); 
+unaryExpr returns [ComplexPtr compl_retv]
+  : ^(UNARY MINUS atomExpr) {
+		$compl_retv = getEvaluatorInstance()->unaryOperator(MR_UNARY_MINUS, $atomExpr.compl_retv); 
     }
-  | ^(UNARY PLUS atom) {
-		$compl_retv = $atom.compl_retv;
+  | ^(UNARY PLUS atomExpr) {
+		$compl_retv = $atomExpr.compl_retv;
     }
-  | ^(UNARY BW_NOT atom) {
-        $compl_retv = getEvaluatorInstance()->unaryOperator(MR_BITWISE_NOT, $atom.compl_retv); 
+  | ^(UNARY BW_NOT atomExpr) {
+        $compl_retv = getEvaluatorInstance()->unaryOperator(MR_BITWISE_NOT, $atomExpr.compl_retv); 
   }
-  | atom {
-		$compl_retv = $atom.compl_retv;
+  | atomExpr {
+		$compl_retv = $atomExpr.compl_retv;
     }
   ;
 
-atom returns [ComplexPtr compl_retv]
+atomExpr returns [ComplexPtr compl_retv]
   :  ^(ATOM real_number) {
 		$compl_retv = $real_number.compl_retv;
 	}

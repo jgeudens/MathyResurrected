@@ -18,15 +18,4 @@ Recomended version ANTLR version is 3.2. Lower versions are not
 guaranteed to work. After that:
 
 	- copy antlr-3.2.jar to this folder 
-	- set java classpath variable. In windows Cmd this can be done like 
-	  this:
-	  
-		set CLASSPATH=%CLASSPATH%;antlr-3.2.jar
-		
-	  In other shells (sh and similar) you will probably need to export 
-	  CLASSPATH variable. See your specific shell documentation. 
-	- now we are ready to go, execute these comands:
-	
-		java org.antlr.Tool ComplexLexer.g
-		java org.antlr.Tool ComplexParser.g
-		java org.antlr.Tool ComplexEval.g
+	- run either regenerate.bat or regenerate.sh depending on your system
