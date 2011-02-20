@@ -7,7 +7,9 @@ options {
 }
 
 @includes {
-	#include "math_bridge_API.h"
+	#define INCLUDED_FROM_ANTLR_GENERATED_CODE
+	#include "MathEvaluator.h"
+	#undef INCLUDED_FROM_ANTLR_GENERATED_CODE
 }
 
 prog returns [ComplexPtr compl_retv]

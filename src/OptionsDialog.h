@@ -40,10 +40,10 @@ public:
 	OptionsDialog(QWidget* parent = 0, Settings* settings = 0);
 	virtual ~OptionsDialog();
 
-public slots: 
+public Q_SLOTS: 
 	void setSettingsObject(Settings* settings);
 
-private slots:
+private Q_SLOTS:
 	void on_radioButtonDecSepSystem_clicked();
 	void on_radioButtonDecSepComa_clicked();
 	void on_radioButtonDecSepDot_clicked();

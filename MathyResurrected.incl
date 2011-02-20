@@ -1,3 +1,5 @@
+# no:keywords needed because ANTLR uses 'emit' in it's headers. 
+CONFIG += no_keywords
 
 CONFIG(release, debug|release) { # general release build options
 	DESTDIR = $${_PRO_FILE_PWD_}/../bin/release
@@ -21,16 +23,13 @@ SOURCES += $${_PRO_FILE_PWD_}/../src/OptionsDialog.cpp \
 	$${_PRO_FILE_PWD_}/../src/MathyResurrectedPlugin.cpp \
 	$${_PRO_FILE_PWD_}/../src/evaluator/MathEvaluator.cpp \
 	$${_PRO_FILE_PWD_}/../src/evaluator/Exceptions.cpp \
-	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.cpp \
-	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API.cpp
+	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.cpp
 HEADERS += $${_PRO_FILE_PWD_}/../src/OptionsDialog.h \
 	$${_PRO_FILE_PWD_}/../src/Settings.h \
 	$${_PRO_FILE_PWD_}/../src/MathyResurrectedPlugin.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/MathEvaluator.h \
 	$${_PRO_FILE_PWD_}/../src/evaluator/Exceptions.h \
-	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.h \
-	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API.h \
-	$${_PRO_FILE_PWD_}/../src/evaluator/math_bridge_API_types.h
+	$${_PRO_FILE_PWD_}/../src/evaluator/Conversion.h
 INCLUDEPATH += $${_PRO_FILE_PWD_}/../src $${_PRO_FILE_PWD_}/../src/evaluator
 
 # Plugin API sources

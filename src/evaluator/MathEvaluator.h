@@ -17,14 +17,129 @@
 * You should have received a copy of the GNU General Public License 
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef MATHY_RESURRECTED_EVALUATOR
-#define MATHY_RESURRECTED_EVALUATOR
+#ifndef MATHY_RESURRECTED_EVALUATOR_BASE_API_INCLUDED
+#define MATHY_RESURRECTED_EVALUATOR_BASE_API_INCLUDED
+
+#include <gmp.h>
+#include <mpfr.h>
+#include <mpc.h>
+#include <antlr3.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*! Multiple precision, floating point type */
+typedef mpfr_t Real;
+typedef mpfr_ptr RealPtr;
+typedef mpfr_srcptr RealConstPtr;
+
+/*! Multiple precision, complex number type */
+typedef mpc_t Complex;
+typedef mpc_ptr ComplexPtr;
+typedef mpc_srcptr ComplexConstPtr;
+
+/** Recognized lexer errors */
+typedef enum {
+	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,
+	LEX_ERR_BAD_INPUT
+} MR_LEXER_ERROR_TYPES;
+
+/** Arithmetic binary operators */
+typedef enum {
+	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
+} MR_MATH_BINARY_OPERATORS;
+
+/** SI unit prefixes */
+typedef enum {
+	MR_MATH_SI_PREFIX_YOTTA, MR_MATH_SI_PREFIX_ZETTA, 
+	MR_MATH_SI_PREFIX_EXA, MR_MATH_SI_PREFIX_PETA, 
+	MR_MATH_SI_PREFIX_TERA, MR_MATH_SI_PREFIX_GIGA, 
+	MR_MATH_SI_PREFIX_MEGA, MR_MATH_SI_PREFIX_KILO, 
+	MR_MATH_SI_PREFIX_HECTO, MR_MATH_SI_PREFIX_DECA, 
+	MR_MATH_SI_PREFIX_DECI, MR_MATH_SI_PREFIX_CENTI, 
+	MR_MATH_SI_PREFIX_MILLI, MR_MATH_SI_PREFIX_MICRO, 
+	MR_MATH_SI_PREFIX_NANO, MR_MATH_SI_PREFIX_PICO, 
+	MR_MATH_SI_PREFIX_FEMTO, MR_MATH_SI_PREFIX_ATTO, 
+	MR_MATH_SI_PREFIX_ZEPTO, MR_MATH_SI_PREFIX_YOCTO, 
+	MR_MATH_SI_PREFIX_KIBI, MR_MATH_SI_PREFIX_MEBI, 
+	MR_MATH_SI_PREFIX_GIBI, MR_MATH_SI_PREFIX_TEBI, 
+	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
+	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
+} MR_MATH_SI_PREFIXES;
+
+/** Logic binary operators */
+typedef enum {
+	MR_BITWISE_AND, MR_BITWISE_OR, 
+	MR_BITWISE_NAND, MR_BITWISE_NOR, 
+	MR_BITWISE_XOR, MR_BITWISE_XNOR,
+	MR_BITWISE_SHL, MR_BITWISE_SHR
+} MR_MATH_BINARY_BITWISE_OPERATORS;
+
+/** Unary operators */
+typedef enum {
+	MR_BITWISE_NOT, MR_UNARY_MINUS
+} MR_MATH_UNARY_OPERATORS;
+
+/** Functions with single argument. */
+typedef enum {
+	MR_FUN_SIN, MR_FUN_COS, MR_FUN_TAN, 
+	MR_FUN_ASIN, MR_FUN_ACOS, MR_FUN_ATAN, 
+	MR_FUN_SINH, MR_FUN_COSH, MR_FUN_TANH,
+	MR_FUN_ASINH, MR_FUN_ACOSH, MR_FUN_ATANH,
+	MR_FUN_EXP, MR_FUN_LOG, MR_FUN_LOG10,
+	MR_FUN_SQRT, MR_FUN_ABS, 
+	MR_FUN_RE, MR_FUN_IM, MR_FUN_ARG, MR_FUN_CONJ,
+	MR_FUN_DEG, MR_FUN_RAD, 
+	MR_FUN_NORM, MR_FUN_POLAR
+} MR_MATH_UNARY_FUNCTIONS;
+
+/** Functions with two arguments. */
+typedef enum {
+	MR_FUN2_ATAN2
+} MR_MATH_BINARY_FUNCTIONS;
+
+void setEvaluator(void* evaluatorObject);
+
+ComplexPtr newMrComplex();
+void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
+void getAns(ComplexPtr dest);
+
+void mr_pi(ComplexPtr dest);
+void mr_e(ComplexPtr dest);
+void si_ref(MR_MATH_SI_PREFIXES si_prefix, ComplexPtr dest);
+
+ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
+	ComplexConstPtr lv, ComplexConstPtr rv);
+ComplexPtr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, 
+	ComplexConstPtr lv, ComplexConstPtr rv);
+ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val);
+
+ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val);
+ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,  
+	ComplexConstPtr arg1, ComplexConstPtr arg2);
+
+void strToReal(const pANTLR3_STRING str, RealPtr dest);
+void strHexToReal(const pANTLR3_STRING str, RealPtr dest);
+void strOctToReal(const pANTLR3_STRING str, RealPtr dest);
+void strBinToReal(const pANTLR3_STRING str, RealPtr dest);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // MATHY_RESURRECTED_EVALUATOR_BASE_API_INCLUDED
+
+#ifndef MATHY_RESURRECTED_EVALUATOR_CPP_API_INCLUDED
+
+// Hiding C++ stuff from ANTLR generated C code.
+// @warning This symbol should never be defined outside of ANTLR grammars. 
+#ifndef INCLUDED_FROM_ANTLR_GENERATED_CODE
+#define MATHY_RESURRECTED_EVALUATOR_CPP_API_INCLUDED
 
 #include <QString>
 #include <QObject>
 #include <vector>
-
-#include "math_bridge_API_types.h"
 
 namespace mathy_resurrected {
 
@@ -68,7 +183,7 @@ public:
 	ComplexPtr unaryFunction (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val);
 	ComplexPtr binaryFunction (MR_MATH_BINARY_FUNCTIONS which, ComplexConstPtr arg1, ComplexConstPtr arg2);
 
-public slots:
+public Q_SLOTS:
 	void setExpression(const QString& expression);
 	bool validate ();
 	bool evaluate ();
@@ -114,4 +229,5 @@ public:
 
 } // mathy_resurrected
 
-#endif // MATHY_RESURRECTED_EVALUATOR
+#endif // INCLUDED_FROM_ANTLR_GENERATED_CODE
+#endif // MATHY_RESURRECTED_EVALUATOR_CPP_API_INCLUDED

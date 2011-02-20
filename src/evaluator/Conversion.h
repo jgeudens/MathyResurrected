@@ -23,7 +23,7 @@
 
 #include <QString>
 #include <QByteArray>
-#include "math_bridge_API_types.h"
+#include "MathEvaluator.h"
 
 namespace mathy_resurrected {
 

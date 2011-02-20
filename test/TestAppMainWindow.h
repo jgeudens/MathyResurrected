@@ -37,7 +37,7 @@ public:
 	TestAppMainWindow(QWidget* parent = 0);
 	virtual ~TestAppMainWindow();
 
-private slots:
+private Q_SLOTS:
 	void on_lineEditExpression_editingFinished();
 
 private:
