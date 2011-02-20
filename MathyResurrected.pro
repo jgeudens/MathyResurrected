@@ -15,5 +15,5 @@ DISTFILES += AUTHORS COPYING HISTORY INSTALL README README.odt TODO \
 	src/antlr/ComplexParser.g \
 	src/antlr/README.txt \
 	src/antlr/regenerate.bat \
-	icons/mathyresurrected.ico \
+	icons/readme.txt \
 	icons/mathyresurrected.png

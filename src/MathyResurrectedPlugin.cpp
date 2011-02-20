@@ -52,9 +52,8 @@ void MathyResurrectedPlugin::getName(QString* str) {
 void MathyResurrectedPlugin::init() {
 	if (gmathyresurrectedInstance == NULL)
 		gmathyresurrectedInstance = this;
-
+	// Read QSettings into our mathyresurrected::Settings
 	itsSettings->readSettings(*(this->settings));
- 	itsCalculator->changeEvaluatorSettings(itsSettings);
 	itsGUI->deleteLater();
 	itsGUI = 0;
 }

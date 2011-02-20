@@ -19,9 +19,15 @@
 */
 
 /*! @file
-Wrapper API for C++ complex math. ANTLR curently generates parsers
-for C only so this API is used to comunicate ANTLR generated,
-C parser/lexer/evaluator with C++ std::complex */
+ANTLR generates C code that can't use C++ classes. For example, it is 
+not possible to use std::complex in evaluator grammar. To be able to 
+use complex numbers and C++ math functions, there is a need  for 
+wrapper API that passes pointers to C structs around. This way, 
+evaluation grammar uses C API that only in it's implementation
+uses C++ classes and methods. There are of course some drawback to this 
+approach, mainly related to casts and conversion between intermediary C 
+structs and Complex objects in bridge API implementation, but 
+it couldn't have been avoided. */
 
 #ifndef MATHY_RESURRECTED_MATH_BRIDGE
 #define MATHY_RESURRECTED_MATH_BRIDGE

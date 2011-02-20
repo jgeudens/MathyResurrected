@@ -38,6 +38,7 @@ using namespace std;
 
 namespace mathy_resurrected {
 
+/** Number of bits uses for all number representations. */
 const int MathEvaluator::NUMERIC_PRECISION = 164;
 
 #ifdef _DEBUG
@@ -139,7 +140,12 @@ MathEvaluator::MathEvaluator(const Settings* app_settings, QObject* parent) :
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false)
 {
 	setEvaluator(this);
-	changeEvaluatorSettings(app_settings);
+	
+	if (app_settings == 0) {
+		throw invalid_argument("Null pointer to evaluator settings!");
+	}
+	itsSettings = app_settings;
+
 	mpc_init2(itsValue, NUMERIC_PRECISION);
 	mpc_set_ui_ui(itsValue, 0, 0, MPC_RNDNN);
 	mpc_init2(itsAns, NUMERIC_PRECISION);
@@ -152,13 +158,6 @@ MathEvaluator::~MathEvaluator() {
 	clearComplexFactory();
 	clearRealFactory();
 	mpfr_free_cache();
-}
-
-void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
-	if (app_settings == 0) {
-		throw invalid_argument("Null pointer to evaluator settings!");
-	}
-	itsSettings = app_settings;
 }
 
 /*! Sets expression to be evaluated. */
@@ -207,6 +206,7 @@ evaluates it. Returns true if expression is valid. Results
 can be read using Re() and Im() methods. */
 bool MathEvaluator::evaluate() {
 	itsLexerErrorsCollection.clear();
+	// Connect to bridge API
 	setEvaluator(this);
 	if (!itsIsEvaluated) {
 		if (validate()) {

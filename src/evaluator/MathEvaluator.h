@@ -23,6 +23,7 @@
 #include <QString>
 #include <QObject>
 #include <vector>
+
 #include "math_bridge_API_types.h"
 
 namespace mathy_resurrected {
@@ -68,8 +69,7 @@ public:
 	ComplexPtr binaryFunction (MR_MATH_BINARY_FUNCTIONS which, ComplexConstPtr arg1, ComplexConstPtr arg2);
 
 public slots:
-	void changeEvaluatorSettings(const Settings* settings);
-	void setExpression (const QString& expression);
+	void setExpression(const QString& expression);
 	bool validate ();
 	bool evaluate ();
 	void storeAns();
