@@ -36,13 +36,18 @@ class MathyResurrectedPlugin : public QObject, public PluginInterface
 	Q_INTERFACES(PluginInterface)
 
 public:
-
-	uint HASH_MATHYRESURRECTED;
-
 	MathyResurrectedPlugin();
 	virtual ~MathyResurrectedPlugin();
 
 	virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL); 
+
+private:
+	uint HASH_MATHYRESURRECTED;
+	mathy_resurrected::MathEvaluator *itsCalculator;
+	mathy_resurrected::OptionsDialog *itsGUI;
+	mathy_resurrected::Settings *itsSettings;
+	QString itsName;
+	QString libPath;
 
 	void getLabels(QList<InputData>*);
 	void getID(uint*);
@@ -54,15 +59,6 @@ public:
 	void init();
 	QString getIcon();
 	void setPath(QString* path);
-
-private:
-	mathy_resurrected::MathEvaluator *itsCalculator;
-	mathy_resurrected::OptionsDialog *itsGUI;
-	mathy_resurrected::Settings *itsSettings;
-	QString itsName;
-	QString libPath;
 };
-
-extern MathyResurrectedPlugin* gmathyresurrectedInstance;
 
 #endif // MATHY_REUSRECTED_MAIN_HEADER_INCLUDED

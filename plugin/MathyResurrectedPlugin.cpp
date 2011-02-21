@@ -27,8 +27,6 @@
 
 using namespace mathy_resurrected;
 
-MathyResurrectedPlugin* gmathyresurrectedInstance = NULL;
-
 MathyResurrectedPlugin::MathyResurrectedPlugin() {
 	HASH_MATHYRESURRECTED = qHash(QString("MathyResurrected"));
 	itsName = "MathyResurrected";
@@ -38,7 +36,6 @@ MathyResurrectedPlugin::MathyResurrectedPlugin() {
 }
 
 MathyResurrectedPlugin::~MathyResurrectedPlugin() {
-	gmathyresurrectedInstance = NULL;
 }
 
 void MathyResurrectedPlugin::getID(uint* id) {
@@ -50,8 +47,6 @@ void MathyResurrectedPlugin::getName(QString* str) {
 }
 
 void MathyResurrectedPlugin::init() {
-	if (gmathyresurrectedInstance == NULL)
-		gmathyresurrectedInstance = this;
 	// Read QSettings into our mathyresurrected::Settings
 	itsSettings->readSettings(*(this->settings));
 	itsGUI->deleteLater();
