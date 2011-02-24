@@ -22,13 +22,17 @@
 #define MATHY_RESURRECTED_TEST_APP_WINDOW
 
 #include <QMainWindow>
+#include <QSettings>
 #include "ui_TestAppMainWindow.h"
+
+class PluginInterface;
 
 namespace mathy_resurrected {
 
-class MathEvaluator;
-class Settings;
-
+/** Quick any dirty test suite implementation. 
+This is little app used for debugging purposes. Written mainly to 
+avoid need to install each new build of mathyresurrected plugin into
+Launchy directory to be able to test it. */
 class TestAppMainWindow : public QMainWindow, private Ui::TestAppMainWindow {
 
 	Q_OBJECT
@@ -39,10 +43,15 @@ public:
 
 private Q_SLOTS:
 	void on_lineEditExpression_editingFinished();
+	void on_pushButtonApply_clicked();
 
 private:
-	MathEvaluator *itsCalculator;
-	Settings *itsSettings;
+	PluginInterface* m_pluginInstance;
+	QSettings* m_appSettings;
+	QWidget* m_pluginGui;
+	QVBoxLayout* m_placeholderLayout;
+
+	void setupPluginGUI();
 };
 
 } // namespace mathy_resurrected

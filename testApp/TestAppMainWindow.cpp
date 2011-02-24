@@ -19,68 +19,79 @@
 */
 
 #include "TestAppMainWindow.h"
-#include "MathEvaluator.h"
-#include "Settings.h"
+#include <QPluginLoader>
+#include <QDir>
+#include <QStringListIterator>
+#include "plugin_interface.h"
 
 namespace mathy_resurrected {
 
 TestAppMainWindow::TestAppMainWindow(QWidget* parent) : 
-	QMainWindow(parent) {
+	QMainWindow(parent), 
+	m_pluginInstance(0), m_pluginGui(0) {
 	setupUi(this);
-	itsSettings = new Settings(this);
-	itsSettings->setCalculationBitWidth(Settings::BW8);
 
-	itsSettings->setShowBinOutput(true);
-	itsSettings->setShowDecOutput(true);
-	itsSettings->setShowHexOutput(true);
-	itsSettings->setShowOctOutput(true);
+	// Ensuring that artificial app settings are available to plugin 
+	m_appSettings = new QSettings (
+		qApp->applicationDirPath() + "/testApp.conf", 
+		QSettings::IniFormat);
 	
-	itsSettings->setShowLeadingZeroesBin(true);
-	itsSettings->setShowLeadingZeroesHex(true);
-	itsSettings->setShowLeadingZeroesOct(true);
-	itsSettings->setShowBasePrefix(true);
+	// Loading plugin. Assumes that dll is in same dir as app exe
+	// and that no other plugins exist in that directory.
+	QDir pluginsDir(qApp->applicationDirPath());
+	QStringListIterator fileName(pluginsDir.entryList(QDir::Files));
+	while (fileName.hasNext() && m_pluginInstance == 0) {
+		QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName.next()));
+		QObject *plugin = pluginLoader.instance();
+		if (plugin) {
+			m_pluginInstance = qobject_cast<PluginInterface *>(plugin);
+		}
+	}
 
-	itsSettings->setOutputFormat(Settings::FIXED);
-
-	frameSettings->setSettingsObject(itsSettings);
-	itsCalculator = new MathEvaluator(itsSettings, this);
+	// Initializing loaded plugin and it's gui
+	m_placeholderLayout = new QVBoxLayout(groupBoxPlaceholder);
+	if (m_pluginInstance != 0) {
+		m_pluginInstance->settings = &m_appSettings;
+		m_pluginInstance->msg(MSG_INIT);
+		setupPluginGUI();
+	}
 }
 
 TestAppMainWindow::~TestAppMainWindow() {
-	setupUi(this);
+	m_pluginInstance->msg(MSG_END_DIALOG);
+}
+
+void TestAppMainWindow::setupPluginGUI() {
+	m_pluginInstance->msg(MSG_DO_DIALOG, groupBoxPlaceholder, &m_pluginGui);
+	m_placeholderLayout->addWidget(m_pluginGui);
+}
+
+void TestAppMainWindow::on_pushButtonApply_clicked() {
+	// Dirty hack: 
+	// deleting plugin GUI and then creating it again only to force 
+	// saving of plugin settings.
+	if (m_pluginGui != 0) {
+		m_placeholderLayout->removeWidget(m_pluginGui);
+	}
+	m_pluginInstance->msg(MSG_END_DIALOG, (void*)true);
+	setupPluginGUI();
 }
 
 void TestAppMainWindow::on_lineEditExpression_editingFinished() {
-	itsCalculator->setExpression(lineEditExpression->text());
-	if (itsCalculator->evaluate()) {
-		if (itsSettings->showBinOutput()) {
-			lineEditResultBin->setText(itsCalculator->toStringBin());
-		} else {
-			lineEditResultBin->clear();
-		}
+	plainTextEditResults->setPlainText("");
 
-		if (itsSettings->showDecOutput()) {
-			lineEditResultDec->setText(itsCalculator->toString());
-		} else {
-			lineEditResultDec->clear();
-		}
+	InputData dta;
+	dta.setText(lineEditExpression->text());
 
-		if (itsSettings->showHexOutput()) {
-			lineEditResultHex->setText(itsCalculator->toStringHex());
-		} else {
-			lineEditResultHex->clear();
-		}
+	QList<InputData> inList;
+	QList<CatItem> outList;
 
-		if (itsSettings->showOctOutput()) {
-			lineEditResultOct->setText(itsCalculator->toStringOct());
-		} else {
-			lineEditResultOct->clear();
-		}
-	} else {
-		lineEditResultDec->clear();
-		lineEditResultBin->clear();
-		lineEditResultHex->clear();
-		lineEditResultOct->clear();
+	inList << dta;
+	m_pluginInstance->msg(MSG_GET_LABELS, &inList);
+	m_pluginInstance->msg(MSG_GET_RESULTS, &inList, &outList);
+
+	Q_FOREACH (CatItem result, outList) {
+		plainTextEditResults->appendPlainText(result.shortName);
 	}
 }
 
