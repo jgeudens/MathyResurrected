@@ -6,8 +6,7 @@ QT = core gui
 CONFIG += qt \
 	warn_on \
 	exceptions \
-	debug_and_release \
-	build_all
+	debug_and_release
 
 SOURCES += main.cpp TestAppMainWindow.cpp
 
@@ -16,6 +15,10 @@ HEADERS += TestAppMainWindow.h
 FORMS += $${_PRO_FILE_PWD_}/../ui/TestAppMainWindow.ui
 
 INCLUDEPATH += $${_PRO_FILE_PWD_}/../interface
+
+win32 {
+	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc *.pdb
+}
 
 CONFIG(release, debug|release) { # general release build options
 	DESTDIR = $${_PRO_FILE_PWD_}/../bin/release
@@ -31,8 +34,4 @@ CONFIG(release, debug|release) { # general release build options
 	MOC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
 	UI_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
 	INCLUDEPATH += $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
-}
-
-win32 {
-	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc *.pdb
 }

@@ -2,42 +2,43 @@ TARGET = mathyresurrected
 TEMPLATE = lib
 VERSION = 0.2.0
 
-unix {
-	PREFIX = /usr
-	target.path = $$PREFIX/src/launchy/plugins/
-	icon.path = $$PREFIX/src/launchy/plugins/icons/
-	icon.files = $${_PRO_FILE_PWD_}/../icons/mathyresurrected.png
-	INSTALLS += target icon
+# Install target on UNIX
+unix:!macx {
+    PREFIX = /usr
+    target.path = $$PREFIX/lib/launchy/plugins/
+    icon.path = $$PREFIX/lib/launchy/plugins/icons/
+    icon.files = mathyresurrected.png
+    INSTALLS += target \
+        icon
+}
+
+# Install target on MacOS. Not that this is copy-paste of Launchy's
+# calcy plugin. I have no means to test if it actually work.
+macx {
+  if(!debug_and_release|build_pass):CONFIG(debug, debug|release):DESTDIR = ../../debug/Launchy.app/Contents/MacOS/plugins
+  if(!debug_and_release|build_pass):CONFIG(release, debug|release):DESTDIR = ../../release/Launchy.app/Contents/MacOS/plugins
+
+    CONFIG(debug, debug|release):icons.path = ../../debug/Launchy.app/Contents/MacOS/plugins/icons/
+    CONFIG(release, debug|release):icons.path = ../../release/Launchy.app/Contents/MacOS/plugins/icons/
+    icons.files = mathyresurrected.png
+    INSTALLS += icons
+
+  INCLUDEPATH += /opt/local/include/
 }
 
 win32 {
 	CONFIG -= embed_manifest_dll
 }
 
-CONFIG += plugin \
+QT = core gui
+
+CONFIG += qt plugin \
 	warn_on \
 	exceptions \
-	debug_and_release \
-	build_all
+	debug_and_release
 
-# no_keywords because ANTLR uses 'emit' in it's headers. 
+# no_keywords because ANTLR uses 'emit' in it's C runtime headers.
 CONFIG += no_keywords
-
-CONFIG(release, debug|release) { # general release build options
-	DESTDIR = $${_PRO_FILE_PWD_}/../bin/release
-	OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
-	RCC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
-	MOC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
-	UI_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
-	INCLUDEPATH += $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
-} else {                         # general debug build options
-	DESTDIR = $${_PRO_FILE_PWD_}/../bin/debug
-	OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
-	RCC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
-	MOC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
-	UI_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
-	INCLUDEPATH += $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
-}
 
 # Plugin main sources
 SOURCES += OptionsDialog.cpp \
@@ -82,7 +83,6 @@ LIBS += -lantlr3c
 
 win32 {
 	LIBS += shell32.lib
-	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc *.pdb
 }
 
 # Adding linking options for GNU BigNum library and related libraries
@@ -97,3 +97,19 @@ unix {
 }
 
 LIBS += -lmpfr -lmpc
+
+CONFIG(release, debug|release) { # general release build options
+	DESTDIR = $${_PRO_FILE_PWD_}/../bin/release
+	OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	RCC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	MOC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	UI_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+	INCLUDEPATH += $${_PRO_FILE_PWD_}/../build/$${TARGET}/release
+} else {                         # general debug build options
+	DESTDIR = $${_PRO_FILE_PWD_}/../bin/debug
+	OBJECTS_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	RCC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	MOC_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	UI_DIR = $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+	INCLUDEPATH += $${_PRO_FILE_PWD_}/../build/$${TARGET}/debug
+}
