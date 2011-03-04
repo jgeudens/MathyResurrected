@@ -127,11 +127,7 @@ void MathyResurrectedPlugin::endDialog(bool accept) {
 }
 
 QString MathyResurrectedPlugin::getIcon() {
-	return libPath + "/icons/mathyresurrected.png";
-}
-
-void MathyResurrectedPlugin::setPath(QString * path) {
-	libPath = *path;
+	return ":icons/mathyresurrected.png";
 }
 
 void MathyResurrectedPlugin::launchItem(QList<InputData>* /*inputData*/, CatItem* item) {
@@ -180,9 +176,6 @@ int MathyResurrectedPlugin::msg(int msgId, void* wParam, void* lParam) {
 		case MSG_END_DIALOG:
 			// This isn't called unless you return true to MSG_HAS_DIALOG
 			endDialog((bool) wParam);
-			break;
-		case MSG_PATH:
-			setPath((QString *) wParam);
 			break;
 
 		default:
