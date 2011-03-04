@@ -57,8 +57,9 @@ set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
 # Include directories common to all
 include_directories(
 	"${PROJECT_BINARY_DIR}"
-	"${PROJECT_SOURCE_DIR}/interface")
-	
+	"${PROJECT_SOURCE_DIR}/common"
+	"${PROJECT_SOURCE_DIR}/common/pluginAPI")
+
 #..............................................................................#
 #                            'make uninstall' target                           #
 #..............................................................................#
@@ -94,5 +95,5 @@ if (MATHYRES_CONFIGURE_DIST_TARGET)
 	endif()
 endif()
 
-add_subdirectory(plugin)
-add_subdirectory(testApp)
+add_subdirectory(src)
+add_subdirectory(test)
