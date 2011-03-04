@@ -550,7 +550,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/mathyresurrected.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>checkBoxZeroTreshold</sender>

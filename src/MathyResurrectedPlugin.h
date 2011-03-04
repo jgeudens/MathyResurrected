@@ -58,7 +58,6 @@ private:
 	void endDialog(bool accept);
 	void init();
 	QString getIcon();
-	void setPath(QString* path);
 };
 
 #endif // MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
