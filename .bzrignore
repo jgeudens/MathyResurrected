@@ -12,4 +12,12 @@ build
 *.sln
 *.vcproj
 *.rc
-src/antlr/output
+src/antlr/ComplexEval.c
+src/antlr/ComplexEval.h
+src/antlr/ComplexEval.tokens
+src/antlr/ComplexLexer.c
+src/antlr/ComplexLexer.h
+src/antlr/ComplexLexer.tokens
+src/antlr/ComplexParser.c
+src/antlr/ComplexParser.h
+src/antlr/ComplexParser.tokens
