@@ -21,3 +21,6 @@ src/antlr/ComplexLexer.tokens
 src/antlr/ComplexParser.c
 src/antlr/ComplexParser.h
 src/antlr/ComplexParser.tokens
+src/antlr/ComplexEval.cpp
+src/antlr/ComplexLexer.cpp
+src/antlr/ComplexParser.cpp

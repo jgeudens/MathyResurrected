@@ -111,7 +111,7 @@ void Conversion::strToReal (const pANTLR3_STRING str, RealPtr dest) {
 	QString temp = QString::fromUtf8((const char*)utf8Str->chars, utf8Str->len);
 	temp.replace(Conversion::internalDecimalPoint(), QChar('.'));
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	mpfr_set_str(dest, temp.toUtf8().constData(), 8, MPFR_RNDN);
+	mpfr_set_str(dest, temp.toUtf8().constData(), 10, MPFR_RNDN);
 }
 
 void Conversion::strHexToReal (const pANTLR3_STRING str, RealPtr dest) {
