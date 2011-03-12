@@ -1,4 +1,3 @@
-
 #..............................................................................#
 #                         General project options                              #
 #..............................................................................#
@@ -12,14 +11,31 @@ set(MATHYRES_TARGET_NAME "mathyresurrected")
 set(MATHYRES_ARCHIVE_NAME "${MATHYRES_TARGET_NAME}-v${MATHYRES_VERSION}")
 
 #..............................................................................#
+#                         Check for standard headers                           #
+#..............................................................................#
+include(CheckIncludeFileCXX)
+include(CheckIncludeFile)
+CHECK_INCLUDE_FILE_CXX(cassert HAVE_STD_CASSERT)
+CHECK_INCLUDE_FILE_CXX(stdexcept HAVE_STD_STDEXCEPT)
+CHECK_INCLUDE_FILE_CXX(string HAVE_STD_STRING)
+CHECK_INCLUDE_FILE_CXX(vector HAVE_STD_VECTOR)
+CHECK_INCLUDE_FILE_CXX(iostream HAVE_STD_IOSTREAM)
+
+if(WIN32)
+	CHECK_INCLUDE_FILE(windows.h HAVE_WINDOWS_H)
+	CHECK_INCLUDE_FILE(shlobj.h HAVE_SHLOBJ_H)
+endif()
+
+#..............................................................................#
 #                         Check for external dependencies                      #
 #..............................................................................#
 find_package(Qt4 4.6.0 COMPONENTS QtCore QtGui REQUIRED)
 include(${QT_USE_FILE})
 
-# TODO 
-# find GNU big num libs, ANTLR runtime, 
-# check Qt features
+CHECK_INCLUDE_FILE(antlr3.h HAVE_ANTLR3_H)
+CHECK_INCLUDE_FILE(gmp.h HAVE_GMP_H)
+CHECK_INCLUDE_FILE(mpfr.h HAVE_MPFR_H)
+CHECK_INCLUDE_FILE(mpc.h HAVE_MPC_H)
 
 #..............................................................................#
 #                                 Build setup                                  #
