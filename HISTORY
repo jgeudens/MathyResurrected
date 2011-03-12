@@ -1,13 +1,14 @@
 v 0.2.0
 =======
++ Tested and fixed Linux/gcc version. 
 * Major update to calculation engine. Swithched to GNU multiple precission 
-  numeric library. This improves numeric precision and rand range of all 
+  numeric library. This improves numeric precision and range of all 
   calculations.
 * Options dialog redesign
 	+ Added larger precision in options dialog
 	+ Added options to show leading zeroes for octal output
 + Added digit grouping for all numeric bases if requested through options
-+ Created new Readem / User Manual
++ Created new Readme / User Manual
 
 v 0.1.7
 =======

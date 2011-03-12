@@ -65,19 +65,15 @@ include_directories(
 	"${PROJECT_SOURCE_DIR}/src"
 	"${CMAKE_CURRENT_BINARY_DIR}")
 	
-source_group(Generated 
+source_group(generated 
 	FILES ${MATHYRES_MOC_SOURCES}	
 	${MATHYRES_UI_HEADERS}
 	${MATHYRES_RESOURCES}
 	antlr/ComplexEval.cpp antlr/ComplexLexer.cpp antlr/ComplexParser.cpp 
 	antlr/ComplexEval.h antlr/ComplexLexer.h antlr/ComplexParser.h
 	"${PROJECT_BINARY_DIR}/mathyresurrected.rc")
-	
-source_group(PluginAPI 
-	FILES "${PROJECT_SOURCE_DIR}/common/pluginAPI/plugin_interface.h"
-	"${PROJECT_SOURCE_DIR}/common/pluginAPI/catalog.h"
-	"${PROJECT_SOURCE_DIR}/common/pluginAPI/plugin_interface.cpp")
-	
+source_group(libs .*common.*)
+
 #..............................................................................#
 #                                Adding target                                 #
 #..............................................................................#

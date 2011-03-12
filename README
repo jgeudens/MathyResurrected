@@ -48,7 +48,7 @@ Building and installation
 Pre-built plugin .dll is available for MS Windows systems, and source code for 
 others. On windows, installing it means simply copying .dll file into plugins 
 directory of Launchy install dir. On other systems plugin must be built from 
-source and installed to appropriate place fro that system. For detailed 
+source and installed to appropriate place for that system. For detailed 
 instructions see INSTALL in Mathy Resurrected source tree. 
 
 Support
