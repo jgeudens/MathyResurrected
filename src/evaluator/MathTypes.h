@@ -20,6 +20,7 @@
 #ifndef MATHY_RESURRECTED_MATH_TYPES
 #define MATHY_RESURRECTED_MATH_TYPES
 
+#include <cstdio>
 #include <gmp.h>
 #include <mpfr.h>
 #include <mpc.h>

@@ -49,9 +49,6 @@ MathEvaluator* getEvaluatorInstance() {
 	return currentEvaluator;
 }
 
-/** Number of bits uses for all number representations. */
-const int MathEvaluator::NUMERIC_PRECISION = 164;
-
 #ifdef _DEBUG
 void MathEvaluator::printLexerErrors() const {
 	unsigned int i = 0;
@@ -157,10 +154,10 @@ MathEvaluator::MathEvaluator(const Settings* app_settings, QObject* parent) :
 	}
 	itsSettings = app_settings;
 
-	mpc_init2(itsValue, NUMERIC_PRECISION);
-	mpc_set_ui_ui(itsValue, 0, 0, MPC_RNDNN);
-	mpc_init2(itsAns, NUMERIC_PRECISION);
-	mpc_set_ui_ui(itsAns, 0, 0, MPC_RNDNN);
+	mpc_init2(itsValue, Conversion::NUMERIC_PRECISION);
+	mpc_set_ui_ui(itsValue, 0, 0, Conversion::defaultComplexRoundingMode());
+	mpc_init2(itsAns, Conversion::NUMERIC_PRECISION);
+	mpc_set_ui_ui(itsAns, 0, 0, Conversion::defaultComplexRoundingMode());
 }
 
 MathEvaluator::~MathEvaluator() {
@@ -250,7 +247,7 @@ bool MathEvaluator::evaluate() {
 
 				try {
 					retv_val = lpr.treeParser->prog(lpr.treeParser);
-					mpc_set(itsValue, retv_val, MPC_RNDNN);
+					mpc_set(itsValue, retv_val, Conversion::defaultComplexRoundingMode());
 				}
 				catch (NumericConversionError& e) {
 					itsIsValid = false;
@@ -268,8 +265,8 @@ bool MathEvaluator::evaluate() {
 /** Stores current state of calculation for future use by "ans" 
 variable in expression. */
 void MathEvaluator::storeAns() {
-	mpfr_set(mpc_realref(itsAns), mpc_realref(itsValue), MPFR_RNDN);
-	mpfr_set(mpc_imagref(itsAns), mpc_imagref(itsValue), MPFR_RNDN);
+	mpfr_set(mpc_realref(itsAns), mpc_realref(itsValue), Conversion::defaultRoundingMode());
+	mpfr_set(mpc_imagref(itsAns), mpc_imagref(itsValue), Conversion::defaultRoundingMode());
 }
 
 const QString MathEvaluator::toString() const {
@@ -329,29 +326,29 @@ const Real& MathEvaluator::Im() const { return mpc_imagref(itsValue); }
 
 void MathEvaluator::pi(ComplexPtr dest) {
 	assert(dest != 0);
-	mpfr_const_pi(mpc_realref(dest), MPFR_RNDN);
-	mpfr_set_ui(mpc_imagref(dest), 0, MPFR_RNDN);
+	mpfr_const_pi(mpc_realref(dest), Conversion::defaultRoundingMode());
+	mpfr_set_ui(mpc_imagref(dest), 0, Conversion::defaultRoundingMode());
 }
 
 void MathEvaluator::e(ComplexPtr dest) {
 	assert(dest != 0);
-	mpfr_set_ui(mpc_realref(dest), 1, MPFR_RNDN);
-	mpfr_set_ui(mpc_imagref(dest), 0, MPFR_RNDN);
-	mpfr_exp(mpc_realref(dest), mpc_realref(dest), MPFR_RNDN);
+	mpfr_set_ui(mpc_realref(dest), 1, Conversion::defaultRoundingMode());
+	mpfr_set_ui(mpc_imagref(dest), 0, Conversion::defaultRoundingMode());
+	mpfr_exp(mpc_realref(dest), mpc_realref(dest), Conversion::defaultRoundingMode());
 }
 
 const Settings& MathEvaluator::settings() const { return *itsSettings; }
 
 void MathEvaluator::ans(ComplexPtr dest) {
 	assert(dest != 0);
-	mpfr_set(mpc_realref(itsAns), mpc_realref(dest), MPFR_RNDN);
-	mpfr_set(mpc_imagref(itsAns), mpc_imagref(dest), MPFR_RNDN);
+	mpfr_set(mpc_realref(itsAns), mpc_realref(dest), Conversion::defaultRoundingMode());
+	mpfr_set(mpc_imagref(itsAns), mpc_imagref(dest), Conversion::defaultRoundingMode());
 }
 
 ComplexPtr MathEvaluator::newComplex() {
 	ComplexPtr p = new Complex();
-	mpc_init2(p, NUMERIC_PRECISION);
-	mpc_set_ui_ui(p, 0, 0, MPC_RNDNN);
+	mpc_init2(p, Conversion::NUMERIC_PRECISION);
+	mpc_set_ui_ui(p, 0, 0, Conversion::defaultComplexRoundingMode());
 	itsComplexFactoryData.push_back(p);
 	return p;
 }
@@ -368,8 +365,8 @@ void MathEvaluator::clearComplexFactory() {
 
 RealPtr MathEvaluator::newReal() {
 	RealPtr p = new Real();
-	mpfr_init2(p, NUMERIC_PRECISION);
-	mpfr_set_ui(p, 0, MPFR_RNDN);
+	mpfr_init2(p, Conversion::NUMERIC_PRECISION);
+	mpfr_set_ui(p, 0, Conversion::defaultRoundingMode());
 	itsRealFactoryData.push_back(p);
 	return p;
 }
@@ -394,92 +391,92 @@ void MathEvaluator::collectlexerError(unsigned int char_index, MR_LEXER_ERROR_TY
 void MathEvaluator::
 SIUnit(MR_MATH_SI_PREFIXES si_prefix, ComplexPtr dest) {
 	assert(dest != 0);
-	mpfr_set_ui(mpc_imagref(dest), 0, MPFR_RNDN);
+	mpfr_set_ui(mpc_imagref(dest), 0, Conversion::defaultRoundingMode());
 
 	switch (si_prefix) {
 		case MR_MATH_SI_PREFIX_YOTTA:
-			mpfr_set_str(mpc_realref(dest), "1e24", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e24", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_ZETTA:
-			mpfr_set_str(mpc_realref(dest), "1e21", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e21", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_EXA:
-			mpfr_set_str(mpc_realref(dest), "1e18", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e18", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_PETA:
-			mpfr_set_str(mpc_realref(dest), "1e15", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e15", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_TERA:
-			mpfr_set_str(mpc_realref(dest), "1e12", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e12", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_GIGA:
-			mpfr_set_str(mpc_realref(dest), "1e9", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e9", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_MEGA:
-			mpfr_set_str(mpc_realref(dest), "1e6", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e6", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_KILO:
-			mpfr_set_str(mpc_realref(dest), "1e3", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e3", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_HECTO:
-			mpfr_set_str(mpc_realref(dest), "1e2", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e2", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_DECA:
-			mpfr_set_str(mpc_realref(dest), "1e1", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e1", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_DECI:
-			mpfr_set_str(mpc_realref(dest), "1e-1", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-1", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_CENTI:
-			mpfr_set_str(mpc_realref(dest), "1e-2", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-2", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_MILLI:
-			mpfr_set_str(mpc_realref(dest), "1e-3", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-3", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_MICRO:
-			mpfr_set_str(mpc_realref(dest), "1e-6", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-6", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_NANO:
-			mpfr_set_str(mpc_realref(dest), "1e-9", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-9", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_PICO:
-			mpfr_set_str(mpc_realref(dest), "1e-12", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-12", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_FEMTO:
-			mpfr_set_str(mpc_realref(dest), "1e-15", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-15", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_ATTO:
-			mpfr_set_str(mpc_realref(dest), "1e-18", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-18", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_ZEPTO:
-			mpfr_set_str(mpc_realref(dest), "1e-21", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-21", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_YOCTO:
-			mpfr_set_str(mpc_realref(dest), "1e-24", 10, MPFR_RNDN);
+			mpfr_set_str(mpc_realref(dest), "1e-24", 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_KIBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 10, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 10, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_MEBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 20, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 20, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_GIBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 30, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 30, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_TEBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 40, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 40, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_PEBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 50, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 50, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_EXBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 60, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 60, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_ZEBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 70, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 70, Conversion::defaultRoundingMode());
 			break;
 		case MR_MATH_SI_PREFIX_YOBI:
-			mpfr_set_ui_2exp(mpc_realref(dest), 1, 80, MPFR_RNDN);
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 80, Conversion::defaultRoundingMode());
 			break;
 	}
 }
@@ -488,22 +485,22 @@ ComplexPtr MathEvaluator::binaryOperator (MR_MATH_BINARY_OPERATORS which, Comple
 	ComplexPtr retv = newComplex();
 	switch (which) {
 		case MR_PLUS:
-			mpc_add(retv, lv, rv, MPC_RNDNN);
+			mpc_add(retv, lv, rv, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_MINUS:
-			mpc_sub(retv, lv, rv, MPC_RNDNN);
+			mpc_sub(retv, lv, rv, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_MULTI:
-			mpc_mul(retv, lv, rv, MPC_RNDNN);
+			mpc_mul(retv, lv, rv, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_DIV:
-			mpc_div(retv, lv, rv, MPC_RNDNN);
+			mpc_div(retv, lv, rv, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_MOD:
-			mpfr_fmod(mpc_realref(retv), mpc_realref(lv), mpc_realref(rv), MPFR_RNDN);
+			mpfr_fmod(mpc_realref(retv), mpc_realref(lv), mpc_realref(rv), Conversion::defaultRoundingMode());
 			break;
 		case MR_POW:
-			mpc_pow(retv, lv, rv, MPC_RNDNN);
+			mpc_pow(retv, lv, rv, Conversion::defaultComplexRoundingMode());
 			break;
 	}
 	return retv;
@@ -544,13 +541,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 & rv64);
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), lv32 & rv32, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv32 & rv32, Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), lv16 & rv16, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv16 & rv16, Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), lv8 & rv8, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv8 & rv8, Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -561,13 +558,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 | rv64);
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), lv32 | rv32, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv32 | rv32, Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), lv16 | rv16, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv16 | rv16, Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), lv8 | rv8, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv8 | rv8, Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -578,13 +575,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 & rv64));
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), ~(lv32 & rv32), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv32 & rv32), Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), ~(lv16 & rv16), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv16 & rv16), Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), ~(lv8 & rv8), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv8 & rv8), Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -595,13 +592,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 | rv64));
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), ~(lv32 | rv32), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv32 | rv32), Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), ~(lv16 | rv16), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv16 | rv16), Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), ~(lv8 | rv8), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv8 | rv8), Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -612,13 +609,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 ^ rv64);
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), lv32 ^ rv32, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv32 ^ rv32, Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), lv16 ^ rv16, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv16 ^ rv16, Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), lv8 ^ rv8, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv8 ^ rv8, Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -629,13 +626,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 ^ rv64));
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), ~(lv32 ^ rv32), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv32 ^ rv32), Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), ~(lv16 ^ rv16), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv16 ^ rv16), Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), ~(lv8 ^ rv8), MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), ~(lv8 ^ rv8), Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -646,13 +643,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 << rv64);
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), lv32 << rv32, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv32 << rv32, Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), lv16 << rv16, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv16 << rv16, Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), lv8 << rv8, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv8 << rv8, Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -663,13 +660,13 @@ ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS whic
 					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 >> rv64);
 					break;
 				case 32:
-					mpfr_set_ui(mpc_realref(retv), lv32 >> rv32, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv32 >> rv32, Conversion::defaultRoundingMode());
 					break;
 				case 16:
-					mpfr_set_ui(mpc_realref(retv), lv16 >> rv16, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv16 >> rv16, Conversion::defaultRoundingMode());
 					break;
 				case 8:
-					mpfr_set_ui(mpc_realref(retv), lv8 >> rv8, MPFR_RNDN);
+					mpfr_set_ui(mpc_realref(retv), lv8 >> rv8, Conversion::defaultRoundingMode());
 					break;
 			}
 			break;
@@ -694,23 +691,23 @@ unaryOperator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val) {
 				quint32 tmpI32;
 				tmpI32 = Conversion::convert_u32b(mpc_realref(val));
 				tmpI32 = ~tmpI32;
-				mpfr_set_ui(mpc_realref(retv), tmpI32, MPFR_RNDN);
+				mpfr_set_ui(mpc_realref(retv), tmpI32, Conversion::defaultRoundingMode());
 				break;
 			case 16:
 				quint16 tmpI16;
 				tmpI16 = Conversion::convert_u16b(mpc_realref(val));
 				tmpI16 = ~tmpI16;
-				mpfr_set_ui(mpc_realref(retv), tmpI16, MPFR_RNDN);
+				mpfr_set_ui(mpc_realref(retv), tmpI16, Conversion::defaultRoundingMode());
 				break;
 			case 8:
 				quint8 tmpI8;
 				tmpI8 = Conversion::convert_u8b(mpc_realref(val));
 				tmpI8 = ~tmpI8;
-				mpfr_set_ui(mpc_realref(retv), tmpI8, MPFR_RNDN);
+				mpfr_set_ui(mpc_realref(retv), tmpI8, Conversion::defaultRoundingMode());
 				break;
 		}
 	} else if (which == MR_UNARY_MINUS) {
-		mpc_mul_si(retv, val, -1, MPC_RNDNN);
+		mpc_mul_si(retv, val, -1, Conversion::defaultComplexRoundingMode());
 	}
 	return retv;
 }
@@ -721,104 +718,104 @@ unaryFunction (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val) {
 
 	switch (which) {
 		case MR_FUN_SIN:
-			mpc_sin(retv, val, MPC_RNDNN);
+			mpc_sin(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_COS:
-			mpc_cos(retv, val, MPC_RNDNN);
+			mpc_cos(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_TAN:
-			mpc_tan(retv, val, MPC_RNDNN);
+			mpc_tan(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_ASIN:
-			mpc_asin(retv, val, MPC_RNDNN);
+			mpc_asin(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_ACOS:
-			mpc_acos(retv, val, MPC_RNDNN);
+			mpc_acos(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_ATAN:
-			mpc_atan(retv, val, MPC_RNDNN);
+			mpc_atan(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_SINH:
-			mpc_sinh(retv, val, MPC_RNDNN);
+			mpc_sinh(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_COSH:
-			mpc_cosh(retv, val, MPC_RNDNN);
+			mpc_cosh(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_TANH:
-			mpc_tanh(retv, val, MPC_RNDNN);
+			mpc_tanh(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_ASINH:
-			mpc_asinh(retv, val, MPC_RNDNN);
+			mpc_asinh(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_ACOSH:
-			mpc_acosh(retv, val, MPC_RNDNN);
+			mpc_acosh(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_ATANH:
-			mpc_atanh(retv, val, MPC_RNDNN);
+			mpc_atanh(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_EXP:
-			mpc_exp(retv, val, MPC_RNDNN);
+			mpc_exp(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_LOG:
-			mpc_log(retv, val, MPC_RNDNN);
+			mpc_log(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_LOG10:
 			Complex logOf10;
-			mpc_init2(logOf10, NUMERIC_PRECISION);
-			mpc_set_ui(logOf10, 10, MPC_RNDNN);
-			mpc_log(logOf10, logOf10, MPC_RNDNN);
+			mpc_init2(logOf10, Conversion::NUMERIC_PRECISION);
+			mpc_set_ui(logOf10, 10, Conversion::defaultComplexRoundingMode());
+			mpc_log(logOf10, logOf10, Conversion::defaultComplexRoundingMode());
 
-			mpc_log(retv, val, MPC_RNDNN);
-			mpc_div(retv, retv, logOf10, MPC_RNDNN);
+			mpc_log(retv, val, Conversion::defaultComplexRoundingMode());
+			mpc_div(retv, retv, logOf10, Conversion::defaultComplexRoundingMode());
 
 			mpc_clear(logOf10);
 			break;
 		case MR_FUN_SQRT:
-			mpc_sqrt(retv, val, MPC_RNDNN);
+			mpc_sqrt(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_ABS:
-			mpc_abs(mpc_realref(retv), val, MPFR_RNDN);
+			mpc_abs(mpc_realref(retv), val, Conversion::defaultRoundingMode());
 			break;
 		case MR_FUN_RE:
-			mpc_set_fr(retv, mpc_realref(val), MPC_RNDNN);
+			mpc_set_fr(retv, mpc_realref(val), Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_IM:
-			mpfr_set(mpc_imagref(retv), mpc_imagref(val), MPFR_RNDN);
+			mpfr_set(mpc_imagref(retv), mpc_imagref(val), Conversion::defaultRoundingMode());
 			break;
 		case MR_FUN_ARG:
-			mpc_arg(mpc_realref(retv), val, MPFR_RNDN);
+			mpc_arg(mpc_realref(retv), val, Conversion::defaultRoundingMode());
 			break;
 		case MR_FUN_CONJ:
-			mpc_conj(retv, val, MPC_RNDNN);
+			mpc_conj(retv, val, Conversion::defaultComplexRoundingMode());
 			break;
 		case MR_FUN_DEG:
-			mpfr_set(mpc_realref(retv), mpc_realref(val), MPFR_RNDN);
-			mpfr_const_pi(mpc_imagref(retv), MPFR_RNDN); // Temporarily, so we don't need to create another Real
-			mpfr_mul_ui(mpc_realref(retv), mpc_realref(retv), 180, MPFR_RNDN);
-			mpfr_div(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
-			mpfr_set_ui(mpc_imagref(retv), 360, MPFR_RNDN); // Temporarily, so we don't need to create another Real
-			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
-			mpfr_set_ui(mpc_imagref(retv), 0, MPFR_RNDN);
+			mpfr_set(mpc_realref(retv), mpc_realref(val), Conversion::defaultRoundingMode());
+			mpfr_const_pi(mpc_imagref(retv), Conversion::defaultRoundingMode()); // Temporarily, so we don't need to create another Real
+			mpfr_mul_ui(mpc_realref(retv), mpc_realref(retv), 180, Conversion::defaultRoundingMode());
+			mpfr_div(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_set_ui(mpc_imagref(retv), 360, Conversion::defaultRoundingMode()); // Temporarily, so we don't need to create another Real
+			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_set_ui(mpc_imagref(retv), 0, Conversion::defaultRoundingMode());
 			break;
 		case MR_FUN_RAD:
-			mpfr_set(mpc_realref(retv), mpc_realref(val), MPFR_RNDN);
-			mpfr_const_pi(mpc_imagref(retv), MPFR_RNDN); // Temporarily, so we don't need to create another Real
-			mpfr_mul(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
-			mpfr_div_ui(mpc_realref(retv), mpc_realref(retv), 180, MPFR_RNDN);
-			mpfr_mul_ui(mpc_imagref(retv), mpc_imagref(retv), 2, MPFR_RNDN);
-			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), MPFR_RNDN);
-			mpfr_set_ui(mpc_imagref(retv), 0, MPFR_RNDN);
+			mpfr_set(mpc_realref(retv), mpc_realref(val), Conversion::defaultRoundingMode());
+			mpfr_const_pi(mpc_imagref(retv), Conversion::defaultRoundingMode()); // Temporarily, so we don't need to create another Real
+			mpfr_mul(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_div_ui(mpc_realref(retv), mpc_realref(retv), 180, Conversion::defaultRoundingMode());
+			mpfr_mul_ui(mpc_imagref(retv), mpc_imagref(retv), 2, Conversion::defaultRoundingMode());
+			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_set_ui(mpc_imagref(retv), 0, Conversion::defaultRoundingMode());
 			break;
 		case MR_FUN_NORM:
-			mpc_norm(mpc_realref(retv), val, MPFR_RNDN);
+			mpc_norm(mpc_realref(retv), val, Conversion::defaultRoundingMode());
 			break;
 		case MR_FUN_POLAR:
 			RealPtr fn;
 			fn = newReal();
-			mpfr_cos(fn, mpc_imagref(val), MPFR_RNDN);
-			mpfr_mul(mpc_realref(retv), mpc_realref(val), fn, MPFR_RNDN);
-			mpfr_sin(fn, mpc_imagref(val), MPFR_RNDN);
-			mpfr_mul(mpc_imagref(retv), mpc_realref(val), fn, MPFR_RNDN);
+			mpfr_cos(fn, mpc_imagref(val), Conversion::defaultRoundingMode());
+			mpfr_mul(mpc_realref(retv), mpc_realref(val), fn, Conversion::defaultRoundingMode());
+			mpfr_sin(fn, mpc_imagref(val), Conversion::defaultRoundingMode());
+			mpfr_mul(mpc_imagref(retv), mpc_realref(val), fn, Conversion::defaultRoundingMode());
 			break;
 	}
 	return retv;
@@ -829,7 +826,7 @@ binaryFunction (MR_MATH_BINARY_FUNCTIONS which, ComplexConstPtr arg1, ComplexCon
 	ComplexPtr retv = newComplex();
 	switch (which) {
 		case MR_FUN2_ATAN2:
-			mpfr_atan2(mpc_realref(retv), mpc_realref(arg1), mpc_realref(arg2), MPFR_RNDN);
+			mpfr_atan2(mpc_realref(retv), mpc_realref(arg1), mpc_realref(arg2), Conversion::defaultRoundingMode());
 			break;
 	}
 	return retv;

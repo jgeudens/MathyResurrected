@@ -61,8 +61,6 @@ public:
 	RealPtr newReal();
 	void collectlexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err_type);
 
-	static const int NUMERIC_PRECISION;
-
 	void SIUnit(MR_MATH_SI_PREFIXES si_prefix, ComplexPtr dest);
 	ComplexPtr binaryOperator (MR_MATH_BINARY_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv);
 	ComplexPtr bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv);

@@ -307,9 +307,9 @@ imaginary_number returns [ComplexPtr compl_retv]
 		)? COMPLEX_UNIT)
 	{
 		if (num_present == 0) {
-			mpfr_set_ui(mpc_imagref($compl_retv), 1, MPFR_RNDN);
+			mpfr_set_ui(mpc_imagref($compl_retv), 1, Conversion::defaultRoundingMode());
 		} else {
-			mpfr_set(mpc_imagref($compl_retv), mpc_realref(numb), MPFR_RNDN);
+			mpfr_set(mpc_imagref($compl_retv), mpc_realref(numb), Conversion::defaultRoundingMode());
 		}
     }
     ;
@@ -328,25 +328,25 @@ real_number returns [ComplexPtr compl_retv]
 dec_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT dec_num) {
         $compl_retv = $dec_num.compl_retv;
-		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
+		mpc_div_ui($compl_retv, $compl_retv, 100, Conversion::defaultComplexRoundingMode());
     };
 	
 hex_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT hex_num) {
         $compl_retv = $hex_num.compl_retv;
-		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
+		mpc_div_ui($compl_retv, $compl_retv, 100, Conversion::defaultComplexRoundingMode());
     };
 	
 oct_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT oct_num) {
         $compl_retv = $oct_num.compl_retv;
-		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
+		mpc_div_ui($compl_retv, $compl_retv, 100, Conversion::defaultComplexRoundingMode());
     };
 	
 bin_num_percent returns [ComplexPtr compl_retv]
     : ^(PERCENT bin_num) {
         $compl_retv = $bin_num.compl_retv;
-		mpc_div_ui($compl_retv, $compl_retv, 100, MPC_RNDNN);
+		mpc_div_ui($compl_retv, $compl_retv, 100, Conversion::defaultComplexRoundingMode());
     };
 
 dec_num returns [ComplexPtr compl_retv]

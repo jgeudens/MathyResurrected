@@ -28,6 +28,17 @@ using namespace std;
 
 namespace mathy_resurrected {
 
+/** Number of bits used for all number representations. */
+const int Conversion::NUMERIC_PRECISION = 164;
+
+const mpfr_rnd_t Conversion::defaultRoundingMode() {
+	return MPFR_RNDN;
+}
+
+const mpc_rnd_t Conversion::defaultComplexRoundingMode() {
+	return MPC_RNDNN;
+}
+
 quint8 Conversion::convert_u8b(RealConstPtr val) {
 	return convert<quint8>(val);
 }
@@ -54,7 +65,7 @@ unsignedIntegerType Conversion::convert(RealConstPtr val) {
 	// First, we need to get multiple precision integer from Real
 	mpz_t roundedInt;
 	mpz_init(roundedInt);
-	mpfr_get_z(roundedInt, val, MPFR_RNDN);
+	mpfr_get_z(roundedInt, val, defaultRoundingMode());
 
 	// max value that can fit into unsignedIntegerType
 	// mpz_init_set_ui(intTemp, tmp); -> This won't work for 64bit integers on all platforms
@@ -102,7 +113,7 @@ unsignedIntegerType Conversion::convert(RealConstPtr val) {
 void Conversion::mpfr_set_quint64(RealPtr dest, const quint64& src) {
 	assert(dest != 0);
 	QByteArray numStr = QByteArray::number(src, 10);
-	mpfr_set_str(dest, numStr.constData(), 10, MPFR_RNDN);
+	mpfr_set_str(dest, numStr.constData(), 10, defaultRoundingMode());
 }
 
 void Conversion::strToReal (const pANTLR3_STRING str, RealPtr dest) {
@@ -111,7 +122,7 @@ void Conversion::strToReal (const pANTLR3_STRING str, RealPtr dest) {
 	QString temp = QString::fromUtf8((const char*)utf8Str->chars, utf8Str->len);
 	temp.replace(Conversion::internalDecimalPoint(), QChar('.'));
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	mpfr_set_str(dest, temp.toUtf8().constData(), 10, MPFR_RNDN);
+	mpfr_set_str(dest, temp.toUtf8().constData(), 10, defaultRoundingMode());
 }
 
 void Conversion::strHexToReal (const pANTLR3_STRING str, RealPtr dest) {
@@ -119,7 +130,7 @@ void Conversion::strHexToReal (const pANTLR3_STRING str, RealPtr dest) {
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
 	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	mpfr_set_str(dest, bArray.constData(), 16, MPFR_RNDN);
+	mpfr_set_str(dest, bArray.constData(), 16, defaultRoundingMode());
 }
 
 void Conversion::strOctToReal (const pANTLR3_STRING str, RealPtr dest) {
@@ -127,7 +138,7 @@ void Conversion::strOctToReal (const pANTLR3_STRING str, RealPtr dest) {
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
 	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	mpfr_set_str(dest, bArray.constData(), 8, MPFR_RNDN);
+	mpfr_set_str(dest, bArray.constData(), 8, defaultRoundingMode());
 }
 
 void Conversion::strBinToReal (const pANTLR3_STRING str, RealPtr dest) {
@@ -136,7 +147,7 @@ void Conversion::strBinToReal (const pANTLR3_STRING str, RealPtr dest) {
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
 	QByteArray bArray ((const char*)utf8Str->chars, utf8Str->len);
 	utf8Str->factory->destroy(utf8Str->factory, utf8Str);
-	mpfr_set_str(dest, bArray.constData(), 2, MPFR_RNDN);
+	mpfr_set_str(dest, bArray.constData(), 2, defaultRoundingMode());
 }
 
 bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {
@@ -144,9 +155,9 @@ bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {
 	bool retv;
 	if (sett.showSmallNumbersAsZero()) {
 		Real tres;
-		mpfr_init2(tres, MathEvaluator::NUMERIC_PRECISION);
-		mpfr_set_ui(tres, 10, MPFR_RNDN);
-		mpfr_pow_si(tres, tres, sett.zeroTresholdExp(), MPFR_RNDN);
+		mpfr_init2(tres, NUMERIC_PRECISION);
+		mpfr_set_ui(tres, 10, defaultRoundingMode());
+		mpfr_pow_si(tres, tres, sett.zeroTresholdExp(), defaultRoundingMode());
 		retv = mpfr_cmpabs(val, tres) <= 0;
 		mpfr_clear(tres);
 	} else {
@@ -164,16 +175,16 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 	// If number is close enough to zero, we make it zero 
 	// explicitly (but for display purposes only)
 	Real re_disp, im_disp;
-	mpfr_init2(re_disp, MathEvaluator::NUMERIC_PRECISION);
-	mpfr_init2(im_disp, MathEvaluator::NUMERIC_PRECISION);
-	mpfr_set(re_disp, mpc_realref(num), MPFR_RNDN);
-	mpfr_set(im_disp, mpc_imagref(num), MPFR_RNDN);
+	mpfr_init2(re_disp, NUMERIC_PRECISION);
+	mpfr_init2(im_disp, NUMERIC_PRECISION);
+	mpfr_set(re_disp, mpc_realref(num), defaultRoundingMode());
+	mpfr_set(im_disp, mpc_imagref(num), defaultRoundingMode());
 
 	if (isBelowZeroTreshold(im_disp, sett)) {
-		mpfr_set_ui(im_disp, 0, MPFR_RNDN);
+		mpfr_set_ui(im_disp, 0, defaultRoundingMode());
 	}
 	if (isBelowZeroTreshold(re_disp, sett)) {
-		mpfr_set_ui(re_disp, 0, MPFR_RNDN);
+		mpfr_set_ui(re_disp, 0, defaultRoundingMode());
 	}
 
 	// Formating output of imaginary part
@@ -184,7 +195,7 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 			} else {
 				im_sign = " - ";
 			}
-			mpfr_abs(im_disp, im_disp, MPFR_RNDN);
+			mpfr_abs(im_disp, im_disp, defaultRoundingMode());
 		} else { // Display as any other base
 			im_sign = " + ";
 		}
@@ -341,7 +352,7 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 			break;
 		case DECIMAL:
 		default:
-			char dec[100]; // 100 should be more than enough
+			char dec[100]; // 100 digits for result should be more than enough
 			if (sett.outputFormat() == Settings::AUTOMATIC) { 
 				mpfr_snprintf(&dec[0], 100, "%.*RNg", sett.precision(), val);
 			} else if (sett.outputFormat() == Settings::SCIENTIFFIC) {
