@@ -55,7 +55,7 @@ public:
 
 	static void mpfr_set_quint64(RealPtr dest, const quint64& src);
 
-	static const int NUMERIC_PRECISION;
+	static const int MAX_BINARY_DIGITS;
 
 	static const mpfr_rnd_t defaultRoundingMode();
 	static const mpc_rnd_t defaultComplexRoundingMode();

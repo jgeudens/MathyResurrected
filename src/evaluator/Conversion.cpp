@@ -39,7 +39,7 @@ using namespace std;
 namespace mathy_resurrected {
 
 /** Number of bits used for all number representations. */
-const int Conversion::NUMERIC_PRECISION = 164;
+const int Conversion::MAX_BINARY_DIGITS = 164;
 
 const mpfr_rnd_t Conversion::defaultRoundingMode() {
 	return MPFR_RNDN;
@@ -56,7 +56,7 @@ quint8 Conversion::convert_u8b(RealConstPtr val) {
 	mpfr_get_z(roundedInt, val, defaultRoundingMode());
 
 	// Getting binary representation
-	char binstr[NUMERIC_PRECISION + 2];
+	char binstr[MAX_BINARY_DIGITS + 2];
 	mpz_get_str(&binstr[0], 2, roundedInt);
 	mpz_clear(roundedInt);
 
@@ -84,7 +84,7 @@ quint16 Conversion::convert_u16b(RealConstPtr val) {
 	mpfr_get_z(roundedInt, val, defaultRoundingMode());
 
 	// Getting binary representation
-	char binstr[NUMERIC_PRECISION + 2];
+	char binstr[MAX_BINARY_DIGITS + 2];
 	mpz_get_str(&binstr[0], 2, roundedInt);
 	mpz_clear(roundedInt);
 
@@ -112,7 +112,7 @@ quint32 Conversion::convert_u32b(RealConstPtr val) {
 	mpfr_get_z(roundedInt, val, defaultRoundingMode());
 
 	// Getting binary representation
-	char binstr[NUMERIC_PRECISION + 2];
+	char binstr[MAX_BINARY_DIGITS + 2];
 	mpz_get_str(&binstr[0], 2, roundedInt);
 	mpz_clear(roundedInt);
 
@@ -140,7 +140,7 @@ quint64 Conversion::convert_u64b(RealConstPtr val) {
 	mpfr_get_z(roundedInt, val, defaultRoundingMode());
 
 	// Getting binary representation
-	char binstr[NUMERIC_PRECISION + 2];
+	char binstr[MAX_BINARY_DIGITS + 2];
 	mpz_get_str(&binstr[0], 2, roundedInt);
 	mpz_clear(roundedInt);
 
@@ -206,7 +206,7 @@ bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {
 	bool retv;
 	if (sett.showSmallNumbersAsZero()) {
 		Real tres;
-		mpfr_init2(tres, NUMERIC_PRECISION);
+		mpfr_init2(tres, MAX_BINARY_DIGITS);
 		mpfr_set_ui(tres, 10, defaultRoundingMode());
 		mpfr_pow_si(tres, tres, sett.zeroTresholdExp(), defaultRoundingMode());
 		retv = mpfr_cmpabs(val, tres) <= 0;
@@ -226,8 +226,8 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 	// If number is close enough to zero, we make it zero 
 	// explicitly (but for display purposes only)
 	Real re_disp, im_disp;
-	mpfr_init2(re_disp, NUMERIC_PRECISION);
-	mpfr_init2(im_disp, NUMERIC_PRECISION);
+	mpfr_init2(re_disp, MAX_BINARY_DIGITS);
+	mpfr_init2(im_disp, MAX_BINARY_DIGITS);
 	mpfr_set(re_disp, mpc_realref(num), defaultRoundingMode());
 	mpfr_set(im_disp, mpc_imagref(num), defaultRoundingMode());
 

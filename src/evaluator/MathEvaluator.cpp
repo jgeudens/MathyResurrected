@@ -154,9 +154,9 @@ MathEvaluator::MathEvaluator(const Settings* app_settings, QObject* parent) :
 	}
 	itsSettings = app_settings;
 
-	mpc_init2(itsValue, Conversion::NUMERIC_PRECISION);
+	mpc_init2(itsValue, Conversion::MAX_BINARY_DIGITS);
 	mpc_set_ui_ui(itsValue, 0, 0, Conversion::defaultComplexRoundingMode());
-	mpc_init2(itsAns, Conversion::NUMERIC_PRECISION);
+	mpc_init2(itsAns, Conversion::MAX_BINARY_DIGITS);
 	mpc_set_ui_ui(itsAns, 0, 0, Conversion::defaultComplexRoundingMode());
 }
 
@@ -347,7 +347,7 @@ void MathEvaluator::ans(ComplexPtr dest) {
 
 ComplexPtr MathEvaluator::newComplex() {
 	ComplexPtr p = new Complex();
-	mpc_init2(p, Conversion::NUMERIC_PRECISION);
+	mpc_init2(p, Conversion::MAX_BINARY_DIGITS);
 	mpc_set_ui_ui(p, 0, 0, Conversion::defaultComplexRoundingMode());
 	itsComplexFactoryData.push_back(p);
 	return p;
@@ -365,7 +365,7 @@ void MathEvaluator::clearComplexFactory() {
 
 RealPtr MathEvaluator::newReal() {
 	RealPtr p = new Real();
-	mpfr_init2(p, Conversion::NUMERIC_PRECISION);
+	mpfr_init2(p, Conversion::MAX_BINARY_DIGITS);
 	mpfr_set_ui(p, 0, Conversion::defaultRoundingMode());
 	itsRealFactoryData.push_back(p);
 	return p;
@@ -761,7 +761,7 @@ unaryFunction (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val) {
 			break;
 		case MR_FUN_LOG10:
 			Complex logOf10;
-			mpc_init2(logOf10, Conversion::NUMERIC_PRECISION);
+			mpc_init2(logOf10, Conversion::MAX_BINARY_DIGITS);
 			mpc_set_ui(logOf10, 10, Conversion::defaultComplexRoundingMode());
 			mpc_log(logOf10, logOf10, Conversion::defaultComplexRoundingMode());
 
