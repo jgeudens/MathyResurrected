@@ -104,16 +104,14 @@ target_link_libraries(${MATHYRES_TARGET_NAME} mpfr mpc)
 #..............................................................................#
 #                            Targets installation                              #
 #..............................................................................#
-if (MATHYRES_CONFIGURE_INSTALL_TARGET)
-	if(WIN32)
-		install(TARGETS ${MATHYRES_TARGET_NAME}
-			CONFIGURATIONS Release
-			DESTINATION  "plugins")
-	elseif((NOT APPLE) AND UNIX)
-		install(TARGETS ${MATHYRES_TARGET_NAME}
-			CONFIGURATIONS Release
-			DESTINATION  "lib/launchy/plugins/")
-	# elseif(APPLE)
-	# TODO
-	endif()
+if(WIN32)
+	install(TARGETS ${MATHYRES_TARGET_NAME}
+		CONFIGURATIONS Release
+		DESTINATION  "plugins")
+elseif((NOT APPLE) AND UNIX)
+	install(TARGETS ${MATHYRES_TARGET_NAME}
+		CONFIGURATIONS Release
+		DESTINATION  "lib/launchy/plugins/")
+# elseif(APPLE)
+# TODO
 endif()
