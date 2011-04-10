@@ -16,6 +16,7 @@ set(MATHYRES_ARCHIVE_NAME "${MATHYRES_TARGET_NAME}-v${MATHYRES_VERSION}")
 include(CheckIncludeFileCXX)
 include(CheckIncludeFile)
 CHECK_INCLUDE_FILE_CXX(cassert HAVE_STD_CASSERT)
+CHECK_INCLUDE_FILE_CXX(cstdio HAVE_STD_IO)
 CHECK_INCLUDE_FILE_CXX(stdexcept HAVE_STD_STDEXCEPT)
 CHECK_INCLUDE_FILE_CXX(string HAVE_STD_STRING)
 CHECK_INCLUDE_FILE_CXX(vector HAVE_STD_VECTOR)
@@ -47,8 +48,8 @@ set(LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/bin")
 # Include directories common to all subprojects
 include_directories(
 	"${PROJECT_BINARY_DIR}"
-	"${PROJECT_SOURCE_DIR}/common"
-	"${PROJECT_SOURCE_DIR}/common/pluginAPI")
+	"${PROJECT_SOURCE_DIR}/lib"
+	"${PROJECT_SOURCE_DIR}/lib/pluginAPI")
 	
 if(MSVC) # MSVC Compiler options common to all.
 	add_definitions(-D_UNICODE -DUNICODE)

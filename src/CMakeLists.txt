@@ -12,8 +12,8 @@ set(MATHYRES_HEADERS
 	evaluator/MathTypes.h
 	evaluator/Conversion.h
 	evaluator/Exceptions.h
-	"${PROJECT_SOURCE_DIR}/common/pluginAPI/plugin_interface.h"
-	"${PROJECT_SOURCE_DIR}/common/pluginAPI/catalog.h")
+	"${PROJECT_SOURCE_DIR}/lib/pluginAPI/plugin_interface.h"
+	"${PROJECT_SOURCE_DIR}/lib/pluginAPI/catalog.h")
 
 # Headers that should be precessed by moc
 set(MATHYRES_HEADERS_TO_MOC
@@ -31,7 +31,7 @@ set(MATHYRES_SOURCES
 	evaluator/Conversion.cpp
 	evaluator/Exceptions.cpp
 	evaluator/MathEvaluator.cpp
-	"${PROJECT_SOURCE_DIR}/common/pluginAPI/plugin_interface.cpp")
+	"${PROJECT_SOURCE_DIR}/lib/pluginAPI/plugin_interface.cpp")
 
 # GUI designs
 set(MATHYRES_FORMS "${PROJECT_SOURCE_DIR}/ui/OptionsWidget.ui")
@@ -72,7 +72,7 @@ source_group(generated
 	antlr/ComplexEval.cpp antlr/ComplexLexer.cpp antlr/ComplexParser.cpp 
 	antlr/ComplexEval.h antlr/ComplexLexer.h antlr/ComplexParser.h
 	"${PROJECT_BINARY_DIR}/mathyresurrected.rc")
-source_group(libs .*common.*)
+source_group(lib .*lib.*)
 
 #..............................................................................#
 #                                Adding target                                 #
