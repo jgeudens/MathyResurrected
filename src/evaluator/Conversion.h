@@ -62,8 +62,6 @@ public:
 
 private:
 	static const QString numberToString(NumberBase base, const Settings& sett, RealConstPtr val);
-	template <class unsignedIntegerType>
-	static unsignedIntegerType convert(RealConstPtr val);
 
 	static bool isBelowZeroTreshold(RealConstPtr val, const Settings& sett);
 	static void insertFromBack(QString& dest, int startPos, int step, const QChar& what); 

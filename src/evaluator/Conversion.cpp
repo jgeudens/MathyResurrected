@@ -18,9 +18,19 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// This is needed because of bad design in windows.h where 
+// min and max macros are defined globally creating name
+// clash with their other uses.
+// http://support.microsoft.com/kb/143208
+#ifdef _MSC_VER
+	#define NOMINMAX
+#endif // MSVC
+
 #include "Conversion.h"
 #include <QLocale>
+#include <QtGlobal>
 #include <cassert>
+#include <limits>
 #include "Settings.h"
 #include "MathEvaluator.h"
 
@@ -40,73 +50,114 @@ const mpc_rnd_t Conversion::defaultComplexRoundingMode() {
 }
 
 quint8 Conversion::convert_u8b(RealConstPtr val) {
-	return convert<quint8>(val);
-}
-
-quint16 Conversion::convert_u16b(RealConstPtr val) {
-	return convert<quint16>(val);
-}
-
-quint32 Conversion::convert_u32b(RealConstPtr val) {
-	return convert<quint32>(val);
-}
-
-quint64 Conversion::convert_u64b(RealConstPtr val) {
-	return convert<quint64>(val);
-}
-
-/** Converts Real number to unsigned, fixed precision integer. 
-Rounds to nearest integer first. If @a val is to big to fit into
-return value, cyclic arithmetic of 2's complement is simulated */
-template <class unsignedIntegerType>
-unsignedIntegerType Conversion::convert(RealConstPtr val) {
-	unsignedIntegerType retv;
-	
-	// First, we need to get multiple precision integer from Real
+	// Converting input real number to integer
 	mpz_t roundedInt;
 	mpz_init(roundedInt);
 	mpfr_get_z(roundedInt, val, defaultRoundingMode());
 
-	// max value that can fit into unsignedIntegerType
-	// mpz_init_set_ui(intTemp, tmp); -> This won't work for 64bit integers on all platforms
-	// they could get truncated while using mpz_init_ui and similar methods. Instead we use 
-	// Qt strings for intermediary data type. These strings allow conversion from/to long long
-	QByteArray intStr = QByteArray::number(static_cast<unsignedIntegerType>(-1), 10);
-	mpz_t maxUnsigned;
-	mpz_init_set_str(maxUnsigned, intStr.constData(), 10);
-
-	// Now we need to convert it to fixed width unsigned integer
-	// simulating fixed width integers behavior (cyclic arithmetic)
-	if (mpz_sgn(roundedInt) >= 0) {
-		if (mpz_cmp(roundedInt, maxUnsigned) > 0) {
-			mpz_mod(roundedInt, roundedInt, maxUnsigned);
-			mpz_get_str(intStr.data(), 10, roundedInt);
-			retv = static_cast<unsignedIntegerType>(intStr.toULongLong()) - 1;
-		} else {
-			mpz_get_str(intStr.data(), 10, roundedInt);
-			retv = static_cast<unsignedIntegerType>(intStr.toULongLong());
-		}
-	} else {
-		mpz_t intervalNum;
-		mpz_init(intervalNum);
-		mpz_mul_si(maxUnsigned, maxUnsigned, -1);
-		mpz_tdiv_q(intervalNum, roundedInt, maxUnsigned);
-		mpz_add(roundedInt, roundedInt, intervalNum);
-		mpz_mul_si(maxUnsigned, maxUnsigned, -1);
-		mpz_mul(intervalNum, intervalNum, maxUnsigned);
-		mpz_add(roundedInt, roundedInt, intervalNum);
-
-		if (mpz_sgn(roundedInt) < 0) {
-			mpz_add(roundedInt, roundedInt, maxUnsigned);
-			mpz_add_ui(roundedInt, roundedInt, 1);
-		}
-
-		mpz_get_str(intStr.data(), 10, roundedInt);
-		retv = static_cast<unsignedIntegerType>(intStr.toULongLong());
-		mpz_clear(intervalNum);
-	}
-	mpz_clear(maxUnsigned);
+	// Getting binary representation
+	char binstr[NUMERIC_PRECISION + 2];
+	mpz_get_str(&binstr[0], 2, roundedInt);
 	mpz_clear(roundedInt);
+
+	quint8 retv;
+	QByteArray ba(binstr);
+	if (ba[0] == '-') {
+		ba.remove(0, 1);
+		retv = static_cast<qint8>(
+			ba.right(8).toULongLong(0, 2)
+		);
+		retv = ~retv;
+		retv += 1;
+	} else {
+		retv = static_cast<qint8>(
+			ba.right(8).toULongLong(0, 2)
+		);
+	}
+	return retv;
+}
+
+quint16 Conversion::convert_u16b(RealConstPtr val) {
+	// Converting input real number to integer
+	mpz_t roundedInt;
+	mpz_init(roundedInt);
+	mpfr_get_z(roundedInt, val, defaultRoundingMode());
+
+	// Getting binary representation
+	char binstr[NUMERIC_PRECISION + 2];
+	mpz_get_str(&binstr[0], 2, roundedInt);
+	mpz_clear(roundedInt);
+
+	quint16 retv;
+	QByteArray ba(binstr);
+	if (ba[0] == '-') {
+		ba.remove(0, 1);
+		retv = static_cast<quint16>(
+			ba.right(16).toULongLong(0, 2)
+		);
+		retv = ~retv;
+		retv += 1;
+	} else {
+		retv = static_cast<quint16>(
+			ba.right(16).toULongLong(0, 2)
+		);
+	}
+	return retv;
+}
+
+quint32 Conversion::convert_u32b(RealConstPtr val) {
+	// Converting input real number to integer
+	mpz_t roundedInt;
+	mpz_init(roundedInt);
+	mpfr_get_z(roundedInt, val, defaultRoundingMode());
+
+	// Getting binary representation
+	char binstr[NUMERIC_PRECISION + 2];
+	mpz_get_str(&binstr[0], 2, roundedInt);
+	mpz_clear(roundedInt);
+
+	quint32 retv;
+	QByteArray ba(binstr);
+	if (ba[0] == '-') {
+		ba.remove(0, 1);
+		retv = static_cast<quint32>(
+			ba.right(32).toULongLong(0, 2)
+		);
+		retv = ~retv;
+		retv += 1;
+	} else {
+		retv = static_cast<quint16>(
+			ba.right(32).toULongLong(0, 2)
+		);
+	}
+	return retv;
+}
+
+quint64 Conversion::convert_u64b(RealConstPtr val) {
+	// Converting input real number to integer
+	mpz_t roundedInt;
+	mpz_init(roundedInt);
+	mpfr_get_z(roundedInt, val, defaultRoundingMode());
+
+	// Getting binary representation
+	char binstr[NUMERIC_PRECISION + 2];
+	mpz_get_str(&binstr[0], 2, roundedInt);
+	mpz_clear(roundedInt);
+
+	quint64 retv;
+	QByteArray ba(binstr);
+	if (ba[0] == '-') {
+		ba.remove(0, 1);
+		retv = static_cast<quint64>(
+			ba.right(64).toULongLong(0, 2)
+		);
+		retv = ~retv;
+		retv += 1;
+	} else {
+		retv = static_cast<quint64>(
+			ba.right(64).toULongLong(0, 2)
+		);
+	}
 	return retv;
 }
 
