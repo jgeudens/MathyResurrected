@@ -1,4 +1,8 @@
 
+# Generate header with #defines from source configuration process
+configure_file("config.h.in"
+			   "${PROJECT_BINARY_DIR}/mr_config.h")
+
 ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_SHARED)
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
@@ -13,7 +17,9 @@ set(MATHYRES_HEADERS
 	evaluator/Conversion.h
 	evaluator/Exceptions.h
 	"${PROJECT_SOURCE_DIR}/lib/pluginAPI/plugin_interface.h"
-	"${PROJECT_SOURCE_DIR}/lib/pluginAPI/catalog.h")
+	"${PROJECT_SOURCE_DIR}/lib/pluginAPI/catalog.h"
+	"${PROJECT_BINARY_DIR}/mr_config.h"
+)
 
 # Headers that should be precessed by moc
 set(MATHYRES_HEADERS_TO_MOC
@@ -63,7 +69,9 @@ include_directories(
 	antlr
 	evaluator
 	"${PROJECT_SOURCE_DIR}/src"
-	"${CMAKE_CURRENT_BINARY_DIR}")
+	"${CMAKE_CURRENT_BINARY_DIR}"
+	"${PROJECT_BINARY_DIR}"
+)
 	
 source_group(generated 
 	FILES ${MATHYRES_MOC_SOURCES}	
