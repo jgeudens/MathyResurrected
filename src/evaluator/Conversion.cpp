@@ -17,6 +17,10 @@
 * You should have received a copy of the GNU General Public License 
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
+//!
+//! @file
+//! @author Tomislav Adamic <tomislav.adamic@gmail.com>
+//!
 
 // This is needed because of bad design in windows.h where 
 // min and max macros are defined globally creating name
@@ -32,39 +36,52 @@
 #include <cassert>
 #include <limits>
 #include "Settings.h"
-#include "MathEvaluator.h"
 
 using namespace std;
 
 namespace mathy_resurrected {
 
-/** Number of bits used for all number representations. */
+//! Number of bits used for all number representations.
 const int Conversion::MAX_BINARY_DIGITS = 164;
 
+//! Default rounding mode used for calculations with real numbers.
 const mpfr_rnd_t Conversion::defaultRoundingMode() {
 	return MPFR_RNDN;
 }
 
+//! Default rounding mode used for calculations with complex numbers.
 const mpc_rnd_t Conversion::defaultComplexRoundingMode() {
 	return MPC_RNDNN;
 }
 
+//! Converts @a val into 8-bit, unsigned integer type (rounding towards 
+//! nearest and converting negative numbers using 2k complement)
 quint8 Conversion::convert_u8b(RealConstPtr val) {
 	return convert_uint<quint8>(val);
 }
 
+//! Converts @a val into 16-bit, unsigned integer type (rounding towards 
+//! nearest and converting negative numbers using 2k complement)
 quint16 Conversion::convert_u16b(RealConstPtr val) {
 	return convert_uint<quint16>(val);
 }
 
+//! Converts @a val into 32-bit, unsigned integer type (rounding towards 
+//! nearest and converting negative numbers using 2k complement)
 quint32 Conversion::convert_u32b(RealConstPtr val) {
 	return convert_uint<quint32>(val);
 }
 
+//! Converts @a val into 64-bit, unsigned integer type (rounding towards 
+//! nearest and converting negative numbers using 2k complement)
 quint64 Conversion::convert_u64b(RealConstPtr val) {
 	return convert_uint<quint64>(val);
 }
 
+//! Generic converter from real numbers to unsigned integers.
+//! Rounds towards nearest and converts negative numbers using 2k 
+//! complement. Works only for types defined by std::numeric_limits
+//! or types that fall-back to std::numeric_limits.
 template<class unsignedIntegerT>
 unsignedIntegerT Conversion::convert_uint (RealConstPtr val) {
 	// Converting input real number to integer
@@ -83,12 +100,11 @@ unsignedIntegerT Conversion::convert_uint (RealConstPtr val) {
 
 	// Below implementation is more complex one, but at least hasn't crashed 
 	char *binstr = mpz_get_str(0, 2, roundedInt);
-	int binstrLen = strlen(binstr) + 1;
 	ba = QByteArray(binstr);
 	mpz_clear(roundedInt);
 	void (*freefunc) (void *, size_t);
 	mp_get_memory_functions (NULL, NULL, &freefunc);
-	freefunc(binstr, binstrLen);
+	freefunc(binstr, strlen(binstr) + 1);
 
 	// Processing result
 	// If number doesn't fit into given bit width, only lower bits are 
@@ -109,12 +125,23 @@ unsignedIntegerT Conversion::convert_uint (RealConstPtr val) {
 	return retv;
 }
 
+//! Implements safe way to set quint64 64 bit integers on all platforms
+//! including 32bit ones. Native mpfr_set_ui might or might not work
+//! because it uses native unsigned long type, which on 32b platforms 
+//! might be either 32b or 64b long. On the other side, quint64 is 
+//! guaranteed 64b long but there is no native function to convert it 
+//! into mpfr_t.
 void Conversion::mpfr_set_quint64(RealPtr dest, const quint64& src) {
 	assert(dest != 0);
 	QByteArray numStr = QByteArray::number(src, 10);
 	mpfr_set_str(dest, numStr.constData(), 10, defaultRoundingMode());
 }
 
+//! Converts ANTLR3 string into real number. This is used in tree parser 
+//! grammar. Because of that, method doesn't check if given string is 
+//! numeric string (ANTLR parser already has done that before method is 
+//! called). Thus, if @a str is not numeric string, method call results in 
+//! undefined behavior.
 void Conversion::strToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
@@ -124,6 +151,11 @@ void Conversion::strToReal (const pANTLR3_STRING str, RealPtr dest) {
 	mpfr_set_str(dest, temp.toUtf8().constData(), 10, defaultRoundingMode());
 }
 
+//! Converts ANTLR3 string into real number. This is used in tree parser 
+//! grammar. Because of that, method doesn't check if given string is 
+//! numeric string (ANTLR parser already has done that before method is 
+//! called). Thus, if @a str is not numeric string, method call results in 
+//! undefined behavior.
 void Conversion::strHexToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
@@ -132,6 +164,11 @@ void Conversion::strHexToReal (const pANTLR3_STRING str, RealPtr dest) {
 	mpfr_set_str(dest, bArray.constData(), 16, defaultRoundingMode());
 }
 
+//! Converts ANTLR3 string into real number. This is used in tree parser 
+//! grammar. Because of that, method doesn't check if given string is 
+//! numeric string (ANTLR parser already has done that before method is 
+//! called). Thus, if @a str is not numeric string, method call results in 
+//! undefined behavior.
 void Conversion::strOctToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
 	pANTLR3_STRING utf8Str = str->toUTF8(str);
@@ -140,6 +177,11 @@ void Conversion::strOctToReal (const pANTLR3_STRING str, RealPtr dest) {
 	mpfr_set_str(dest, bArray.constData(), 8, defaultRoundingMode());
 }
 
+//! Converts ANTLR3 string into real number. This is used in tree parser 
+//! grammar. Because of that, method doesn't check if given string is 
+//! numeric string (ANTLR parser already has done that before method is 
+//! called). Thus, if @a str is not numeric string, method call results in 
+//! undefined behavior.
 void Conversion::strBinToReal (const pANTLR3_STRING str, RealPtr dest) {
 	assert(dest != 0);
 	assert(dest != 0);
@@ -149,6 +191,9 @@ void Conversion::strBinToReal (const pANTLR3_STRING str, RealPtr dest) {
 	mpfr_set_str(dest, bArray.constData(), 2, defaultRoundingMode());
 }
 
+//! Checks is @a val is smaller that some number in @a sett. 
+//! This is for display purposes: in @a sett there is an option to display 
+//! all numbers smaller that zero threshold number as zeros. 
 bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {
 	assert(val != 0);
 	bool retv;
@@ -165,6 +210,8 @@ bool Conversion::isBelowZeroTreshold(RealConstPtr val, const Settings& sett) {
 	return retv;
 }
 
+//! Converts @a num to string representation for given number base @a base 
+//! and user settings @a sett. 
 const QString Conversion::toString(NumberBase base, const Settings& sett, const ComplexConstPtr& num) {
 	QString im_sign;
 	QString re_str, im_str;
@@ -213,6 +260,8 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 	return retv;
 }
 
+//! Converts @a val to string representation for given number base @a base 
+//! and user settings @a sett. 
 const QString Conversion::numberToString(NumberBase base, const Settings& sett, RealConstPtr val) {
 	assert(val != 0);
 	QLocale loc = QLocale::c();
@@ -385,6 +434,10 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 	return retv;
 }
 
+//! Inserts @a what into @a dest putting first character on position
+//! @a pos and other characters in positions backward from original 
+//! in steps determined by @a step. 
+//! @warning For speed sake, doesn't check validity of any of it's params.
 void Conversion::insertFromBack(QString& dest, int startPos, int step, const QChar& what) {
 	if (startPos >= 0 && startPos <= dest.length()) {
 		for (startPos -= step; startPos > 0; startPos -= step) {

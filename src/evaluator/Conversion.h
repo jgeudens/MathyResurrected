@@ -17,22 +17,33 @@
 * You should have received a copy of the GNU General Public License 
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
+//!
+//! @file
+//! @author Tomislav Adamic <tomislav.adamic@gmail.com>
+//!
 
-#ifndef MATHY_RESURRECTED_CONVERSION_H
-#define MATHY_RESURRECTED_CONVERSION_H
+#ifndef D04C6E81_4698_45A7_A791_CF3CCA4AD181_CONVERSION_H
+#define D04C6E81_4698_45A7_A791_CF3CCA4AD181_CONVERSION_H
 
 #include <QString>
 #include <QByteArray>
-#include "MathEvaluator.h"
+#include "MathTypes.h"
 
 namespace mathy_resurrected {
 
 class Settings;
 
-/** Class responsible for conversion between numeric and 
-string representation of numeric types*/
+//! Class responsible for conversion between numeric and 
+//! string representation of numeric types
 class Conversion {
 public:
+	static const int MAX_BINARY_DIGITS;
+
+	//! Supported input/output number bases.
+	enum NumberBase {
+		DECIMAL, HEXADECIMAL, BINARY, OCTAL
+	};
+
 	static quint8 convert_u8b(RealConstPtr val);
 	static quint16 convert_u16b(RealConstPtr val);
 	static quint32 convert_u32b(RealConstPtr val);
@@ -43,19 +54,17 @@ public:
 	static void strOctToReal(const pANTLR3_STRING str, RealPtr dest);
 	static void strBinToReal(const pANTLR3_STRING str, RealPtr dest);
 
-	enum NumberBase {
-		DECIMAL, HEXADECIMAL, BINARY, OCTAL
-	};
 	static const QString toString(NumberBase base, const Settings& sett, const ComplexConstPtr& num);
 
-	/*! This should return same character that was used in grammar */
+	//!
+	//! This should return same character that was used in grammar 
 	static const QChar internalDecimalPoint() { return QChar('@'); }
-	/*! This should return same character that was used in grammar */
+	//!
+	//! This should return same character that was used in grammar 
 	static const QChar internalArgSeparator() { return QChar('#'); }
 
+	
 	static void mpfr_set_quint64(RealPtr dest, const quint64& src);
-
-	static const int MAX_BINARY_DIGITS;
 
 	static const mpfr_rnd_t defaultRoundingMode();
 	static const mpc_rnd_t defaultComplexRoundingMode();
@@ -72,4 +81,4 @@ private:
 
 } // namespace mathy_resurrected
 
-#endif // MATHY_RESURRECTED_CONVERSION_H
+#endif // HEADER_GUARD
