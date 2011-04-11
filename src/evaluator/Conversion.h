@@ -65,6 +65,9 @@ private:
 
 	static bool isBelowZeroTreshold(RealConstPtr val, const Settings& sett);
 	static void insertFromBack(QString& dest, int startPos, int step, const QChar& what); 
+
+	template<class unsignedIntegerT>
+	static unsignedIntegerT convert_uint (RealConstPtr val);
 };
 
 } // namespace mathy_resurrected

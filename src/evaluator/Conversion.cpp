@@ -50,112 +50,60 @@ const mpc_rnd_t Conversion::defaultComplexRoundingMode() {
 }
 
 quint8 Conversion::convert_u8b(RealConstPtr val) {
-	// Converting input real number to integer
-	mpz_t roundedInt;
-	mpz_init(roundedInt);
-	mpfr_get_z(roundedInt, val, defaultRoundingMode());
-
-	// Getting binary representation
-	char binstr[MAX_BINARY_DIGITS + 2];
-	mpz_get_str(&binstr[0], 2, roundedInt);
-	mpz_clear(roundedInt);
-
-	quint8 retv;
-	QByteArray ba(binstr);
-	if (ba[0] == '-') {
-		ba.remove(0, 1);
-		retv = static_cast<qint8>(
-			ba.right(8).toULongLong(0, 2)
-		);
-		retv = ~retv;
-		retv += 1;
-	} else {
-		retv = static_cast<qint8>(
-			ba.right(8).toULongLong(0, 2)
-		);
-	}
-	return retv;
+	return convert_uint<quint8>(val);
 }
 
 quint16 Conversion::convert_u16b(RealConstPtr val) {
-	// Converting input real number to integer
-	mpz_t roundedInt;
-	mpz_init(roundedInt);
-	mpfr_get_z(roundedInt, val, defaultRoundingMode());
-
-	// Getting binary representation
-	char binstr[MAX_BINARY_DIGITS + 2];
-	mpz_get_str(&binstr[0], 2, roundedInt);
-	mpz_clear(roundedInt);
-
-	quint16 retv;
-	QByteArray ba(binstr);
-	if (ba[0] == '-') {
-		ba.remove(0, 1);
-		retv = static_cast<quint16>(
-			ba.right(16).toULongLong(0, 2)
-		);
-		retv = ~retv;
-		retv += 1;
-	} else {
-		retv = static_cast<quint16>(
-			ba.right(16).toULongLong(0, 2)
-		);
-	}
-	return retv;
+	return convert_uint<quint16>(val);
 }
 
 quint32 Conversion::convert_u32b(RealConstPtr val) {
-	// Converting input real number to integer
-	mpz_t roundedInt;
-	mpz_init(roundedInt);
-	mpfr_get_z(roundedInt, val, defaultRoundingMode());
-
-	// Getting binary representation
-	char binstr[MAX_BINARY_DIGITS + 2];
-	mpz_get_str(&binstr[0], 2, roundedInt);
-	mpz_clear(roundedInt);
-
-	quint32 retv;
-	QByteArray ba(binstr);
-	if (ba[0] == '-') {
-		ba.remove(0, 1);
-		retv = static_cast<quint32>(
-			ba.right(32).toULongLong(0, 2)
-		);
-		retv = ~retv;
-		retv += 1;
-	} else {
-		retv = static_cast<quint16>(
-			ba.right(32).toULongLong(0, 2)
-		);
-	}
-	return retv;
+	return convert_uint<quint32>(val);
 }
 
 quint64 Conversion::convert_u64b(RealConstPtr val) {
+	return convert_uint<quint64>(val);
+}
+
+template<class unsignedIntegerT>
+unsignedIntegerT Conversion::convert_uint (RealConstPtr val) {
 	// Converting input real number to integer
 	mpz_t roundedInt;
 	mpz_init(roundedInt);
 	mpfr_get_z(roundedInt, val, defaultRoundingMode());
 
-	// Getting binary representation
-	char binstr[MAX_BINARY_DIGITS + 2];
-	mpz_get_str(&binstr[0], 2, roundedInt);
-	mpz_clear(roundedInt);
+	// Getting binary string representation
+	unsignedIntegerT retv;
+	QByteArray ba;
 
-	quint64 retv;
-	QByteArray ba(binstr);
+	// This will crash for val = 1e60:
+	// char binstr[MAX_BINARY_DIGITS + 2];
+	// mpz_get_str(&binstr[0], 2, roundedInt);
+	// mpz_clear(roundedInt);
+
+	// Below implementation is more complex one, but at least hasn't crashed 
+	char *binstr = mpz_get_str(0, 2, roundedInt);
+	int binstrLen = strlen(binstr) + 1;
+	ba = QByteArray(binstr);
+	mpz_clear(roundedInt);
+	void (*freefunc) (void *, size_t);
+	mp_get_memory_functions (NULL, NULL, &freefunc);
+	freefunc(binstr, binstrLen);
+
+	// Processing result
+	// If number doesn't fit into given bit width, only lower bits are 
+	// returned. Additionally, negative numbers are converted using 2k 
+	// complement.
 	if (ba[0] == '-') {
 		ba.remove(0, 1);
-		retv = static_cast<quint64>(
-			ba.right(64).toULongLong(0, 2)
+		retv = static_cast<unsignedIntegerT>(
+			ba.right(numeric_limits<unsignedIntegerT>::digits).toULongLong(0, 2)
 		);
 		retv = ~retv;
 		retv += 1;
 	} else {
-		retv = static_cast<quint64>(
-			ba.right(64).toULongLong(0, 2)
+		retv = static_cast<unsignedIntegerT>(
+			ba.right(numeric_limits<unsignedIntegerT>::digits).toULongLong(0, 2)
 		);
 	}
 	return retv;
@@ -268,39 +216,31 @@ const QString Conversion::toString(NumberBase base, const Settings& sett, const 
 const QString Conversion::numberToString(NumberBase base, const Settings& sett, RealConstPtr val) {
 	assert(val != 0);
 	QLocale loc = QLocale::c();
-	quint64 tmpI64;
-	quint32 tmpI32;
-	quint16 tmpI16;
-	quint8 tmpI8;
 	QString bho_prefix, retv;
 
 	switch (base) {
 		case BINARY:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = convert_u64b(val);
-					retv += QString::number(tmpI64, 2);
+					retv += QString::number(convert_uint<quint64>(val), 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(64, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = convert_u32b(val);
-					retv += QString::number(tmpI32, 2);
+					retv += QString::number(convert_uint<quint32>(val), 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(32, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = convert_u16b(val);
-					retv += QString::number(tmpI16, 2);
+					retv += QString::number(convert_uint<quint16>(val), 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(16, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = convert_u8b(val);
-					retv += QString::number(tmpI8, 2);
+					retv += QString::number(convert_uint<quint8>(val), 2);
 					if (sett.showLeadingZeroesBin()) {
 						retv = retv.rightJustified(8, '0');
 					}
@@ -320,29 +260,25 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		case HEXADECIMAL:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = convert_u64b(val);
-					retv += QString::number(tmpI64, 16).toUpper();
+					retv += QString::number(convert_uint<quint64>(val), 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(16, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = convert_u32b(val);
-					retv += QString::number(tmpI32, 16).toUpper();
+					retv += QString::number(convert_uint<quint32>(val), 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(8, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = convert_u16b(val);
-					retv += QString::number(tmpI16, 16).toUpper();
+					retv += QString::number(convert_uint<quint16>(val), 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(4, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = convert_u8b(val);
-					retv += QString::number(tmpI8, 16).toUpper();
+					retv += QString::number(convert_uint<quint8>(val), 16).toUpper();
 					if (sett.showLeadingZeroesHex()) {
 						retv = retv.rightJustified(2, '0');
 					}
@@ -362,29 +298,25 @@ const QString Conversion::numberToString(NumberBase base, const Settings& sett, 
 		case OCTAL:
 			switch (sett.calculationBitWidth()) {
 				case Settings::BW64:
-					tmpI64 = convert_u64b(val);
-					retv += QString::number(tmpI64, 8);
+					retv += QString::number(convert_uint<quint64>(val), 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(24, '0');
 					}
 					break;
 				case Settings::BW32:
-					tmpI32 = convert_u32b(val);
-					retv += QString::number(tmpI32, 8);
+					retv += QString::number(convert_uint<quint32>(val), 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(12, '0');
 					}
 					break;
 				case Settings::BW16:
-					tmpI16 = convert_u16b(val);
-					retv += QString::number(tmpI16, 8);
+					retv += QString::number(convert_uint<quint16>(val), 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(6, '0');
 					}
 					break;
 				case Settings::BW8:
-					tmpI8 = convert_u8b(val);
-					retv += QString::number(tmpI8, 8);
+					retv += QString::number(convert_uint<quint8>(val), 8);
 					if (sett.showLeadingZeroesOct()) {
 						retv = retv.rightJustified(3, '0');
 					}
