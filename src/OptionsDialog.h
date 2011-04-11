@@ -21,6 +21,7 @@
 #ifndef MATHY_RESURRECTED_GUI_OPTIONS
 #define MATHY_RESURRECTED_GUI_OPTIONS
 
+#include "mr_config.h"
 #include <QFrame>
 #include "ui_OptionsWidget.h"
 

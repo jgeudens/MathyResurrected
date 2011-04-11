@@ -183,6 +183,11 @@ OptionsDialog::OptionsDialog(QWidget* parent, Settings* settings) :
 {
 	setupUi(this);
 	setupUiBySettings();
+
+	// Setting version in About tab
+	QTextCursor cur = aboutText->document()->find("VERSION_STRING"); // Selects text
+	cur.deleteChar(); // deletes selected text
+	cur.insertText("v" + QString::fromAscii(MATHYRESURRECTED_VERSION_STRING));
 }
 
 OptionsDialog::~OptionsDialog() { 
