@@ -20,11 +20,11 @@ BEGIN
     BEGIN
         BLOCK "000904b0"
         BEGIN
-            VALUE "CompanyName", "Tomislav Adamic"
+            VALUE "CompanyName", "Tomislav Adamic (a.k.a. El Grunón)"
             VALUE "FileDescription", "${PROJECT_NAME}"
             VALUE "FileVersion", "${MATHYRES_VERSION}"
             VALUE "InternalName", "mathyresurrected"
-            VALUE "LegalCopyright", "Copyright (C) 2010 by Tomislav Adamic"
+            VALUE "LegalCopyright", "Tomislav Adamic (a.k.a. El Grunón)"
             VALUE "LegalTrademarks", "GNU GPL v3"
 #ifdef _DEBUG
 			VALUE "OriginalFilename", "mathyresurrected_d.dll"

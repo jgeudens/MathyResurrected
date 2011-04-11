@@ -30,5 +30,19 @@
 #define MATHYRESURRECTED_VERSION_MINOR ${MATHYRES_VERSION_MINOR}
 #define MATHYRESURRECTED_VERSION_SUBMINOR ${MATHYRES_VERSION_SUBMINOR}
 
+// None of things bellow are currently used...
+#cmakedefine HAVE_STD_CASSERT
+#cmakedefine HAVE_STD_IO
+#cmakedefine HAVE_STD_STDEXCEPT
+#cmakedefine HAVE_STD_STRING
+#cmakedefine HAVE_STD_VECTOR
+#cmakedefine HAVE_STD_IOSTREAM
+#cmakedefine HAVE_WINDOWS_H
+#cmakedefine HAVE_SHLOBJ_H
+#cmakedefine HAVE_ANTLR3_H
+#cmakedefine HAVE_GMP_H
+#cmakedefine HAVE_MPFR_H
+#cmakedefine HAVE_MPC_H
+
 #endif // HEADER_GUARD
 
