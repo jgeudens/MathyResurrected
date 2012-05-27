@@ -43,7 +43,7 @@ All questions regarding plugin should be asked at Sourceforge project site:
 
 Or at Launchy project site, "Plugins 2.0+" subforum:
 
-         https://sourceforge.net/projects/launchy/
+         http://sourceforge.net/projects/launchy/
 
 Features
 ========
@@ -80,6 +80,9 @@ separator following are examples of supported numeric input:
     -i            =      0-i
     -12i          =      0-12i
     ...
+	
+	It is also possible to enter percentage directly like in expressions : 2%, 
+3%i, 2+33%...
 
 ===========================================================================
                              Operators
@@ -101,9 +104,9 @@ separator following are examples of supported numeric input:
      *        multiply             6*4, 1*2
      /        divide               4/4, 2/i
      ^        to the power of      4^4, 2^i
-     %        modulo               456%45
+     mod      modulo               456 mod 45
               NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
-
+			
     ()        brackets
 
     Bitwise operators (unary and binary)
@@ -115,14 +118,42 @@ operator op
 
                 x op y = UInt{Re{x}} op UInt{Re{y}}
 
-    symbol        name
-       &         and
-       |         or
-       ×         xor
-       ~         not
-	  >>         bit shift right
-      <<         bit shift left
+symbol       long symbol      description                        usage
+   &            and            bitwise and                    x & y; x and y
+   |            or             bitwse or                      x & y; x or y
+   ~            xor            bitwse exclusive or            x ~ y; x xor y
+   !            not            bitwse not                       !x; not x
+  >>            shr            bitwse shift left              x >> y; x shr y
+  <<            shl            bitwse shift right             x << y; x shl y
+               nand            bitwse NAND                       x nand y
+			   nor             bitwse NOR                        x nor y
+			   xnor            bitwse XNOR                       x xnor y
+			   
+	Operator precedence
+    ===================
+	
+	Operator precedence is same as in C/C++. For common operators like +, -, etc.
+this is also the precedence that is well known outside of programing world. 
+	Exception are operators that are not present( orcommon) in either C/C++ 
+(nand, nor, xnor) or in the non-programing world. Because of that following table
+shows operator precedence:
 
+            operator            precedence            associativity
+         unary+ unary- !            1                    RTL
+			   ^                    2                    RTL
+             * / mod                3                    LTR
+               + -                  4                    LTR
+            shl shr                 5                    LTR
+          nand nor xnor             6                    LTR
+               &                    7                    LTR
+               ~                    8                    LTR
+               |                    9                    LTR
+          
+    Higher precedence means lower order of evaluation: if operator op1 has 
+precedence 3 and operator op2 precedence 4, op1 will be evaluated before op2.
+	It can be seen that exponentiation and some bitwise operators not existing
+in C/C++ grammar have been added. 
+	
 ===========================================================================
                        SI and binary unit prefixes
 ===========================================================================
@@ -262,7 +293,8 @@ Miscellaneous functions
     norm(x)     norm of complex number
     polar(x)    creates complex number from polar components, where
                 Re(x) = r and Im(x) = t;
-
+				
+				
 Bitwise functions
 =================
 
@@ -270,12 +302,8 @@ Bitwise functions
 This means that for any function f from this group, f(x) = f(Re(x)) no matter what
 the value of Im{x} is.
 
-    and(x,y)    - bitwise and
-    or(x,y)     - bitwse or
-    not(x)      - bitwise not
     nand(x,y)   - bitwise nand: not(x and y)
     nor(x,y)    - bitwise nor: not(x or y)
-    xor(x,y)    - bitwise exclusive or
     xnor(x,y)   - bitwise xnor: not(x xor y)
 
 ===========================================================================

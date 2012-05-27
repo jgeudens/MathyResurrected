@@ -29,13 +29,15 @@ extern "C" {
 typedef double mrReal;
 
 /*! This is a replacement for std::complex<T>. ANTLR doesn't have C++ API
-so actions inside grammar use this type to pass around complex nnumbers. */
+so actions inside grammar use this type to pass around complex numbers. */
 typedef struct {
 	mrReal real, imag;
-} mrComplex_t;
+} Complex;
 
-/*! Pointer to mrComplex_t */ 
-typedef mrComplex_t* mrComplex_ptr;
+/*! Pointer to Complex */ 
+typedef Complex* ComplexPtr;
+/*! const pointer to const Complex */ 
+typedef const Complex* const ComplexConstPtr;
 
 typedef enum MR_LEXER_ERROR_TYPES_ {
 	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,

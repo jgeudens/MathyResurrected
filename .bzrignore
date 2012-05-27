@@ -9,4 +9,7 @@ build
 *.idb
 *.pdb
 *.jar
+*.sln
+*.vcproj
+*.rc
 src/antlr/output

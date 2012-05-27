@@ -15,8 +15,6 @@ tokens {
 	BIN;
 	HEX;
 	OCT;
-	BW_SHLEFT_OP;
-	BW_SHRIGHT_OP;
 }
 
 @lexer::includes {
@@ -27,7 +25,8 @@ PLUS             : '+';
 MINUS            : '-';
 MULT             : '*';
 DIV              : '/';
-MOD              : '%';
+MOD              : (('m'|'M')('o'|'O')('d'|'D'));
+PERCENT          : '%';
 POW              : '^';
 ARG_SEPARATOR    : '#';
 DECIMAL_POINT    : '@';
@@ -35,10 +34,21 @@ LEFT_PAREN       : '(';
 RIGHT_PAREN      : ')';
 BW_AND           : '&';
 BW_OR            : '|';
-BW_NOT           : '~';
-BW_XOR           : '×';//U+00D7
+BW_NOT           : '!';
+BW_XOR           : '~';
 BW_SHLEFT        : '<<';
 BW_SHRIGHT       : '>>';
+
+BW_AND2			 : (('a'|'A')('n'|'N')('d'|'D'));
+BW_OR2			 : (('o'|'O')('r'|'R'));
+BW_NOT2			 : (('n'|'N')('o'|'O')('t'|'T'));
+BW_XOR2			 : (('x'|'X')('o'|'O')('r'|'R'));
+BW_SHLEFT2		 : (('s'|'S')('h'|'H')('l'|'L'));
+BW_SHRIGHT2		 : (('s'|'S')('h'|'H')('r'|'R'));
+
+BW_NAND  : (('n'|'N')('a'|'A')('n'|'N')('d'|'D'));
+BW_NOR   : (('n'|'N')('o'|'O')('r'|'R'));
+BW_XNOR  : (('x'|'X')('n'|'N')('o'|'O')('r'|'R'));
 
 SI_PREFIX_YOTTA  : 'Y';
 SI_PREFIX_ZETTA  : 'Z';
@@ -108,16 +118,6 @@ FN_RAD           : (('r'|'R')('a'|'A')('d'|'D'));
 FN_PROJ          : (('p'|'P')('r'|'R')('o'|'O')('j'|'J'));
 FN_NORM          : (('n'|'N')('o'|'O')('r'|'R')('m'|'M'));
 FN_POLAR         : (('p'|'P')('o'|'O')('l'|'L')('a'|'A')('r'|'R'));
-
-BITWISE_FN_AND   : (('a'|'A')('n'|'N')('d'|'D'));
-BITWISE_FN_OR    : (('o'|'O')('r'|'R'));
-BITWISE_FN_NOT   : (('n'|'N')('o'|'O')('t'|'T'));
-BITWISE_FN_NAND  : (('n'|'N')('a'|'A')('n'|'N')('d'|'D'));
-BITWISE_FN_NOR   : (('n'|'N')('o'|'O')('r'|'R'));
-BITWISE_FN_XOR   : (('x'|'X')('o'|'O')('r'|'R'));
-BITWISE_FN_XNOR  : (('x'|'X')('n'|'N')('o'|'O')('r'|'R'));
-BITWISE_FN_SHL   : (('s'|'S')('h'|'H')('l'|'L'));
-BITWISE_FN_SHR   : (('s'|'S')('h'|'H')('r'|'R'));
 
 CONSTANTS_PI     : ('p''i');
 CONSTANTS_E      : 'e';

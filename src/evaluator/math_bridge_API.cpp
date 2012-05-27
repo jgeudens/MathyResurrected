@@ -24,9 +24,8 @@
 #include <boost/math/complex.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/dynamic_bitset.hpp>
 #include <string>
-#include "MathyResurrectedExceptions.h"
+#include "Exceptions.h"
 #include "math_bridge_API.h"
 #include "math_bridge_globals.h"
 #include "MathEvaluator.h"
@@ -37,56 +36,29 @@ using namespace std;
 using namespace mathy_resurrected;
 
 typedef std::complex<mrReal> mr_StdComplex_t;
-typedef const mrComplex_t* const mrComplex_const_ptr;
+
+ComplexPtr newMrComplex() {
+	return BridgeAPIGlobals::newMrComplex();
+}
+
+void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type) {
+	BridgeAPIGlobals::collectlexerError(char_index, err_type);
+}
+
+ComplexConstPtr getAns() {
+	return BridgeAPIGlobals::getAns();
+}
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& dest, mrComplex_const_ptr src) {
+inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& dest, ComplexConstPtr src) {
 	dest.real(src->real);
 	dest.imag(src->imag);
 }
 
 /*! Converts between tree parser return value and std::complex<T> */
-inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr dest, const mr_StdComplex_t& src) {
+inline void STDCOMPLEX_2_MRCOMPLEX(ComplexPtr dest, const mr_StdComplex_t& src) {
 	dest->real = src.real();
 	dest->imag = src.imag();
-}
-
-/** Global data used by bridge API. Although this doesn't make this API much
-tread safer than before, at leaset this "unsafety" has been localized and 
-modulatized. */
-BridgeAPIGlobals* globalData = 0;
-
-void init_bridge_API (BridgeAPIGlobals* globs) {
-	if(globs == 0) {
-		throw invalid_argument("Null pointer not allowed!");
-	}
-	globalData = globs;
-}
-
-mrComplex_ptr newMrComplex() {
-	mrComplex_ptr p = new mrComplex_t;
-	p->real = 0; p->imag = 0;
-	boost::shared_ptr< mrComplex_t > sp(p);
-	globalData->complexFactoryData.push_back(sp);
-	return p;
-}
-
-/*! Collects lexer errors during lexing phase so they can be used
-to check for things like unmatched parentheses, illegal input etc... */
-void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_code) {
-	BridgeAPIGlobals::mr_LexerErrorPair p;
-	p.char_index = char_index;
-	p.err_type = err_code;
-	globalData->lexerErrorsCollection.push_back(p);
-}
-
-void setAns(mrReal real, mrReal imag) {
-	globalData->ans.real = real;
-	globalData->ans.imag = imag;
-}
-
-mrComplex_ptr getAns() {
-	return &(globalData->ans);
 }
 
 mrReal mr_pi() {
@@ -192,8 +164,9 @@ mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix) {
 	return suff_val;
 }
 
-mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
+								  ComplexConstPtr lv, ComplexConstPtr rv) {
+	ComplexPtr retv = newMrComplex();
 	mr_StdComplex_t rv_c, lv_c, retv_c;
 
 	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
@@ -225,9 +198,9 @@ mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr 
 	return retv;
 }
 
-mrComplex_ptr 
-mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr 
+mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv) {
+	ComplexPtr retv = newMrComplex();
 
 	quint64 lv64, rv64;
 	quint32 lv32, rv32;
@@ -235,7 +208,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 	quint8 lv8, rv8;
 	bool okFlag = false;
 
-	switch (globalData->bit_width) {
+	switch (BridgeAPIGlobals::bitWidth()) {
 		case 64:
 			lv64 = MathEvaluator::safe_convert_u64b(lv->real, okFlag);
 			rv64 = MathEvaluator::safe_convert_u64b(rv->real, okFlag);
@@ -259,7 +232,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 		switch (which) {
 			// bitwise AND
 			case  MR_BITWISE_AND:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = lv64 & rv64;
 						break;
@@ -276,7 +249,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 				break;
 			// bitwise OR
 			case  MR_BITWISE_OR:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = lv64 | rv64;
 						break;
@@ -293,7 +266,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 				break;
 			// bitwise NAND
 			case  MR_BITWISE_NAND:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = ~(lv64 & rv64);
 						break;
@@ -310,7 +283,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 				break;
 			// bitwise NOR
 			case  MR_BITWISE_NOR:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = ~(lv64 | rv64);
 						break;
@@ -327,7 +300,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 				break;
 			// bitwise XOR
 			case  MR_BITWISE_XOR:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = lv64 ^ rv64;
 						break;
@@ -344,7 +317,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 				break;
 			// bitwise XNOR
 			case  MR_BITWISE_XNOR:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = ~(lv64 ^ rv64);
 						break;
@@ -361,7 +334,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 				break;
 			// bitwise shift left
 			case  MR_BITWISE_SHL:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = lv64 << rv64;
 						break;
@@ -378,7 +351,7 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 				break;
 			// bitwise shift right
 			case  MR_BITWISE_SHR:
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:	
 						retv->real = lv64 >> rv64;
 						break;
@@ -399,8 +372,8 @@ mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_pt
 	return retv;
 }
 
-mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val) {
+	ComplexPtr retv = newMrComplex();
 
 	quint64 tmpI64;
 	quint32 tmpI32;
@@ -408,7 +381,7 @@ mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr va
 	quint8 tmpI8;
  	bool okFlag;
 
-	switch (globalData->bit_width) {
+	switch (BridgeAPIGlobals::bitWidth()) {
 		case 64:
 			tmpI64 = MathEvaluator::safe_convert_u64b(val->real, okFlag);
 			break;
@@ -427,7 +400,7 @@ mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr va
 		switch (which) {
 			case  MR_BITWISE_NOT:
 				retv->imag = 0;
-				switch (globalData->bit_width) {
+				switch (BridgeAPIGlobals::bitWidth()) {
 					case 64:
 						tmpI64 = ~tmpI64;
 						retv->real = tmpI64;
@@ -452,8 +425,8 @@ mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr va
 	return retv;
 }
 
-mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, mrComplex_ptr val) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val) {
+	ComplexPtr retv = newMrComplex();
 	mr_StdComplex_t arg_c, retv_c;
 	MRCOMPLEX_2_STDCOMPLEX(arg_c, val);
 
@@ -541,8 +514,9 @@ mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, mrComplex_ptr va
 	return retv;
 }
 
-mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr arg1, mrComplex_ptr arg2) {
-	mrComplex_ptr retv = newMrComplex();
+ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which,
+								  ComplexConstPtr arg1, ComplexConstPtr arg2) {
+	ComplexPtr retv = newMrComplex();
 	mr_StdComplex_t arg1_c, arg2_c, retv_c;
 
 	MRCOMPLEX_2_STDCOMPLEX(arg1_c, arg1);
@@ -560,7 +534,7 @@ mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr 
 }
 
 /*! Parsing of numeric types. */
-mrReal parse_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal strToReal (const pANTLR3_STRING strin) {
 	string str;
 	ANTLR3_UINT32 len = strin->len;
 
@@ -577,7 +551,7 @@ mrReal parse_mrNumeric_t (pANTLR3_STRING strin) {
 	with internal representation, before input is handed to parser. 
 	This replacement will occur somewhere high in application so that
 	parser and lexer will always get clear string expressions in which
-	decimal separator will always be '.' */
+	decimal separator will always be MathEvaluator::internalDecimalPoint */
 
 	char removeCh = MathEvaluator::internalDecimalPoint().toAscii();
 	char current;
@@ -603,7 +577,7 @@ mrReal parse_mrNumeric_t (pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrReal parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal strHexToReal (const pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	QString str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
@@ -629,7 +603,7 @@ mrReal parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrReal parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal strOctToReal (const pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	QString str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
@@ -655,7 +629,7 @@ mrReal parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
 	return retv;
 }
 
-mrReal parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal strBinToReal (const pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
 	QString str;
 	for (ANTLR3_UINT32 i = 2; i < len; ++i) {

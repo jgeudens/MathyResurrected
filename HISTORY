@@ -1,3 +1,16 @@
+v 0.1.7
+=======
+* Replaced functions nand(x,y), nor(x,y), xnor(x,y) with operators: x nand y, 
+  x nor y, x xnor y. Created operator precedence table in Readme. 
+* Replaced symbol '×' for bitwise XOR operator with '~'
+* Replaced symbol '~' for bitwise not operator with '!'
++ Added percent operator. Expressions like "3.3%", "25%i", etc. are now 
+  possible.
+* Large code maintenance, refactoring and cleanup...
+* Replaced functions and(x,y), or(x,y), xor(x,y), shr(x,y), shl(x,y) with 
+  operators: x and y, x or y, x xor y, x shr y, x shl y. 
+* Fixed: Launchy crash when plugin was disabled and then enabled again.
+
 v 0.1.6
 =======
 + Added bitwise operators: AND, OR, XOR, bit shift left and right

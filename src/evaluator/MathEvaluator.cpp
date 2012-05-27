@@ -18,19 +18,20 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "MathEvaluator.h"
 #include <antlr3.h>
 #ifdef _DEBUG
 #include <iostream>
 #endif // _DEBUG
-#include <exception>
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include "ComplexLexer.h"
 #include "ComplexParser.h"
 #include "ComplexEval.h"
-#include "MathyResurrectedOptionsDialog.h"
-#include "MathEvaluator.h"
+#include "Settings.h"
+#include "Exceptions.h"
+#include <QLocale>
+#include "math_bridge_globals.h"
 
 using namespace std;
 using namespace boost;
@@ -40,12 +41,12 @@ namespace mathy_resurrected {
 #ifdef _DEBUG
 void MathEvaluator::printLexerErrors() const {
 	unsigned int i = 0;
-	unsigned int iend = itsBAPI.lexerErrorsCollection.size();
+	unsigned int iend = BridgeAPIGlobals::getLexerErrors().size();
 
 	for (; i != iend; ++i) {
-		cout << "Char at: " << itsBAPI.lexerErrorsCollection[i].char_index;
+		cout << "Char at: " << BridgeAPIGlobals::getLexerErrors()[i].char_index;
 		cout << " Error: ";
-		switch (itsBAPI.lexerErrorsCollection[i].err_type) {
+		switch (BridgeAPIGlobals::getLexerErrors()[i].err_type) {
 			case LEX_ERR_MALFORMED_MANTISSA:
 				cout << "LEX_ERR_MALFORMED_MANTISSA";
 				break;
@@ -124,94 +125,26 @@ MathEvaluator::LexerParser::~LexerParser() {
 	if (inputStream != NULL) { inputStream->close (inputStream); inputStream = NULL; }
 }
 
-QString MathEvaluator::defaultDecimalPointTag() {
-	return MathyResurrectedOptionsDialog::systemDecPointTag(); 
-}
 
-QString MathEvaluator::defaultGroupingCharTag()  {
-	return MathyResurrectedOptionsDialog::systemGroupingCharTag(); 
-}
-
-MathEvaluator::MathEvaluator(QSettings* app_settings) : 
+MathEvaluator::MathEvaluator(const Settings* app_settings) : 
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false),
 	itsExprLen(0)
 {
-	init_bridge_API(&itsBAPI);
-	real = imag = 0;
-	setAns(0, 0);
 	changeEvaluatorSettings(app_settings);
+	real = imag = 0;
+	storeAns();
 }
 
-void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
-	if (app_settings == NULL) {
-		itsArgSeparator = defaultArgSeparator();
-		itsOutputFormat = defaultOutputFormat();
-		itsPrecision = defaultOutputPrecision();
-		itsShowGroupChar = defaultShowDigitGrouping();
-		itsZeroTreshold = pow (10.0, defaultZeroTresholdExp());
-		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(defaultDecimalPointTag());
-		itsGroupingCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
-		itsBAPI.bit_width = itsBitWidth = defaultBitWidth();
-		itsShowLeadZeroesHex = defaultShowLeadingZeroesHex();
-		itsShowLeadZeroesBin = defaultShowLeadingZeroesBin();
-	} else {
-		itsArgSeparator = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
-			defaultArgSeparator()).toChar();
-
-		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(
-			app_settings->value(MathyResurrectedOptionsDialog::keyNameDecimalPoint(), "").toString()
-			);
-
-		itsGroupingCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(
-			app_settings->value(MathyResurrectedOptionsDialog::keyNameGroupingChar(), "").toString()
-			);
-			
-		itsOutputFormat = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameOutputFormat(),
-			defaultOutputFormat()).toChar();
-		
-		itsPrecision = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNamePrecision(),
-			defaultOutputPrecision()).toInt();
-
-		itsShowGroupChar = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameShowDigitGrouping(), 
-			defaultShowDigitGrouping()).toBool();
-
-		bool shouldUse = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameShouldUseZeroTreshold(), 
-			defaultShouldUseZeroTreshold()).toBool();
-
-		if (shouldUse) {
-			itsZeroTreshold = app_settings->value(
-				MathyResurrectedOptionsDialog::keyNameZeroTresholdExp(), 
-				defaultZeroTresholdExp()).toInt();
-			itsZeroTreshold = pow (10.0, itsZeroTreshold);
-		} else {
-			itsZeroTreshold = 0;
-		}
-
-		itsShowBasePrefix = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameShowBasePrefix(), 
-			MathyResurrectedOptionsDialog::defaultShowBasePrefix()).toBool();
-
-		itsBAPI.bit_width = itsBitWidth = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameBitWidth(),
-			defaultBitWidth()).toUInt();
-
-		itsShowLeadZeroesHex = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameShowLeadingZeroesHex(), 
-			defaultShowLeadingZeroesHex()).toBool();
-			
-		itsShowLeadZeroesBin = app_settings->value(
-			MathyResurrectedOptionsDialog::keyNameShowLeadingZeroesBin(), 
-			defaultShowLeadingZeroesBin()).toBool();
+void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
+	if (app_settings == 0) {
+		throw invalid_argument("Null pointer to evaluator settings!");
 	}
+	itsSettings = app_settings;
+	BridgeAPIGlobals::setBitWidth(itsSettings->calculationBitWidth());
+}
 
-	if (itsArgSeparator == itsDecimalPoint) {
-		itsArgSeparator = defaultArgSeparator();
-	}
+const Complex& MathEvaluator::ans() const { 
+	return *BridgeAPIGlobals::getAns(); 
 }
 
 void MathEvaluator::setExpression(const QString& expression) {
@@ -224,8 +157,8 @@ void MathEvaluator::setExpression(const QString& expression) {
 	QString tmp_expr = expression;
 
 	// Preprocessing expression...
-	tmp_expr.replace(itsDecimalPoint, internalDecimalPoint());
-	tmp_expr.replace(itsArgSeparator, internalArgSeparator());
+	tmp_expr.replace(itsSettings->decimalPointAsChar(), internalDecimalPoint());
+	tmp_expr.replace(itsSettings->functionArgSeparatorAsChar(), internalArgSeparator());
 
 	QByteArray tmp = tmp_expr.toAscii();
 	int iend = tmp.length();
@@ -263,8 +196,8 @@ bool MathEvaluator::validate() {
 		itsIsValidated = true;
 	}
 
-	itsBAPI.complexFactoryData.clear();
-	itsBAPI.lexerErrorsCollection.clear();
+	BridgeAPIGlobals::clearComplexFactory();
+	BridgeAPIGlobals::clearLexerErrors();
 	return itsIsValid;
 }
 
@@ -272,7 +205,7 @@ bool MathEvaluator::evaluate() {
 	if (!itsIsEvaluated) {
 		if (validate()) {
 
-			itsErrStr = "";
+			itsErrStr.clear();
 
 			LexerParser lpr (itsExprString, itsExprLen);
 
@@ -296,7 +229,7 @@ bool MathEvaluator::evaluate() {
 			}
 
 			if (!lpr.malloc_error) {
-				mrComplex_ptr retv_val;
+				ComplexPtr retv_val;
 
 				try {
 					retv_val = lpr.treeParser->prog(lpr.treeParser);
@@ -312,13 +245,13 @@ bool MathEvaluator::evaluate() {
 		itsIsEvaluated = true;
 	}
 
-	itsBAPI.complexFactoryData.clear();
-	itsBAPI.lexerErrorsCollection.clear();
+	BridgeAPIGlobals::clearComplexFactory();
+	BridgeAPIGlobals::clearLexerErrors();
 	return itsIsValid;
 }
 
 void MathEvaluator::storeAns() {
-	itsBAPI.ans.real = real; itsBAPI.ans.imag = imag;
+	BridgeAPIGlobals::setAns(real, imag);
 }
 
 QString MathEvaluator::toString() const {
@@ -355,10 +288,10 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 			// If number is close enough to zero, we make it zero 
 			// explicitly (but for display purposes only)
 			mrReal im_disp = imag, re_disp = real;
-			if (abs(im_disp) < abs(itsZeroTreshold)) {
+			if (abs(im_disp) < pow(10.0, itsSettings->zeroTresholdExp())) {
 				im_disp = 0;
 			}
-			if (abs(re_disp) < abs(itsZeroTreshold)) {
+			if (abs(re_disp) < pow(10.0, itsSettings->zeroTresholdExp())) {
 				re_disp = 0;
 			}
 
@@ -453,45 +386,45 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 	mrReal absVal = val;
 	switch (baseTag) {
 		case 'b':
-			switch (itsBitWidth) {
-				case 64:
+			switch (itsSettings->calculationBitWidth()) {
+				case Settings::BW64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI64, 2);
-						if (itsShowLeadZeroesBin) {
+						if (itsSettings->showLeadingZeroesBin()) {
 							retv = retv.rightJustified(64, '0');
 						}
 					} else {
 						retv = "64b int range error";
 					}
 					break;
-				case 32:
+				case Settings::BW32:
 					tmpI32 = safe_convert_u32b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI32, 2);
-						if (itsShowLeadZeroesBin) {
+						if (itsSettings->showLeadingZeroesBin()) {
 							retv = retv.rightJustified(32, '0');
 						}
 					} else {
 						retv = "32b int range error";
 					}
 					break;
-				case 16:
+				case Settings::BW16:
 					tmpI16 = safe_convert_u16b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI16, 2);
-						if (itsShowLeadZeroesBin) {
+						if (itsSettings->showLeadingZeroesBin()) {
 							retv = retv.rightJustified(16, '0');
 						}
 					} else {
 						retv = "16b int range error";
 					}
 					break;
-				case 8:
+				case Settings::BW8:
 					tmpI8 = safe_convert_u8b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI8, 2);
-						if (itsShowLeadZeroesBin) {
+						if (itsSettings->showLeadingZeroesBin()) {
 							retv = retv.rightJustified(8, '0');
 						}
 					} else {
@@ -499,51 +432,51 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					}
 					break;
 			}
-			if (itsShowBasePrefix) {
+			if (itsSettings->showBasePrefix()) {
 				retv.insert(0, "0b");
 			}
 			retv.insert(0, bho_sign);
 			break;
 		case 'h':
-			switch (itsBitWidth) {
-				case 64:
+			switch (itsSettings->calculationBitWidth()) {
+				case Settings::BW64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI64, 16).toUpper();
-						if (itsShowLeadZeroesHex) {
+						if (itsSettings->showLeadingZeroesHex()) {
 							retv = retv.rightJustified(16, '0');
 						}
 					} else {
 						retv = "64b int range error";
 					}
 					break;
-				case 32:
+				case Settings::BW32:
 					tmpI32 = safe_convert_u32b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI32, 16).toUpper();
-						if (itsShowLeadZeroesHex) {
+						if (itsSettings->showLeadingZeroesHex()) {
 							retv = retv.rightJustified(8, '0');
 						}
 					} else {
 						retv = "32b int range error";
 					}
 					break;
-				case 16:
+				case Settings::BW16:
 					tmpI16 = safe_convert_u16b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI16, 16).toUpper();
-						if (itsShowLeadZeroesHex) {
+						if (itsSettings->showLeadingZeroesHex()) {
 							retv = retv.rightJustified(4, '0');
 						}
 					} else {
 						retv = "16b int range error";
 					}
 					break;
-				case 8:
+				case Settings::BW8:
 					tmpI8 = safe_convert_u8b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI8, 16).toUpper();
-						if (itsShowLeadZeroesHex) {
+						if (itsSettings->showLeadingZeroesHex()) {
 							retv = retv.rightJustified(2, '0');
 						}
 					} else {
@@ -551,14 +484,14 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					}
 					break;
 			}
-			if (itsShowBasePrefix) {
+			if (itsSettings->showBasePrefix()) {
 				retv.insert(0, "0x");
 			}
 			retv.insert(0, bho_sign);
 			break;
 		case 'o':
-			switch (itsBitWidth) {
-				case 64:
+			switch (itsSettings->calculationBitWidth()) {
+				case Settings::BW64:
 					tmpI64 = safe_convert_u64b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI64, 8);
@@ -566,7 +499,7 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 						retv = "64b int range error";
 					}
 					break;
-				case 32:
+				case Settings::BW32:
 					tmpI32 = safe_convert_u32b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI32, 8);
@@ -574,7 +507,7 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 						retv = "32b int range error";
 					}
 					break;
-				case 16:
+				case Settings::BW16:
 					tmpI16 = safe_convert_u16b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI16, 8);
@@ -582,7 +515,7 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 						retv = "16b int range error";
 					}
 					break;
-				case 8:
+				case Settings::BW8:
 					tmpI8 = safe_convert_u8b(absVal, ok_flag);
 					if (ok_flag) {
 						retv += QString::number(tmpI8, 8);
@@ -591,19 +524,19 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 					}
 					break;
 			}
-			if (itsShowBasePrefix) {
+			if (itsSettings->showBasePrefix()) {
 				retv.insert(0, "0");
 			}
 			retv.insert(0, bho_sign);
 			break;
 		case 'd':
 		default:
-			if (itsOutputFormat == 'd') { 
-				retv = loc.toString(val, 'g', itsPrecision);
-			} else if (itsOutputFormat == 's') {
-				retv = loc.toString(val, 'e', itsPrecision);
-			} else if (itsOutputFormat == 'f') {
-				retv = loc.toString(val, 'f', itsPrecision);		
+			if (itsSettings->outputFormat() == Settings::AUTOMATIC) { 
+				retv = loc.toString(val, 'g', itsSettings->precision());
+			} else if (itsSettings->outputFormat() == Settings::SCIENTIFFIC) {
+				retv = loc.toString(val, 'e', itsSettings->precision());
+			} else if (itsSettings->outputFormat() == Settings::FIXED) {
+				retv = loc.toString(val, 'f', itsSettings->precision());		
 			}
 
 			// Post processing
@@ -616,14 +549,14 @@ void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) cons
 			retv.replace(loc.decimalPoint(), internalDecimalPoint());
 
 			// Post processing group separator. 
-			if (!itsShowGroupChar) {
+			if (!itsSettings->outputDigitGrouping()) {
 				retv.remove(loc.groupSeparator());
 			} else {
-				retv.replace(loc.groupSeparator(), itsGroupingCharacter);
+				retv.replace(loc.groupSeparator(), itsSettings->digitGroupingCharacterAsChar());
 			}
 
-			// Postprocessing decimal point. 
-			retv.replace(internalDecimalPoint(), itsDecimalPoint);
+			// Post processing decimal point. 
+			retv.replace(internalDecimalPoint(), itsSettings->decimalPointAsChar());
 
 			break;
 	}

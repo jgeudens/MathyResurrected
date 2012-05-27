@@ -22,16 +22,12 @@
 #define MATHY_RESURRECTED_EVALUATOR
 
 #include <QString>
-#include <QSettings>
-#include <QLocale>
-#include <vector>
-#include <utility>
 #include <boost/smart_ptr/shared_array.hpp>
-#include "MathyResurrectedExceptions.h"
 #include "math_bridge_API_types.h"
-#include "math_bridge_globals.h"
 
 namespace mathy_resurrected {
+
+class Settings;
 
 /*! Main class for mathematical expression evaluation. Can be used
 to validate expression string or to fully evaluate it. Internally 
@@ -39,41 +35,26 @@ uses ANTLR generated lexer / parser for its job.
 @note
 Current implementation relies on globally accessible factories and 
 variables for communication between this class and ANTLR generated 
-evaluator. Because of that, it only single instance of MathEvaluator
+evaluator. Because of that, only single instance of MathEvaluator
 should exist at any time in program. If this is not ensured, evaluation
 will result in unspecified behavior. */
-class MathEvaluator : private mrComplex_t {
+class MathEvaluator : private Complex {
 public:
-	MathEvaluator(QSettings* app_settings = 0);
-
-	// Input / output settings
-	void changeEvaluatorSettings(QSettings* app_settings = 0);
-	static QChar systemDecimalPoint() { return QLocale::system().decimalPoint(); }
-	static QChar systemThousandSep() { return QLocale::system().groupSeparator(); }
-	static QChar defaultArgSeparator() { return QChar(':'); } // Must never be '.' or ','
-	static QString defaultDecimalPointTag();
-	static QString defaultGroupingCharTag();
-	static QChar defaultOutputFormat() { return QChar('f'); }
-	static int defaultOutputPrecision() { return 2; }
-	static bool defaultShowDigitGrouping() { return true; }
-	static int defaultZeroTresholdExp() { return -15; }
-	static bool defaultShouldUseZeroTreshold() { return true; }
-	static unsigned char defaultBitWidth() { return 8; }
-	static bool defaultShowLeadingZeroesHex() { return true; }
-	static bool defaultShowLeadingZeroesBin() { return false; }
+	MathEvaluator(const Settings* app_settings);
+	void changeEvaluatorSettings(const Settings* settings);
 
 	/*! Sets expression to be evaluated. */
 	void setExpression (const QString& expression);
 	/*! Validates expression. Doesn't evaluate it. */
 	bool validate ();
 	/*! Validates expression if it hasn't been validated and 
-	evaluates it. @returns true if expression is valid. Results
+	evaluates it. Returns true if expression is valid. Results
 	can be read using Re() and Im() methods. */
 	bool evaluate ();
 	/** Stores current state of calculation for future use by "ans" 
 	variable in expression. */
 	void storeAns();
-	const mrComplex_t& ans() const { return itsBAPI.ans; }
+	const Complex& ans() const;
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
@@ -102,6 +83,8 @@ public:
 
 	/*! This should return same character that was used in grammar */
 	static QChar internalDecimalPoint() { return QChar('@'); }
+	/*! This should return same character that was used in grammar */
+	static QChar internalArgSeparator() { return QChar('#'); }
 
 private:
 	// Evaluation state variables
@@ -109,7 +92,9 @@ private:
 	bool itsIsValid;		/*!< true if expression is valid */
 	bool itsIsEvaluated;	/*!< true if expression has been evaluated */
 	QString itsErrStr;		/*!< Error string */
-	BridgeAPIGlobals itsBAPI;
+
+	/** Evaluator settings. Non-owned pointer to const object. */
+	const Settings* itsSettings;
 
 	// Input expression variables
 	/*! Type to hold expression that will be passed to lexer and parser. */
@@ -124,21 +109,6 @@ private:
 	antlr8BitString_t itsExprString;
 	/*! Length of expression string in sizeof(char). */
 	unsigned int itsExprLen;
-
-	// Input / output settings
-	QChar itsArgSeparator;
-	QChar itsDecimalPoint;
-	QChar itsOutputFormat;
-	int itsPrecision;
-	bool itsShowGroupChar;
-	double itsZeroTreshold;
-	QChar itsGroupingCharacter;
-	bool itsShowBasePrefix;
-	unsigned char itsBitWidth;
-	bool itsShowLeadZeroesHex;
-	bool itsShowLeadZeroesBin;
-	/*! This should return same character that was used in grammar */
-	static QChar internalArgSeparator() { return QChar('#'); }
 
 	void numberToString(mrReal val, QString& retv, char baseTag) const;
 	void toString(char baseTag, QString& dest) const;

@@ -1,6 +1,6 @@
 TARGET = mathyresurrected
 TEMPLATE = lib
-VERSION = 0.1.6
+VERSION = 0.1.7
 
 CONFIG += plugin \
 	warn_on \
@@ -20,72 +20,74 @@ win32 {
 	CONFIG -= embed_manifest_dll
 	LIBS += shell32.lib
 	
-	QMAKE_DISTCLEAN += *.ncb *.user *.suo
+	QMAKE_DISTCLEAN += *.ncb *.user *.suo *.sln *.vcproj *.rc
 }
 
-DISTFILES += $$PWD/AUTHORS \
-	$$PWD/COPYING \
-	$$PWD/HISTORY \
-	$$PWD/INSTALL \
-	$$PWD/README.mathyresurrected.txt \
-	$$PWD/TODO \
-	$$PWD/src/antlr/ComplexEval.g \
-	$$PWD/src/antlr/ComplexLexer.g \
-	$$PWD/src/antlr/ComplexParser.g \
-	$$PWD/src/antlr/README.txt \
-	$$PWD/src/antlr/regenerate.bat \
-	$$PWD/icons/mathyresurrected.ico \
-	$$PWD/icons/mathyresurrected.png
+DISTFILES += AUTHORS \
+	COPYING \
+	HISTORY \
+	INSTALL \
+	README.mathyresurrected.txt \
+	TODO \
+	src/antlr/ComplexEval.g \
+	src/antlr/ComplexLexer.g \
+	src/antlr/ComplexParser.g \
+	src/antlr/README.txt \
+	src/antlr/regenerate.bat \
+	icons/mathyresurrected.ico \
+	icons/mathyresurrected.png
 
-# generated files
-MOC_DIR = $$PWD/build/generated
-UI_DIR = $$PWD/build/generated
-INCLUDEPATH += $$PWD/build/generated
+FORMS = ui/OptionsWidget.ui
 
-FORMS = $$PWD/ui/OptionsWidget.ui
-
-# debug build options
-CONFIG(debug, debug|release) {
-	DESTDIR = $$PWD/bin/debug
-	OBJECTS_DIR = $$PWD/build/debug	
-}
-
-# release build options
-CONFIG(release, debug|release) { 
-	DESTDIR = $$PWD/bin/release
-	OBJECTS_DIR = $$PWD/build/release
+CONFIG(release, debug|release) { # general release build options
+	DESTDIR = $${_PRO_FILE_PWD_}/bin/release
+	OBJECTS_DIR = $${_PRO_FILE_PWD_}/build/release
+	RCC_DIR = $${_PRO_FILE_PWD_}/build/release
+	MOC_DIR = $${_PRO_FILE_PWD_}/build/release
+	UI_DIR = $${_PRO_FILE_PWD_}/build/release
+	INCLUDEPATH += $${_PRO_FILE_PWD_}/build/release
+} else {                         # general debug build options
+	DESTDIR = $${_PRO_FILE_PWD_}/bin/debug
+	OBJECTS_DIR = $${_PRO_FILE_PWD_}/build/debug
+	RCC_DIR = $${_PRO_FILE_PWD_}/build/debug
+	MOC_DIR = $${_PRO_FILE_PWD_}/build/debug
+	UI_DIR = $${_PRO_FILE_PWD_}/build/debug
+	INCLUDEPATH += $${_PRO_FILE_PWD_}/build/debug
 }
 
 LIBS += -lantlr3c
 
 # Plugin main sources
-SOURCES += $$PWD/src/MathyResurrectedOptionsDialog.cpp \
-	$$PWD/src/MathyResurrectedPlugin.cpp \
-	$$PWD/src/evaluator/MathEvaluator.cpp \
-	$$PWD/src/evaluator/MathyResurrectedExceptions.cpp \
-	$$PWD/src/evaluator/math_bridge_API.cpp
-HEADERS += $$PWD/src/MathyResurrectedOptionsDialog.h \
-	$$PWD/src/MathyResurrectedPlugin.h \
-	$$PWD/src/evaluator/MathEvaluator.h \
-	$$PWD/src/evaluator/MathyResurrectedExceptions.h \
-	$$PWD/src/evaluator/math_bridge_globals.h \
-	$$PWD/src/evaluator/math_bridge_API.h \
-	$$PWD/src/evaluator/math_bridge_API_types.h
-INCLUDEPATH += $$PWD/src \
-	$$PWD/src/evaluator
+SOURCES += src/OptionsDialog.cpp \
+	src/Settings.cpp \
+	src/MathyResurrectedPlugin.cpp \
+	src/evaluator/MathEvaluator.cpp \
+	src/evaluator/Exceptions.cpp \
+	src/evaluator/math_bridge_globals.cpp \
+	src/evaluator/math_bridge_API.cpp
+HEADERS += src/OptionsDialog.h \
+	src/Settings.h \
+	src/MathyResurrectedPlugin.h \
+	src/evaluator/MathEvaluator.h \
+	src/evaluator/Exceptions.h \
+	src/evaluator/math_bridge_globals.h \
+	src/evaluator/math_bridge_API.h \
+	src/evaluator/math_bridge_API_types.h
+INCLUDEPATH += src \
+	src/evaluator
 
 # Plugin API sources
-HEADERS += $$PWD/src/pluginAPI/plugin_interface.h \
-	$$PWD/src/pluginAPI/catalog.h
-SOURCES += $$PWD/src/pluginAPI/plugin_interface.cpp
-INCLUDEPATH += $$PWD/src/pluginAPI
+HEADERS += src/pluginAPI/plugin_interface.h \
+	src/pluginAPI/catalog.h
+SOURCES += src/pluginAPI/plugin_interface.cpp
+INCLUDEPATH += src/pluginAPI
 
 # ANTLR generated math lexer, parser and evaluator
-SOURCES += $$PWD/src/antlr/ComplexEval.c \
-	$$PWD/src/antlr/ComplexLexer.c \
-	$$PWD/src/antlr/ComplexParser.c
-HEADERS += $$PWD/src/antlr/ComplexEval.h \
-	$$PWD/src/antlr/ComplexLexer.h \
-	$$PWD/src/antlr/ComplexParser.h
-INCLUDEPATH += $$PWD/src/antlr
+SOURCES += src/antlr/ComplexEval.c \
+	src/antlr/ComplexLexer.c \
+	src/antlr/ComplexParser.c
+HEADERS += src/antlr/ComplexEval.h \
+	src/antlr/ComplexLexer.h \
+	src/antlr/ComplexParser.h
+INCLUDEPATH += src/antlr
 

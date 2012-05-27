@@ -30,33 +30,43 @@ C parser/lexer/evaluator with C++ std::complex */
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include "math_bridge_API_types.h"
 
-/** Structure that holds global variables needed by math bridge API.
-Bridge API is initialized with instance of this struct and then uses
-it's members to store data. This had to be done because ANTLR generates
-C-api which can't be used directly with C++ */
-struct BridgeAPIGlobals {
-	BridgeAPIGlobals() {
-		ans.real = ans.imag = 0;
-	}
-
+/** Structure that holds global variables needed by math bridge API. */
+class BridgeAPIGlobals {
+public:
+	static ComplexPtr newMrComplex();
+	static void clearComplexFactory();
+	
 	typedef struct {
 		unsigned int char_index;
 		MR_LEXER_ERROR_TYPES err_type;
 	} mr_LexerErrorPair;
 
+	typedef std::vector <mr_LexerErrorPair> LexerErrorsCollection;
+
+	static void collectlexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err_type);
+	static void clearLexerErrors();
+	static const LexerErrorsCollection& getLexerErrors();
+
+	static void setAns(mrReal real, mrReal imag);
+	static ComplexConstPtr getAns();
+
+	static unsigned char bitWidth();
+	static void setBitWidth(unsigned char nw);
+
+private:
+	BridgeAPIGlobals();
+	static BridgeAPIGlobals& getGlobals();
+
+	/*! Data storage for factory produced objects. */
+	std::vector< boost::shared_ptr< Complex > > complexFactoryData;
+
 	/*! All lexer errors are collected here during lexing phase. After 
 	that and before parser is invoked, this can be used to generate error 
 	message. */
-	std::vector <mr_LexerErrorPair> lexerErrorsCollection;
+	LexerErrorsCollection lexerErrorsCollection;
 
-	/*! Data storage for factory produced objects. */
-	std::vector< boost::shared_ptr< mrComplex_t > > complexFactoryData;
-
-	mrComplex_t ans;
-
+	Complex ans;
 	unsigned char bit_width;
 };
-
-void init_bridge_API (BridgeAPIGlobals* globs);
 
 #endif // MATHY_RESURRECTED_MATH_BRIDGE_GLOBALS
