@@ -36,7 +36,20 @@ using namespace boost::math;
 using namespace std;
 using namespace mathy_resurrected;
 
-typedef std::complex<mrNumeric_t> mr_StdComplex_t;
+typedef std::complex<mrReal> mr_StdComplex_t;
+typedef const mrComplex_t* const mrComplex_const_ptr;
+
+/*! Converts between tree parser return value and std::complex<T> */
+inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& dest, mrComplex_const_ptr src) {
+	dest.real(src->real);
+	dest.imag(src->imag);
+}
+
+/*! Converts between tree parser return value and std::complex<T> */
+inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr dest, const mr_StdComplex_t& src) {
+	dest->real = src.real();
+	dest->imag = src.imag();
+}
 
 /** Global data used by bridge API. Although this doesn't make this API much
 tread safer than before, at leaset this "unsafety" has been localized and 
@@ -67,7 +80,7 @@ void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_code) 
 	globalData->lexerErrorsCollection.push_back(p);
 }
 
-void setAns(mrNumeric_t real, mrNumeric_t imag) {
+void setAns(mrReal real, mrReal imag) {
 	globalData->ans.real = real;
 	globalData->ans.imag = imag;
 }
@@ -76,33 +89,19 @@ mrComplex_ptr getAns() {
 	return &(globalData->ans);
 }
 
-mrNumeric_t mr_pi() {
-	static const mrNumeric_t 
-		piVal = atan2((mrNumeric_t)(0.0), static_cast<mrNumeric_t>(-1.0));
+mrReal mr_pi() {
+	static const mrReal 
+		piVal = atan2((mrReal)(0.0), static_cast<mrReal>(-1.0));
 	return piVal;
 }
 
-mrNumeric_t mr_e() {
-	static const mrNumeric_t eVal = exp((mrNumeric_t)(1.0));
+mrReal mr_e() {
+	static const mrReal eVal = exp((mrReal)(1.0));
 	return eVal;
 }
 
-typedef const mrComplex_t* const mrComplex_const_ptr;
-
-/*! Converts between tree parser return value and std::complex<T> */
-inline void MRCOMPLEX_2_STDCOMPLEX(mr_StdComplex_t& compl, mrComplex_const_ptr mrretv) {
-	compl.real(mrretv->real);
-	compl.imag(mrretv->imag);
-}
-
-/*! Converts between tree parser return value and std::complex<T> */
-inline void STDCOMPLEX_2_MRCOMPLEX(mrComplex_ptr mrretv, const mr_StdComplex_t& compl) {
-	mrretv->real = compl.real();
-	mrretv->imag = compl.imag();
-}
-
-mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix) {
-	mrNumeric_t suff_val, retv;
+mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix) {
+	mrReal suff_val, retv;
 
 	switch (si_prefix) {
 		case MR_MATH_SI_PREFIX_YOTTA:
@@ -195,351 +194,341 @@ mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix) {
 	return retv;
 }
 
-mrComplex_ptr mr_sin(mrComplex_ptr x) {
+mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv) {
+	mrComplex_ptr retv = newMrComplex();
+	mr_StdComplex_t rv_c, lv_c, retv_c;
+
+	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
+	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
+
+	switch (which) {
+		case MR_PLUS:
+			retv_c = lv_c + rv_c;
+			break;
+		case MR_MINUS:
+			retv_c = lv_c - rv_c;
+			break;
+		case MR_MULTI:
+			retv_c = lv_c * rv_c;;
+			break;
+		case MR_DIV:
+			retv_c = lv_c / rv_c;;
+			break;
+		case MR_MOD:
+			retv_c.imag(0);
+			retv_c.real(static_cast<mrReal>(fmod(lv->real, rv->real)));
+			break;
+		case MR_POW:
+			retv_c = std::pow(lv_c, rv_c);
+			break;
+	}
+
+	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
+	return retv;
+}
+
+mrComplex_ptr 
+mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv) {
+	mrComplex_ptr retv = newMrComplex();
+
+	quint64 lv64, rv64;
+	quint32 lv32, rv32;
+	quint16 lv16, rv16;
+	quint8 lv8, rv8;
+	bool okFlag;
+
+	switch (globalData->bit_width) {
+		case 64:
+			lv64 = MathEvaluator::safe_convert_u64b(lv->real, okFlag);
+			rv64 = MathEvaluator::safe_convert_u64b(rv->real, okFlag);
+			break;
+		case 32:
+			lv32 = MathEvaluator::safe_convert_u32b(lv->real, okFlag);
+			rv32 = MathEvaluator::safe_convert_u32b(rv->real, okFlag);
+			break;
+		case 16:
+			lv16 = MathEvaluator::safe_convert_u16b(lv->real, okFlag);
+			rv16 = MathEvaluator::safe_convert_u16b(rv->real, okFlag);
+			break;
+		case 8:
+			lv8 = MathEvaluator::safe_convert_u8b(lv->real, okFlag);
+			rv8 = MathEvaluator::safe_convert_u8b(rv->real, okFlag);
+			break;
+	}
+
+	if (okFlag) {
+		retv->imag = 0;
+		switch (which) {
+			// bitwise AND
+			case  MR_BITWISE_AND:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 & rv64;
+						break;
+					case 32:
+						retv->real = lv32 & rv32;
+						break;
+					case 16:
+						retv->real = lv16 & rv16;
+						break;
+					case 8:
+						retv->real = lv8 & rv8;
+						break;
+				}
+				break;
+			// bitwise OR
+			case  MR_BITWISE_OR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 | rv64;
+						break;
+					case 32:
+						retv->real = lv32 | rv32;
+						break;
+					case 16:
+						retv->real = lv16 | rv16;
+						break;
+					case 8:
+						retv->real = lv8 | rv8;
+						break;
+				}
+				break;
+			// bitwise NAND
+			case  MR_BITWISE_NAND:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = ~(lv64 & rv64);
+						break;
+					case 32:
+						retv->real = ~(lv32 & rv32);
+						break;
+					case 16:
+						retv->real = ~(lv16 & rv16);
+						break;
+					case 8:
+						retv->real = ~(lv8 & rv8);
+						break;
+				}
+				break;
+			// bitwise NOR
+			case  MR_BITWISE_NOR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = ~(lv64 | rv64);
+						break;
+					case 32:
+						retv->real = ~(lv32 | rv32);
+						break;
+					case 16:
+						retv->real = ~(lv16 | rv16);
+						break;
+					case 8:
+						retv->real = ~(lv8 | rv8);
+						break;
+				}
+				break;
+			// bitwise XOR
+			case  MR_BITWISE_XOR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = lv64 ^ rv64;
+						break;
+					case 32:
+						retv->real = lv32 ^ rv32;
+						break;
+					case 16:
+						retv->real = lv16 ^ rv16;
+						break;
+					case 8:
+						retv->real = lv8 ^ rv8;
+						break;
+				}
+				break;
+			// bitwise XNOR
+			case  MR_BITWISE_XNOR:
+				switch (globalData->bit_width) {
+					case 64:	
+						retv->real = ~(lv64 ^ rv64);
+						break;
+					case 32:
+						retv->real = ~(lv32 ^ rv32);
+						break;
+					case 16:
+						retv->real = ~(lv16 ^ rv16);
+						break;
+					case 8:
+						retv->real = ~(lv8 ^ rv8);
+						break;
+				}
+				break;
+		}
+	}
+
+	return retv;
+}
+
+mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val) {
+	mrComplex_ptr retv = newMrComplex();
+
+	quint64 tmpI64;
+	quint32 tmpI32;
+	quint16 tmpI16;
+	quint8 tmpI8;
+ 	bool okFlag;
+
+	switch (globalData->bit_width) {
+		case 64:
+			tmpI64 = MathEvaluator::safe_convert_u64b(val->real, okFlag);
+			break;
+		case 32:
+			tmpI32 = MathEvaluator::safe_convert_u32b(val->real, okFlag);
+			break;
+		case 16:
+			tmpI16 = MathEvaluator::safe_convert_u16b(val->real, okFlag);
+			break;
+		case 8:
+			tmpI8 = MathEvaluator::safe_convert_u8b(val->real, okFlag);
+			break;
+	}
+
+	if (okFlag) {
+		switch (which) {
+			case  MR_BITWISE_NOT:
+				retv->imag = 0;
+				switch (globalData->bit_width) {
+					case 64:
+						tmpI64 = ~tmpI64;
+						retv->real = tmpI64;
+						break;
+					case 32:
+						tmpI32 = ~tmpI32;
+						retv->real = tmpI32;
+						break;
+					case 16:
+						tmpI16 = ~tmpI16;
+						retv->real = tmpI16;
+						break;
+					case 8:
+						tmpI8 = ~tmpI8;
+						retv->real = tmpI8;
+						break;
+				}
+				break;
+		}
+	}
+
+	return retv;
+}
+
+mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, mrComplex_ptr val) {
 	mrComplex_ptr retv = newMrComplex();
 	mr_StdComplex_t arg_c, retv_c;
+	MRCOMPLEX_2_STDCOMPLEX(arg_c, val);
 
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::sin(arg_c);
+	switch (which) {
+		case MR_FUN_SIN:
+			retv_c = std::sin(arg_c);
+			break;;
+		case MR_FUN_COS:
+			retv_c = std::cos(arg_c);
+			break;;
+		case MR_FUN_TAN:
+			retv_c = std::tan(arg_c);
+			break;;
+		case MR_FUN_ASIN:
+			retv_c = boost::math::asin(arg_c);
+			break;;
+		case MR_FUN_ACOS:
+			retv_c = boost::math::acos(arg_c);
+			break;;
+		case MR_FUN_ATAN:
+			retv_c = boost::math::atan(arg_c);
+			break;;
+		case MR_FUN_SINH:
+			retv_c = std::sinh(arg_c);
+			break;;
+		case MR_FUN_COSH:
+			retv_c = std::cosh(arg_c);
+			break;;
+		case MR_FUN_TANH:
+			retv_c = std::tanh(arg_c);
+			break;;
+		case MR_FUN_ASINH:
+			retv_c = boost::math::asinh(arg_c);
+			break;;
+		case MR_FUN_ACOSH:
+			retv_c = boost::math::acosh(arg_c);
+			break;;
+		case MR_FUN_ATANH:
+			retv_c = boost::math::atanh(arg_c);
+			break;;
+		case MR_FUN_EXP:
+			retv_c = std::exp(arg_c);
+			break;;
+		case MR_FUN_LOG:
+			retv_c = std::log(arg_c);
+			break;;
+		case MR_FUN_LOG10:
+			retv_c = std::log10(arg_c);
+			break;;
+		case MR_FUN_SQRT:
+			retv_c = std::sqrt(arg_c);
+			break;;
+		case MR_FUN_ABS:
+			retv_c = std::abs(arg_c);
+			break;;
+		case MR_FUN_RE:
+			retv_c.real(val->real); retv_c.imag(0.0);
+			break;;
+		case MR_FUN_IM:
+			retv_c.real(0.0); retv_c.imag(val->imag);
+			break;;
+		case MR_FUN_ARG:
+			retv_c = std::arg(arg_c);
+			break;;
+		case MR_FUN_CONJ:
+			retv_c = std::conj(arg_c);
+			break;;
+		case MR_FUN_DEG:
+			retv_c.real(fmod(val->real * 180 / mr_pi(), 360));
+			retv_c.imag(0.0);
+			break;;
+		case MR_FUN_RAD:
+			retv_c.real(fmod(val->real * mr_pi() / 180, 2*mr_pi()));
+			retv_c.imag(0.0);
+			break;;
+		case MR_FUN_NORM:
+			retv_c = std::norm(arg_c);
+			break;;
+		case MR_FUN_POLAR:
+			retv_c = std::polar(val->real, val->imag);
+			break;;
+	}
+
 	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
 	return retv;
 }
 
-mrComplex_ptr mr_cos(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::cos(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_tan(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::tan(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_asin(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::asin(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_acos(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::acos(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_atan(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::atan(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_sinh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::sinh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_cosh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::cosh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_tanh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::tanh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_asinh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::asinh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_acosh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::acosh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_atanh(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = boost::math::atanh(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_exp(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::exp(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_log(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::log(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_log10(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::log10(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_sqrt(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::sqrt(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_abs(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::abs(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_re(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	retv->real = x->real; retv->imag = 0.0;
-	return retv;
-}
-
-mrComplex_ptr mr_im(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	retv->imag = x->imag; retv->real = 0.0;
-	return retv;
-}
-
-mrComplex_ptr mr_arg(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::arg(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_conj(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::conj(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_deg(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->real = fmod(x->real * 180 / mr_pi(), 360);
-	retv->imag = 0;
-
-	return retv;
-}
-
-mrComplex_ptr mr_rad(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-
-	retv->real = fmod(x->real * mr_pi() / 180, 2*mr_pi());
-	retv->imag = 0;
-
-	return retv;
-}
-
-mrComplex_ptr mr_norm(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t arg_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(arg_c, x);
-	retv_c = std::norm(arg_c);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_polar(mrComplex_ptr x) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t retv_c;
-
-	retv_c = std::polar(x->real, x->imag);
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y) {
-	mrComplex_ptr retv = newMrComplex();
-	retv->real = std::atan2(x->real, y->real);
-	return retv;
-}
-
-mrComplex_ptr mr_pow (mrComplex_ptr x, mrComplex_ptr y) {
+mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr arg1, mrComplex_ptr arg2) {
 	mrComplex_ptr retv = newMrComplex();
 	mr_StdComplex_t arg1_c, arg2_c, retv_c;
 
-	MRCOMPLEX_2_STDCOMPLEX(arg1_c, x);
-	MRCOMPLEX_2_STDCOMPLEX(arg2_c, y);
+	MRCOMPLEX_2_STDCOMPLEX(arg1_c, arg1);
+	MRCOMPLEX_2_STDCOMPLEX(arg2_c, arg2);
 
-	retv_c = std::pow(arg1_c, arg2_c);
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-
-	return retv;
-}
-
-mrComplex_ptr mr_add (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c + rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_substract (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c - rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_multiply (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c * rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_divide (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t rv_c, lv_c, retv_c;
-
-	MRCOMPLEX_2_STDCOMPLEX(rv_c,rv);
-	MRCOMPLEX_2_STDCOMPLEX(lv_c,lv);
-
-	retv_c = lv_c / rv_c;
-
-	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
-	return retv;
-}
-
-mrComplex_ptr mr_modulo (mrComplex_ptr lv, mrComplex_ptr rv) {
-	mrComplex_ptr retv = newMrComplex();
-	mr_StdComplex_t retv_c;
-
-	retv_c.imag(0);
-	retv_c.real(static_cast<mrNumeric_t>(fmod(lv->real, rv->real)));
+	switch (which) {
+		case MR_FUN2_ATAN2:
+			retv_c.real(std::atan2(arg1->real, arg2->real));
+			retv_c.imag(0.0);
+			break;
+	}
 
 	STDCOMPLEX_2_MRCOMPLEX(retv, retv_c);
 	return retv;
 }
 
 /*! Parsing of numeric types. */
-mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_mrNumeric_t (pANTLR3_STRING strin) {
 	string str;
 	ANTLR3_UINT32 len = strin->len;
 
@@ -569,72 +558,93 @@ mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
 		}
 	}
 
-	mrNumeric_t retv;
+	mrReal retv;
 	try {
-		retv = numeric_cast<mrNumeric_t>(lexical_cast<mrNumeric_t, string>(str));
+		retv = numeric_cast<mrReal>(lexical_cast<mrReal, string>(str));
 	}
 	catch (bad_lexical_cast&) {
-		throw NumericConversionError("Range error: " + str);
+		throw NumericConversionError("NaN: " + str);
 	}
 	catch (bad_numeric_cast&) {
 		throw NumericConversionError("Range error: " + str);
 	}
- 
 	return retv;
 }
 
-mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
-	string str;
+	QString str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
 		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
-	mrNumeric_t retv;
+	mrReal retv;
 
-	std::stringstream convertor;
-	convertor << str;
-	unsigned long int result;
-	if (!(convertor >> std::hex >> result) || !convertor.eof()) {
-		throw NumericConversionError("Range error: " + str);
+	quint64 tempRetv;
+	bool okFlag;
+	tempRetv = str.toULongLong(&okFlag, 16);
+
+	if (!okFlag) {
+		throw NumericConversionError("Input conversion error: " + str.toStdString());
+	}
+	try {
+		retv = numeric_cast<mrReal>(tempRetv);
+	}
+	catch (bad_numeric_cast&) {
+		throw NumericConversionError("Input range error: " + str.toStdString());
 	}
 
-	retv = result;
 	return retv;
 }
 
-mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
-	string str;
+	QString str;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
 		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
-	mrNumeric_t retv;
+	mrReal retv;
 
-	std::stringstream convertor;
-	convertor << str;
-	long int result;
-	if (!(convertor >> std::oct >> result) || !convertor.eof()) {
-		throw NumericConversionError("Range error: " + str);
+	quint64 tempRetv;
+	bool okFlag;
+	tempRetv = str.toULongLong(&okFlag, 8);
+
+	if (!okFlag) {
+		throw NumericConversionError("Input conversion error: " + str.toStdString());
+	}
+	try {
+		retv = numeric_cast<mrReal>(tempRetv);
+	}
+	catch (bad_numeric_cast&) {
+		throw NumericConversionError("Input range error: " + str.toStdString());
 	}
 
-	retv = result;
 	return retv;
 }
 
-mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
+mrReal parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
 	ANTLR3_UINT32 len = strin->len;
-	string tmpS;
-	for (ANTLR3_UINT32 i = 2; i < len; ++i) { // Skipping "0b"
-		char digit = static_cast<char>(strin->charAt(strin, i));
-		tmpS.push_back(digit);
+	QString str;
+	for (ANTLR3_UINT32 i = 2; i < len; ++i) {
+		str += static_cast<char>(strin->charAt(strin, i));;
 	}
 
-	mrNumeric_t retv;
-	long int result;
-	dynamic_bitset<> set(tmpS);
-	result = set.to_ulong();
-	retv = result;
+	mrReal retv;
+
+	quint64 tempRetv;
+	bool okFlag;
+	tempRetv = str.toULongLong(&okFlag, 2);
+
+	if (!okFlag) {
+		throw NumericConversionError("Input conversion error: " + str.toStdString());
+	}
+	try {
+		retv = numeric_cast<mrReal>(tempRetv);
+	}
+	catch (bad_numeric_cast&) {
+		throw NumericConversionError("Input range error: " + str.toStdString());
+	}
+
 	return retv;
 }

@@ -36,8 +36,13 @@ extern "C" {
 be deleted directly, it is handled automatically. */
 mrComplex_ptr newMrComplex();
 void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-void setAns(mrNumeric_t real, mrNumeric_t imag);
+void setAns(mrReal real, mrReal imag);
 mrComplex_ptr getAns();
+
+/*! Return value of PI */
+mrReal mr_pi();
+/*! Return value of e */
+mrReal mr_e();
 
 /*! To avoid passing around ANTLR3_STRING as much as possible
 and to simplify implementation of SI unit conversion, this enum 
@@ -59,53 +64,47 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
+mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix);
 
-/*! Return value of PI */
-mrNumeric_t mr_pi();
-/*! Return value of e */
-mrNumeric_t mr_e();
+typedef enum {
+	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
+} MR_MATH_BINARY_OPERATORS;
+mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv);
 
-mrComplex_ptr mr_add (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_substract (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_multiply (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_divide (mrComplex_ptr lv, mrComplex_ptr rv);
-mrComplex_ptr mr_modulo (mrComplex_ptr lv, mrComplex_ptr rv);
+typedef enum {
+	MR_BITWISE_AND, MR_BITWISE_OR, 
+	MR_BITWISE_NAND, MR_BITWISE_NOR, 
+	MR_BITWISE_XOR, MR_BITWISE_XNOR
+} MR_MATH_BINARY_BITWISE_OPERATORS;
+mrComplex_ptr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv);
 
-mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix);
+typedef enum {
+	MR_BITWISE_NOT
+} MR_MATH_UNARY_OPERATORS;
+mrComplex_ptr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, mrComplex_ptr val);
 
-mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING str);
-mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING str);
-mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING str);
-mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING str);
+typedef enum {
+	MR_FUN_SIN, MR_FUN_COS, MR_FUN_TAN, 
+	MR_FUN_ASIN, MR_FUN_ACOS, MR_FUN_ATAN, 
+	MR_FUN_SINH, MR_FUN_COSH, MR_FUN_TANH,
+	MR_FUN_ASINH, MR_FUN_ACOSH, MR_FUN_ATANH,
+	MR_FUN_EXP, MR_FUN_LOG, MR_FUN_LOG10,
+	MR_FUN_SQRT, MR_FUN_ABS, 
+	MR_FUN_RE, MR_FUN_IM, MR_FUN_ARG, MR_FUN_CONJ,
+	MR_FUN_DEG, MR_FUN_RAD, 
+	MR_FUN_NORM, MR_FUN_POLAR
+} MR_MATH_UNARY_FUNCTIONS;
+mrComplex_ptr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, mrComplex_ptr val);
 
-mrComplex_ptr mr_sin(mrComplex_ptr x);
-mrComplex_ptr mr_cos(mrComplex_ptr x);
-mrComplex_ptr mr_tan(mrComplex_ptr x);
-mrComplex_ptr mr_asin(mrComplex_ptr x);
-mrComplex_ptr mr_acos(mrComplex_ptr x);
-mrComplex_ptr mr_atan(mrComplex_ptr x);
-mrComplex_ptr mr_sinh(mrComplex_ptr x);
-mrComplex_ptr mr_cosh(mrComplex_ptr x);
-mrComplex_ptr mr_tanh(mrComplex_ptr x);
-mrComplex_ptr mr_asinh(mrComplex_ptr x);
-mrComplex_ptr mr_acosh(mrComplex_ptr x);
-mrComplex_ptr mr_atanh(mrComplex_ptr x);
-mrComplex_ptr mr_exp(mrComplex_ptr x);
-mrComplex_ptr mr_log(mrComplex_ptr x);
-mrComplex_ptr mr_log10(mrComplex_ptr x);
-mrComplex_ptr mr_sqrt(mrComplex_ptr x);
-mrComplex_ptr mr_abs(mrComplex_ptr x);
-mrComplex_ptr mr_re(mrComplex_ptr x);
-mrComplex_ptr mr_im(mrComplex_ptr x);
-mrComplex_ptr mr_arg(mrComplex_ptr x);
-mrComplex_ptr mr_conj(mrComplex_ptr x);
-mrComplex_ptr mr_deg(mrComplex_ptr x);
-mrComplex_ptr mr_rad(mrComplex_ptr x);
-mrComplex_ptr mr_norm(mrComplex_ptr x);
-mrComplex_ptr mr_polar(mrComplex_ptr x);
+typedef enum {
+	MR_FUN2_ATAN2
+} MR_MATH_BINARY_FUNCTIONS;
+mrComplex_ptr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, mrComplex_ptr arg1, mrComplex_ptr arg2);
 
-mrComplex_ptr mr_atan2 (mrComplex_ptr x, mrComplex_ptr y); 
-mrComplex_ptr mr_pow (mrComplex_ptr x, mrComplex_ptr y); 
+mrReal parse_mrNumeric_t (pANTLR3_STRING str);
+mrReal parse_hex_mrNumeric_t (pANTLR3_STRING str);
+mrReal parse_oct_mrNumeric_t (pANTLR3_STRING str);
+mrReal parse_bin_mrNumeric_t (pANTLR3_STRING str);
 
 #ifdef __cplusplus
 }

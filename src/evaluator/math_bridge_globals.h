@@ -53,6 +53,8 @@ struct BridgeAPIGlobals {
 	std::vector< boost::shared_ptr< mrComplex_t > > complexFactoryData;
 
 	mrComplex_t ans;
+
+	unsigned char bit_width;
 };
 
 void init_bridge_API (BridgeAPIGlobals* globs);

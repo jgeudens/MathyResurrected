@@ -101,6 +101,14 @@ FN_PROJ   : (('p'|'P')('r'|'R')('o'|'O')('j'|'J'));
 FN_NORM   : (('n'|'N')('o'|'O')('r'|'R')('m'|'M'));
 FN_POLAR  : (('p'|'P')('o'|'O')('l'|'L')('a'|'A')('r'|'R'));
 
+BINARY_FN_AND	: (('a'|'A')('n'|'N')('d'|'D'));
+BINARY_FN_OR	: (('o'|'O')('r'|'R'));
+BINARY_FN_NOT	: (('n'|'N')('o'|'O')('t'|'T'));
+BINARY_FN_NAND	: (('n'|'N')('a'|'A')('n'|'N')('d'|'D'));
+BINARY_FN_NOR	: (('n'|'N')('o'|'O')('r'|'R'));
+BINARY_FN_XOR	: (('x'|'X')('o'|'O')('r'|'R'));
+BINARY_FN_XNOR	: (('x'|'X')('n'|'N')('o'|'O')('r'|'R'));
+
 CONSTANTS_PI  : 'pi';
 CONSTANTS_E : 'e';
 CONSTANTS_ANS : 'ans';

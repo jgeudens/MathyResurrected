@@ -151,6 +151,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsZeroTreshold = pow (10.0, defaultZeroTresholdExp());
 		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(defaultDecimalPointTag());
 		itsGroupingCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
+		itsBAPI.bit_width = itsBitWidth = defaultBitWidth();
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
@@ -192,14 +193,15 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsShowBasePrefix = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameShowBasePrefix(), 
 			MathyResurrectedOptionsDialog::defaultShowBasePrefix()).toBool();
+
+		itsBAPI.bit_width = itsBitWidth = app_settings->value(
+			MathyResurrectedOptionsDialog::keyNameBitWidth(),
+			defaultBitWidth()).toUInt();
 	}
 
 	if (itsArgSeparator == itsDecimalPoint) {
 		itsArgSeparator = defaultArgSeparator();
 	}
-
-	// Update result string if output format has changed. 
-	toString();
 }
 
 void MathEvaluator::setExpression(const QString& expression) {
@@ -243,7 +245,7 @@ bool MathEvaluator::validate() {
 			// to analyze things before invoking parser.
 			if (lpr.parser->pParser->rec->state->errorCount > 0) {
 				itsIsValid = false;
-				itsResult = "Malformed expression";
+				itsErrStr = "Malformed expression";
 			} else {
 				itsIsValid = true;
 			}		
@@ -259,6 +261,8 @@ bool MathEvaluator::validate() {
 bool MathEvaluator::evaluate() {
 	if (!itsIsEvaluated) {
 		if (validate()) {
+
+			itsErrStr = "";
 
 			LexerParser lpr (itsExprString, itsExprLen);
 
@@ -291,7 +295,7 @@ bool MathEvaluator::evaluate() {
 				}
 				catch (NumericConversionError& e) {
 					itsIsValid = false;
-					itsResult = e.what();
+					itsErrStr = e.what();
 				}
 			}
 		}
@@ -307,9 +311,10 @@ void MathEvaluator::storeAns() {
 	itsBAPI.ans.real = real; itsBAPI.ans.imag = imag;
 }
 
-const QString& MathEvaluator::toString() {
-	toString('d', itsResult);
-	return itsResult;
+QString MathEvaluator::toString() const {
+	QString retv;
+	toString('d', retv);
+	return retv;
 }
 
 QString MathEvaluator::toStringBin() const {
@@ -333,13 +338,13 @@ QString MathEvaluator::toStringOct() const {
 void MathEvaluator::toString(char baseTag, QString& dest) const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
-			QString sign;
+			QString im_sign;
 			QString re_str, im_str;
 			bool add_i = false;
 
 			// If number is close enough to zero, we make it zero 
 			// explicitly (but for display purposes only)
-			mrNumeric_t im_disp = imag, re_disp = real;
+			mrReal im_disp = imag, re_disp = real;
 			if (abs(im_disp) < abs(itsZeroTreshold)) {
 				im_disp = 0;
 			}
@@ -347,55 +352,215 @@ void MathEvaluator::toString(char baseTag, QString& dest) const {
 				re_disp = 0;
 			}
 
+			// Formating output of imaginary part
 			if ((boost::math::fpclassify)(im_disp) != FP_ZERO) {
-				if (im_disp > 0) {
-					sign = " + ";
-				} else { // if (imag < 0) {
-					sign = " - ";
+				// Display as decimal
+				if (baseTag == 'd') {
+					if (im_disp > 0) {
+						im_sign = " + ";
+					} else { // if (imag < 0) {
+						im_sign = " - ";
+					}
+					mrReal tmp = abs(im_disp);
+					numberToString(tmp, im_str, baseTag);
+				} else { // Display as any other base
+					im_sign = " + ";
+					numberToString(im_disp, im_str, baseTag);
 				}
-
-				mrNumeric_t tmp = abs(im_disp);
-				numberToString(tmp, im_str, baseTag);
 				add_i = true;
 			}
 			numberToString(re_disp, re_str, baseTag);
 			dest = re_str;
 			if (add_i) {
-				dest +=  sign + im_str + "i";
+				dest +=  im_sign + im_str + "i";
 			}
 		} else {
 			dest = "Not evaluated!!!";
 		}
-	} // else {
-	// result has been set to some error message during evaluation 
-	// so don't touch it.
+	} else {
+		dest = itsErrStr;
+	}
 }
 
-void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag) const {
-	QLocale loc = QLocale::c();
+qint8 MathEvaluator::safe_convert_8b(mrReal val, bool& ok) {
+	return safe_convert<qint8>(val, ok);
+}
 
-	qlonglong tmp;
+qint16 MathEvaluator::safe_convert_16b(mrReal val, bool& ok) {
+	return safe_convert<qint8>(val, ok);
+}
+
+qint32 MathEvaluator::safe_convert_32b(mrReal val, bool& ok) {
+	return safe_convert<qint32>(val, ok);
+}
+
+qint64 MathEvaluator::safe_convert_64b(mrReal val, bool& ok) {
+	return safe_convert<qint64>(val, ok);
+}
+
+quint8 MathEvaluator::safe_convert_u8b(mrReal val, bool& ok) {
+	return safe_convert<quint8>(val, ok);
+}
+
+quint16 MathEvaluator::safe_convert_u16b(mrReal val, bool& ok) {
+	return safe_convert<quint16>(val, ok);
+}
+
+quint32 MathEvaluator::safe_convert_u32b(mrReal val, bool& ok) {
+	return safe_convert<quint32>(val, ok);
+}
+
+quint64 MathEvaluator::safe_convert_u64b(mrReal val, bool& ok) {
+	return safe_convert<quint64>(val, ok);
+}
+
+template <class intT>
+intT MathEvaluator::safe_convert(mrReal val, bool& ok) {
+	intT retv;
+//	try {
+// 		retv = numeric_cast<intT>(val);
+// 		ok = true;
+// 	}
+// 	catch (bad_numeric_cast&) {
+// 		ok = false;
+// 	}
+	retv = val; ok = true;
+	return retv;
+}
+
+void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) const {
+	QLocale loc = QLocale::c();
+	bool ok_flag;
+	quint64 tmpI64;
+	quint32 tmpI32;
+	quint16 tmpI16;
+	quint8 tmpI8;
+	QString bho_sign, bho_prefix;
+// 	if (val < 0) {
+// 		bho_sign = "-";
+// 	}
+//	mrReal absVal = abs(val);
+	mrReal absVal = val;
 	switch (baseTag) {
 		case 'b':
+			retv += bho_sign;
 			if (itsShowBasePrefix) {
-				retv = "0b";
+				retv += "0b";
 			}
-			tmp = numeric_cast<qlonglong>(val);
-			retv += QString::number(tmp, 2);
+			switch (itsBitWidth) {
+				case 64:
+					tmpI64 = safe_convert_u64b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI64, 2);
+					} else {
+						retv = "64b int range error";
+					}
+					break;
+				case 32:
+					tmpI32 = safe_convert_u32b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI32, 2);
+					} else {
+						retv = "32b int range error";
+					}
+					break;
+				case 16:
+					tmpI16 = safe_convert_u16b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI16, 2);
+					} else {
+						retv = "16b int range error";
+					}
+					break;
+				case 8:
+					tmpI8 = safe_convert_u8b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI8, 2);
+					} else {
+						retv = "8b int range error";
+					}
+					break;
+			}			
 			break;
 		case 'h':
+			retv += bho_sign;
 			if (itsShowBasePrefix) {
-				retv = "0x";
+				retv += "0x";
 			}
-			tmp = numeric_cast<qlonglong>(val);
-			retv += QString::number(tmp, 16).toUpper();
+			switch (itsBitWidth) {
+				case 64:
+					tmpI64 = safe_convert_u64b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI64, 16).toUpper();
+					} else {
+						retv = "64b int range error";
+					}
+					break;
+				case 32:
+					tmpI32 = safe_convert_u32b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI32, 16).toUpper();
+					} else {
+						retv = "32b int range error";
+					}
+					break;
+				case 16:
+					tmpI16 = safe_convert_u16b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI16, 16).toUpper();
+					} else {
+						retv = "16b int range error";
+					}
+					break;
+				case 8:
+					tmpI8 = safe_convert_u8b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI8, 16).toUpper();
+					} else {
+						retv = "8b int range error";
+					}
+					break;
+			}
 			break;
 		case 'o':
+			retv += bho_sign;
 			if (itsShowBasePrefix) {
-				retv = "0";
+				retv += "0";
 			}
-			tmp = numeric_cast<qlonglong>(val);
-			retv += QString::number(tmp, 8);
+			switch (itsBitWidth) {
+				case 64:
+					tmpI64 = safe_convert_u64b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI64, 8);
+					} else {
+						retv = "64b int range error";
+					}
+					break;
+				case 32:
+					tmpI32 = safe_convert_u32b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI32, 8);
+					} else {
+						retv = "32b int range error";
+					}
+					break;
+				case 16:
+					tmpI16 = safe_convert_u16b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI16, 8);
+					} else {
+						retv = "16b int range error";
+					}
+					break;
+				case 8:
+					tmpI8 = safe_convert_u8b(absVal, ok_flag);
+					if (ok_flag) {
+						retv += QString::number(tmpI8, 8);
+					} else {
+						retv = "8b int range error";
+					}
+					break;
+			}
 			break;
 		case 'd':
 		default:

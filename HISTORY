@@ -1,3 +1,8 @@
+v 0.1.5
+=======
++ Implemented bitwise functions: AND, OR, XOR, NAND, NOR, XNOR
++ Added calculation bit width option.
+  
 v 0.1.4
 =======
 - Bugfix: binary input was not correctly converted in calculation producing

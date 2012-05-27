@@ -55,100 +55,59 @@ QChar MathyResurrectedOptionsDialog::digitGroupTag2Char (const QString& tag) {
 	return retv;
 }
 
-void MathyResurrectedOptionsDialog::setFunArgSeparatorComa() {
+void MathyResurrectedOptionsDialog::on_radioButtonDecSepSystem_clicked() { 
+	itsDecPointTag = "sys";
+	if (MathEvaluator::systemDecimalPoint() == itsArgSeparator) {
+		on_radioButtonArgSeparatorColon_clicked();
+		radioButtonArgSeparatorColon->setChecked(true);
+	}
+	if (MathEvaluator::systemDecimalPoint() == ',') {
+		radioButtonArgSeparatorComa->setEnabled(false);
+	}
+}
+
+void MathyResurrectedOptionsDialog::on_radioButtonDecSepComa_clicked() { 
+	itsDecPointTag = "com";
+	if (itsArgSeparator == ',') {
+		on_radioButtonArgSeparatorColon_clicked();
+		radioButtonArgSeparatorColon->setChecked(true);
+	}
+	radioButtonArgSeparatorComa->setEnabled(false);
+}
+
+void MathyResurrectedOptionsDialog::on_radioButtonDecSepDot_clicked() { 
+	itsDecPointTag = "dot";
+	radioButtonArgSeparatorComa->setEnabled(true);
+}
+
+void MathyResurrectedOptionsDialog::on_radioButtonArgSeparatorComa_clicked() {
 	if (decPointTag2Char(itsDecPointTag) == ',') {
-		setFunArgSeparatorColon();
+		on_radioButtonArgSeparatorColon_clicked();
 	} else {
 		itsArgSeparator = ','; 
 	}
 }
 
-void MathyResurrectedOptionsDialog::setDecPointSystem() { 
-	itsDecPointTag = "sys";
-	if (MathEvaluator::systemDecimalPoint() == itsArgSeparator) {
-		setFunArgSeparatorColon();
-		radioButton_ArgSeparatorColon->setChecked(true);
-	}
-	if (MathEvaluator::systemDecimalPoint() == ',') {
-		radioButton_ArgSeparatorComa->setEnabled(false);
-	}
+void MathyResurrectedOptionsDialog::on_checkBoxDecOut_clicked(bool flag) { 
+	itsShowDec = flag; 
 }
 
-void MathyResurrectedOptionsDialog::setDecPointComa() { 
-	itsDecPointTag = "com";
-	if (itsArgSeparator == ',') {
-		setFunArgSeparatorColon();
-		radioButton_ArgSeparatorColon->setChecked(true);
-	}
-	radioButton_ArgSeparatorComa->setEnabled(false);
+void MathyResurrectedOptionsDialog::on_checkBoxHexOut_clicked(bool flag) { 
+	itsShowHex = flag; 
+	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
-void MathyResurrectedOptionsDialog::setDecPointDot() { 
-	itsDecPointTag = "dot";
-	radioButton_ArgSeparatorComa->setEnabled(true);
+void MathyResurrectedOptionsDialog::on_checkBoxOctOut_clicked(bool flag) { 
+	itsShowOct = flag; 
+	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
-void MathyResurrectedOptionsDialog::connectAll() {
-	connect(radioButton_ArgSeparatorColon, 
-		SIGNAL(clicked(bool)), this, SLOT(setFunArgSeparatorColon(void)));
-	connect(radioButton_ArgSeparatorSemiColon, 
-		SIGNAL(clicked(bool)), this, SLOT(setFunArgSeparatorSemicolon(void)));
-	connect(radioButton_ArgSeparatorComa, 
-		SIGNAL(clicked(bool)), this, SLOT(setFunArgSeparatorComa(void)));
-
-	connect(radioButton_ThSepSys, 
-		SIGNAL(clicked(bool)), this, SLOT(setThousandSepSystem(void)));
-	connect(radioButton_ThSepCom, 
-		SIGNAL(clicked(bool)), this, SLOT(setThousandSepComa(void)));
-	connect(radioButton_ThSepDot, 
-		SIGNAL(clicked(bool)), this, SLOT(setThousandSepDot(void)));
-
-	connect(radioButton_DecSepSystem, 
-		SIGNAL(clicked(bool)), this, SLOT(setDecPointSystem(void)));
-	connect(radioButton_DecSepComa, 
-		SIGNAL(clicked(bool)), this, SLOT(setDecPointComa(void)));
-	connect(radioButton_DecSepDot, 
-		SIGNAL(clicked(bool)), this, SLOT(setDecPointDot(void)));
-
-	connect(checkBox_BinOut, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseBin(bool)));
-	connect(checkBox_DecOut, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseDec(bool)));
-	connect(checkBox_HexOut, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseHex(bool)));
-	connect(checkBox_OctOut, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBaseOct(bool)));
-	connect(checkBox_ShowBasePrefix, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputBasePrefix(bool)));
-	
-	connect(checkBox_InputMatching, 
-		SIGNAL(toggled(bool)), this, SLOT(setSimpleInputMatching(bool)));
-
-	connect(checkBox_ShowGrouping, 
-		SIGNAL(toggled(bool)), this, SLOT(setShowDigitGrouping(bool)));
-	connect(checkBox_UseEnterKey, 
-		SIGNAL(toggled(bool)), this, SLOT(setUseEnterKey(bool)));
-	
-	connect(radioButton_outputDefault, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputFormatDefault(void)));
-	connect(radioButton_outputScientiffic, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputFormatScientiffic(void)));
-	connect(radioButton_OutputFixed, 
-		SIGNAL(clicked(bool)), this, SLOT(setOutputFormatFixed(void)));
-
-	connect(spinBox_OutputPrecision, 
-		SIGNAL(valueChanged(int)), this, SLOT(setPrecision(int)));
-
-	connect(checkBox_ZeroTreshold, 
-		SIGNAL(toggled(bool)), this, SLOT(setShouldUseZeroTreshold(bool)));
-	connect(spinBox_zeroTreshold, 
-		SIGNAL(valueChanged(int)), this, SLOT(setZeroTresholdExp(int)));
-
-	connect(pushButton_setDefaults, 
-		SIGNAL(clicked(bool)), this, SLOT(setAllDefaults(void)));
+void MathyResurrectedOptionsDialog::on_checkBoxBinOut_clicked(bool flag) { 
+	itsShowBin = flag; 
+	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
-void MathyResurrectedOptionsDialog::setAllDefaults()  {
+void MathyResurrectedOptionsDialog::on_pushButtonSetDefaults_clicked()  {
 	itsArgSeparator = MathEvaluator::defaultArgSeparator();
 	itsOutputFormat = MathEvaluator::defaultOutputFormat();
 	itsPrecision = MathEvaluator::defaultOutputPrecision();
@@ -166,66 +125,80 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsShowHex = defaultOutputShowHex();
 	itsShowOct = defaultOutputShowOct();
 	itsShowBasePrefix = defaultShowBasePrefix();
+
+	itsBWidth = MathEvaluator::defaultBitWidth();
 	
 	setupUiByAppSettings();
 }
 
 void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 	if (decPointTag2Char(itsDecPointTag) == ',') {
-		radioButton_ArgSeparatorComa->setDisabled(true);
+		radioButtonArgSeparatorComa->setDisabled(true);
 		if (itsArgSeparator == ',') {
 			itsArgSeparator = MathEvaluator::defaultArgSeparator();
 		}
 	} else {
-		radioButton_ArgSeparatorComa->setEnabled(true);
+		radioButtonArgSeparatorComa->setEnabled(true);
 	}
 
 	if (itsThousandsSepTag == "sys") {
-		radioButton_ThSepSys->setChecked(true);
+		radioButtonThSepSys->setChecked(true);
 	} else if (itsThousandsSepTag == "com") {
-		radioButton_ThSepCom->setChecked(true);
+		radioButtonThSepCom->setChecked(true);
 	} else if (itsThousandsSepTag == "dot") {
-		radioButton_ThSepDot->setChecked(true);
+		radioButtonThSepDot->setChecked(true);
 	}
 
 	if (itsDecPointTag == "sys") {
-		radioButton_DecSepSystem->setChecked(true);
+		radioButtonDecSepSystem->setChecked(true);
 	} else if (itsDecPointTag == "com") {
-		radioButton_DecSepComa->setChecked(true);
+		radioButtonDecSepComa->setChecked(true);
 	} else if (itsDecPointTag == "dot") {
-		radioButton_DecSepDot->setChecked(true);
+		radioButtonDecSepDot->setChecked(true);
 	}
 
 	if (itsArgSeparator == ':') {
-		radioButton_ArgSeparatorColon->setChecked(true);
+		radioButtonArgSeparatorColon->setChecked(true);
 	} else if (itsArgSeparator == ';') {
-		radioButton_ArgSeparatorSemiColon->setChecked(true);
+		radioButtonArgSeparatorSemiColon->setChecked(true);
 	} else if (itsArgSeparator == ',') {
-		radioButton_ArgSeparatorComa->setChecked(true);
+		radioButtonArgSeparatorComa->setChecked(true);
 	}
 
-	checkBox_InputMatching->setChecked(itsSimpleInputFlag);
-	checkBox_ShowGrouping->setChecked(itsShowDigitGrouping);
-	checkBox_UseEnterKey->setChecked(itsUseEnterKey);
+	checkBoxInputMatching->setChecked(itsSimpleInputFlag);
+	checkBoxShowGrouping->setChecked(itsShowDigitGrouping);
+	checkBoxUseEnterKey->setChecked(itsUseEnterKey);
 	
 	if (itsOutputFormat == 'd') {
-		radioButton_outputDefault->setChecked(true);
+		radioButtonOutputDefault->setChecked(true);
 	} else if (itsOutputFormat == 'f') {
-		radioButton_OutputFixed->setChecked(true);
+		radioButtonOutputFixed->setChecked(true);
 	} else if (itsOutputFormat == 's') {
-		radioButton_outputScientiffic->setChecked(true);
+		radioButtonOutputScientiffic->setChecked(true);
 	}
 
-	spinBox_OutputPrecision->setValue(itsPrecision);
+	spinBoxOutputPrecision->setValue(itsPrecision);
 
-	checkBox_ZeroTreshold->setChecked(itsZeroTresholdFlag);
-	spinBox_zeroTreshold->setValue(itsZeroTresholdExp);
+	checkBoxZeroTreshold->setChecked(itsZeroTresholdFlag);
+	spinBoxZeroTreshold->setValue(itsZeroTresholdExp);
 
-	checkBox_BinOut->setChecked(itsShowBin);
-	checkBox_DecOut->setChecked(itsShowDec);
-	checkBox_HexOut->setChecked(itsShowHex);
-	checkBox_OctOut->setChecked(itsShowOct);
-	checkBox_ShowBasePrefix->setChecked(itsShowBasePrefix);
+	checkBoxBinOut->setChecked(itsShowBin);
+	checkBoxDecOut->setChecked(itsShowDec);
+	checkBoxHexOut->setChecked(itsShowHex);
+	checkBoxOctOut->setChecked(itsShowOct);
+	checkBoxShowBasePrefix->setChecked(itsShowBasePrefix);
+
+	if (itsBWidth == 8) {
+		radioButtonBW8->setChecked(true);
+	} else if (itsBWidth == 16) {
+		radioButtonBW16->setChecked(true);
+	} else if (itsBWidth == 32) {
+		radioButtonBW32->setChecked(true);
+	} else if (itsBWidth == 64) {
+		radioButtonBW64->setChecked(true);
+	} 
+
+	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
@@ -233,48 +206,58 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 {
 	setupUi(this);
 
-	QSettings* app_settings = *gmathyresurrectedInstance->settings;
+	QSettings* app_settings = 0;
 
-	itsArgSeparator = app_settings->value(
-		keyNameArgSeparator(), MathEvaluator::defaultArgSeparator()).toChar();
-	itsOutputFormat = app_settings->value(
-		keyNameOutputFormat(), MathEvaluator::defaultOutputFormat()).toChar();
-	itsPrecision = app_settings->value(
-		keyNamePrecision(), MathEvaluator::defaultOutputPrecision()).toInt();	
-	itsSimpleInputFlag = app_settings->value(
-		keyNameSimpleInputMatching(), defaultSimpleInputMatching()).toBool();
+	if (gmathyresurrectedInstance) {
+		app_settings = *gmathyresurrectedInstance->settings;
+	}
 
-	itsUseEnterKey = app_settings->value(
-		keyNameUseEnterKey(), defaultUseEnterKey()).toBool();
-	itsShowDigitGrouping = app_settings->value(
-		keyNameShowDigitGrouping(), MathEvaluator::defaultShowDigitGrouping()
-		).toBool();
-	itsZeroTresholdExp = app_settings->value(
-		keyNameZeroTresholdExp(), MathEvaluator::defaultZeroTresholdExp()
-		).toInt();
-	itsZeroTresholdFlag = app_settings->value(
-		keyNameShouldUseZeroTreshold(), MathEvaluator::defaultShouldUseZeroTreshold()
-		).toBool();
-	itsDecPointTag = app_settings->value(
-		keyNameDecimalPoint(), MathEvaluator::defaultDecimalPointTag()
-		).toString();
-	itsThousandsSepTag = app_settings->value(
-		keyNameGroupingChar(), MathEvaluator::defaultGroupingCharTag()
-		).toString();
+	if (app_settings) {
+		itsArgSeparator = app_settings->value(
+			keyNameArgSeparator(), MathEvaluator::defaultArgSeparator()).toChar();
+		itsOutputFormat = app_settings->value(
+			keyNameOutputFormat(), MathEvaluator::defaultOutputFormat()).toChar();
+		itsPrecision = app_settings->value(
+			keyNamePrecision(), MathEvaluator::defaultOutputPrecision()).toInt();	
+		itsSimpleInputFlag = app_settings->value(
+			keyNameSimpleInputMatching(), defaultSimpleInputMatching()).toBool();
 
-	itsShowDec = app_settings->value(
-		keyNameOutputShowDec(), defaultOutputShowDec()).toBool();
-	itsShowBin = app_settings->value(
-		keyNameOutputShowBin(), defaultOutputShowBin()).toBool();
-	itsShowHex = app_settings->value(
-		keyNameOutputShowHex(), defaultOutputShowHex()).toBool();
-	itsShowOct = app_settings->value(
-		keyNameOutputShowOct(), defaultOutputShowOct()).toBool();
-	itsShowBasePrefix = app_settings->value(
-		keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
+		itsUseEnterKey = app_settings->value(
+			keyNameUseEnterKey(), defaultUseEnterKey()).toBool();
+		itsShowDigitGrouping = app_settings->value(
+			keyNameShowDigitGrouping(), MathEvaluator::defaultShowDigitGrouping()
+			).toBool();
+		itsZeroTresholdExp = app_settings->value(
+			keyNameZeroTresholdExp(), MathEvaluator::defaultZeroTresholdExp()
+			).toInt();
+		itsZeroTresholdFlag = app_settings->value(
+			keyNameShouldUseZeroTreshold(), MathEvaluator::defaultShouldUseZeroTreshold()
+			).toBool();
+		itsDecPointTag = app_settings->value(
+			keyNameDecimalPoint(), MathEvaluator::defaultDecimalPointTag()
+			).toString();
+		itsThousandsSepTag = app_settings->value(
+			keyNameGroupingChar(), MathEvaluator::defaultGroupingCharTag()
+			).toString();
+
+		itsShowDec = app_settings->value(
+			keyNameOutputShowDec(), defaultOutputShowDec()).toBool();
+		itsShowBin = app_settings->value(
+			keyNameOutputShowBin(), defaultOutputShowBin()).toBool();
+		itsShowHex = app_settings->value(
+			keyNameOutputShowHex(), defaultOutputShowHex()).toBool();
+		itsShowOct = app_settings->value(
+			keyNameOutputShowOct(), defaultOutputShowOct()).toBool();
+		itsShowBasePrefix = app_settings->value(
+			keyNameShowBasePrefix(), defaultShowBasePrefix()).toBool();
+
+		itsBWidth = app_settings->value(
+			keyNameBitWidth(), MathEvaluator::defaultBitWidth()).toInt();
+	} else {
+		on_pushButtonSetDefaults_clicked();
+	}
 
 	setupUiByAppSettings();
-	connectAll();
 }
 
 MathyResurrectedOptionsDialog::~MathyResurrectedOptionsDialog() { 
@@ -303,6 +286,7 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameOutputShowHex(), itsShowHex);
 	app_settings->setValue(keyNameOutputShowOct(), itsShowOct);
 	app_settings->setValue(keyNameShowBasePrefix(), itsShowBasePrefix);
+	app_settings->setValue(keyNameBitWidth(), itsBWidth);
 }
 
 } // namespace mathy_resurrected
