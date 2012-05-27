@@ -64,7 +64,7 @@ void runProgram(QString path, QString args) {
 int getDesktop()
 {
     QStringList list = QProcess::systemEnvironment();
-    foreach(QString s, list)
+    Q_FOREACH(QString s, list)
 	{
 	    if (s.startsWith("GNOME_DESKTOP_SESSION"))
 		return DESKTOP_GNOME;

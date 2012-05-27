@@ -1,0 +1,48 @@
+/* 
+* Copyright (C) 2009, 2010
+* Tomislav Adamic <tomislav.adamic@gmail.com>
+* 
+* This file is part of MathyResurrected - Launchy advanced calculator plugin
+* 
+* MathyResurrected is free software: you can redistribute it and/or modify 
+* it under the terms of the GNU General Public License as published by the 
+* Free Software Foundation, either version 3 of the License, or (at your 
+* option) any later version.
+* 
+* This program is distributed in the hope that it will be useful, but
+* WITHOUT ANY WARRANTY; without even the implied warranty of 
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License 
+* along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
+*/
+//!
+//! @file
+//! @author Tomislav Adamic <tomislav.adamic@gmail.com>
+//!
+
+#ifndef D04C6E81_4698_45A7_A791_CF3CCA4AD181_CONFIG_H
+#define D04C6E81_4698_45A7_A791_CF3CCA4AD181_CONFIG_H
+
+#define MATHYRESURRECTED_VERSION_STRING "${MATHYRES_VERSION}"
+#define MATHYRESURRECTED_VERSION_MAJOR ${MATHYRES_VERSION_MAJOR}
+#define MATHYRESURRECTED_VERSION_MINOR ${MATHYRES_VERSION_MINOR}
+#define MATHYRESURRECTED_VERSION_SUBMINOR ${MATHYRES_VERSION_SUBMINOR}
+
+// None of things bellow are currently used...
+#cmakedefine HAVE_STD_CASSERT
+#cmakedefine HAVE_STD_IO
+#cmakedefine HAVE_STD_STDEXCEPT
+#cmakedefine HAVE_STD_STRING
+#cmakedefine HAVE_STD_VECTOR
+#cmakedefine HAVE_STD_IOSTREAM
+#cmakedefine HAVE_WINDOWS_H
+#cmakedefine HAVE_SHLOBJ_H
+#cmakedefine HAVE_ANTLR3_H
+#cmakedefine HAVE_GMP_H
+#cmakedefine HAVE_MPFR_H
+#cmakedefine HAVE_MPC_H
+
+#endif // HEADER_GUARD
+

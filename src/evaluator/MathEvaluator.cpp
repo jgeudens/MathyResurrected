@@ -18,35 +18,46 @@
 * along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "MathEvaluator.h"
-#include <antlr3.h>
 #ifdef _DEBUG
 #include <iostream>
 #endif // _DEBUG
-#include <boost/math/special_functions/fpclassify.hpp>
-#include <boost/numeric/conversion/cast.hpp>
+#include <QByteArray>
+
+#include <cassert>
+#include "MathEvaluator.h"
+#include "Settings.h"
+#include "Exceptions.h"
+#include "Conversion.h"
+
 #include "ComplexLexer.h"
 #include "ComplexParser.h"
 #include "ComplexEval.h"
-#include "Settings.h"
-#include "Exceptions.h"
-#include <QLocale>
-#include "math_bridge_globals.h"
 
 using namespace std;
-using namespace boost;
+using namespace mathy_resurrected;
 
 namespace mathy_resurrected {
+
+/** Evaluator object that currently uses ANTLR parser/lexer. 
+ANTLR parser lexer uses evaluator instance as factory object and for
+retrieving ans() data. Thus, any evaluator operation that needs to 
+use ANTLR generated lexer/parser must ensure that it is registered
+through this pointer before calling ANTLR functions. */
+MathEvaluator* currentEvaluator;
+
+MathEvaluator* getEvaluatorInstance() {
+	return currentEvaluator;
+}
 
 #ifdef _DEBUG
 void MathEvaluator::printLexerErrors() const {
 	unsigned int i = 0;
-	unsigned int iend = BridgeAPIGlobals::getLexerErrors().size();
+	unsigned int iend = itsLexerErrorsCollection.size();
 
 	for (; i != iend; ++i) {
-		cout << "Char at: " << BridgeAPIGlobals::getLexerErrors()[i].char_index;
+		cout << "Char at: " << itsLexerErrorsCollection[i].char_index;
 		cout << " Error: ";
-		switch (BridgeAPIGlobals::getLexerErrors()[i].err_type) {
+		switch (itsLexerErrorsCollection[i].err_type) {
 			case LEX_ERR_MALFORMED_MANTISSA:
 				cout << "LEX_ERR_MALFORMED_MANTISSA";
 				break;
@@ -65,8 +76,9 @@ void MathEvaluator::printLexerErrors() const {
 /*! Convenience class that is used to setup basic components of 
 ANTLR lexer and parser for use by evaluate() and validate() 
 methods. */
-struct MathEvaluator::LexerParser {
-	LexerParser(const antlr8BitString_t& expression, ANTLR3_UINT32 len);
+class MathEvaluator::LexerParser {
+public:
+	LexerParser(const QString& expression);
 	~LexerParser();
 	
 	pANTLR3_INPUT_STREAM inputStream;
@@ -82,11 +94,16 @@ struct MathEvaluator::LexerParser {
 
 /*! @note Assumes that @a expression has been preprocessed.
 @see MathEvaluator::itsExprString. */
-MathEvaluator::LexerParser::LexerParser(const antlr8BitString_t& expression, ANTLR3_UINT32 len) {
+MathEvaluator::LexerParser::LexerParser(const QString& expression) {
 	malloc_error = false;
 
-	inputStream = //antlr3NewAsciiStringCopyStream(tmp, len, NULL);
-		antlr3NewAsciiStringInPlaceStream(expression.get(), len, NULL);
+	// Possibly problematic cast!
+	// ANTLR expects UCS2 encoded string, and we provide UTF16 one.
+	// Should make no difference for strings that contain only math
+	// expressions.
+	inputStream = antlr3NewUCS2StringInPlaceStream(
+			(pANTLR3_UINT16)(expression.utf16()), 
+			expression.length(), NULL);
 	if (inputStream == NULL) {
 		malloc_error = true;
 	}
@@ -126,57 +143,48 @@ MathEvaluator::LexerParser::~LexerParser() {
 }
 
 
-MathEvaluator::MathEvaluator(const Settings* app_settings) : 
- 	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false),
-	itsExprLen(0)
+MathEvaluator::MathEvaluator(const Settings* app_settings, QObject* parent) : 
+	QObject(parent),
+ 	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false)
 {
-	changeEvaluatorSettings(app_settings);
-	real = imag = 0;
-	storeAns();
-}
-
-void MathEvaluator::changeEvaluatorSettings(const Settings* app_settings) {
+	currentEvaluator = this;
+	
 	if (app_settings == 0) {
 		throw invalid_argument("Null pointer to evaluator settings!");
 	}
 	itsSettings = app_settings;
-	BridgeAPIGlobals::setBitWidth(itsSettings->calculationBitWidth());
+
+	mpc_init2(itsValue, Conversion::MAX_BINARY_DIGITS);
+	mpc_set_ui_ui(itsValue, 0, 0, Conversion::defaultComplexRoundingMode());
+	mpc_init2(itsAns, Conversion::MAX_BINARY_DIGITS);
+	mpc_set_ui_ui(itsAns, 0, 0, Conversion::defaultComplexRoundingMode());
 }
 
-const Complex& MathEvaluator::ans() const { 
-	return *BridgeAPIGlobals::getAns(); 
+MathEvaluator::~MathEvaluator() {
+	mpc_clear(itsValue);
+	mpc_clear(itsAns);
+	clearComplexFactory();
+	clearRealFactory();
+	mpfr_free_cache();
 }
 
+/*! Sets expression to be evaluated. */
 void MathEvaluator::setExpression(const QString& expression) {
 	itsIsValidated = false;
 	itsIsValid = false;
 	itsIsEvaluated = false;
-	itsExprString.reset();
-	itsExprLen = 0;
-
-	QString tmp_expr = expression;
-
+	
+	itsExprString = expression;
 	// Preprocessing expression...
-	tmp_expr.replace(itsSettings->decimalPointAsChar(), internalDecimalPoint());
-	tmp_expr.replace(itsSettings->functionArgSeparatorAsChar(), internalArgSeparator());
-
-	QByteArray tmp = tmp_expr.toAscii();
-	int iend = tmp.length();
-
-	antlr8BitString_t p (new ANTLR3_UINT8[iend+1]);
-	itsExprString = p;
-
-	for (int i = 0; i < iend; ++i) {
-		itsExprString[i] = tmp[i];
-	}
-	itsExprString[iend] = '\0';
-	itsExprLen = iend;
+	itsExprString.replace(itsSettings->decimalPointAsChar(), Conversion::internalDecimalPoint());
+	itsExprString.replace(itsSettings->functionArgSeparatorAsChar(), Conversion::internalArgSeparator());
 }
 
+/*! Validates expression. Doesn't evaluate it. */
 bool MathEvaluator::validate() {
 	
 	if (!itsIsValidated) {
-		LexerParser lpr (itsExprString, itsExprLen);
+		LexerParser lpr (itsExprString);
 
 		if (!lpr.malloc_error) {
 			lpr.expressionAST = lpr.parser->prog(lpr.parser);
@@ -196,18 +204,24 @@ bool MathEvaluator::validate() {
 		itsIsValidated = true;
 	}
 
-	BridgeAPIGlobals::clearComplexFactory();
-	BridgeAPIGlobals::clearLexerErrors();
+	clearComplexFactory();
+	itsLexerErrorsCollection.clear();
 	return itsIsValid;
 }
 
+/*! Validates expression if it hasn't been validated and 
+evaluates it. Returns true if expression is valid. Results
+can be read using Re() and Im() methods. */
 bool MathEvaluator::evaluate() {
+	itsLexerErrorsCollection.clear();
+	// Connect to bridge API
+	currentEvaluator = this;
 	if (!itsIsEvaluated) {
 		if (validate()) {
 
 			itsErrStr.clear();
 
-			LexerParser lpr (itsExprString, itsExprLen);
+			LexerParser lpr (itsExprString);
 
 			if (!lpr.malloc_error) {
 				// No need to check if this fails because it was done during 
@@ -233,8 +247,7 @@ bool MathEvaluator::evaluate() {
 
 				try {
 					retv_val = lpr.treeParser->prog(lpr.treeParser);
-					this->real = retv_val->real;
-					this->imag = retv_val->imag;
+					mpc_set(itsValue, retv_val, Conversion::defaultComplexRoundingMode());
 				}
 				catch (NumericConversionError& e) {
 					itsIsValid = false;
@@ -245,321 +258,578 @@ bool MathEvaluator::evaluate() {
 		itsIsEvaluated = true;
 	}
 
-	BridgeAPIGlobals::clearComplexFactory();
-	BridgeAPIGlobals::clearLexerErrors();
+	clearComplexFactory();
 	return itsIsValid;
 }
 
+/** Stores current state of calculation for future use by "ans" 
+variable in expression. */
 void MathEvaluator::storeAns() {
-	BridgeAPIGlobals::setAns(real, imag);
+	mpfr_set(mpc_realref(itsAns), mpc_realref(itsValue), Conversion::defaultRoundingMode());
+	mpfr_set(mpc_imagref(itsAns), mpc_imagref(itsValue), Conversion::defaultRoundingMode());
 }
 
-QString MathEvaluator::toString() const {
-	QString retv;
-	toString('d', retv);
-	return retv;
-}
-
-QString MathEvaluator::toStringBin() const {
-	QString retv;
-	toString('b', retv);
-	return retv;
-}
-
-QString MathEvaluator::toStringHex() const {
-	QString retv;
-	toString('h', retv);
-	return retv;
-}
-
-QString MathEvaluator::toStringOct() const {
-	QString retv;
-	toString('o', retv);
-	return retv;
-}
-
-void MathEvaluator::toString(char baseTag, QString& dest) const {
+const QString MathEvaluator::toString() const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
-			QString im_sign;
-			QString re_str, im_str;
-			bool add_i = false;
-
-			// If number is close enough to zero, we make it zero 
-			// explicitly (but for display purposes only)
-			mrReal im_disp = imag, re_disp = real;
-			if (abs(im_disp) < pow(10.0, itsSettings->zeroTresholdExp())) {
-				im_disp = 0;
-			}
-			if (abs(re_disp) < pow(10.0, itsSettings->zeroTresholdExp())) {
-				re_disp = 0;
-			}
-
-			// Formating output of imaginary part
-			if ((boost::math::fpclassify)(im_disp) != FP_ZERO) {
-				// Display as decimal
-				if (baseTag == 'd') {
-					if (im_disp > 0) {
-						im_sign = " + ";
-					} else { // if (imag < 0) {
-						im_sign = " - ";
-					}
-					mrReal tmp = abs(im_disp);
-					numberToString(tmp, im_str, baseTag);
-				} else { // Display as any other base
-					im_sign = " + ";
-					numberToString(im_disp, im_str, baseTag);
-				}
-				add_i = true;
-			}
-			numberToString(re_disp, re_str, baseTag);
-			dest = re_str;
-			if (add_i) {
-				dest +=  im_sign + im_str + "i";
-			}
+			return Conversion::toString(Conversion::DECIMAL, *itsSettings, itsValue);
 		} else {
-			dest = "Not evaluated!!!";
+			return "Not evaluated!!!";
 		}
 	} else {
-		dest = itsErrStr;
+		return itsErrStr;
 	}
 }
 
-qint8 MathEvaluator::safe_convert_8b(mrReal val, bool& ok) {
-	return safe_convert<qint8>(val, ok);
+const QString MathEvaluator::toStringBin() const {
+	if (itsIsValid) {
+		if (itsIsEvaluated) {
+			return Conversion::toString(Conversion::BINARY, *itsSettings, itsValue);
+		} else {
+			return "Not evaluated!!!";
+		}
+	} else {
+		return itsErrStr;
+	}
 }
 
-qint16 MathEvaluator::safe_convert_16b(mrReal val, bool& ok) {
-	return safe_convert<qint8>(val, ok);
+const QString MathEvaluator::toStringHex() const {
+	if (itsIsValid) {
+		if (itsIsEvaluated) {
+			return Conversion::toString(Conversion::HEXADECIMAL, *itsSettings, itsValue);
+		} else {
+			return "Not evaluated!!!";
+		}
+	} else {
+		return itsErrStr;
+	}
 }
 
-qint32 MathEvaluator::safe_convert_32b(mrReal val, bool& ok) {
-	return safe_convert<qint32>(val, ok);
+const QString MathEvaluator::toStringOct() const {
+	if (itsIsValid) {
+		if (itsIsEvaluated) {
+			return Conversion::toString(Conversion::OCTAL, *itsSettings, itsValue);
+		} else {
+			return "Not evaluated!!!";
+		}
+	} else {
+		return itsErrStr;
+	}
 }
 
-qint64 MathEvaluator::safe_convert_64b(mrReal val, bool& ok) {
-	return safe_convert<qint64>(val, ok);
+/*! Returns result of evaluation. If expression hasn't been evaluated, 
+or is invalid, return value is unspecified. */
+const Real& MathEvaluator::Re() const { return mpc_realref(itsValue); }
+/*! Returns result of evaluation. If expression hasn't been evaluated, 
+or is invalid, return value is unspecified. */
+const Real& MathEvaluator::Im() const { return mpc_imagref(itsValue); }
+
+void MathEvaluator::pi(ComplexPtr dest) {
+	assert(dest != 0);
+	mpfr_const_pi(mpc_realref(dest), Conversion::defaultRoundingMode());
+	mpfr_set_ui(mpc_imagref(dest), 0, Conversion::defaultRoundingMode());
 }
 
-quint8 MathEvaluator::safe_convert_u8b(mrReal val, bool& ok) {
-	return safe_convert<quint8>(val, ok);
+void MathEvaluator::e(ComplexPtr dest) {
+	assert(dest != 0);
+	mpfr_set_ui(mpc_realref(dest), 1, Conversion::defaultRoundingMode());
+	mpfr_set_ui(mpc_imagref(dest), 0, Conversion::defaultRoundingMode());
+	mpfr_exp(mpc_realref(dest), mpc_realref(dest), Conversion::defaultRoundingMode());
 }
 
-quint16 MathEvaluator::safe_convert_u16b(mrReal val, bool& ok) {
-	return safe_convert<quint16>(val, ok);
+const Settings& MathEvaluator::settings() const { return *itsSettings; }
+
+void MathEvaluator::ans(ComplexPtr dest) {
+	assert(dest != 0);
+	mpfr_set(mpc_realref(itsAns), mpc_realref(dest), Conversion::defaultRoundingMode());
+	mpfr_set(mpc_imagref(itsAns), mpc_imagref(dest), Conversion::defaultRoundingMode());
 }
 
-quint32 MathEvaluator::safe_convert_u32b(mrReal val, bool& ok) {
-	return safe_convert<quint32>(val, ok);
+ComplexPtr MathEvaluator::newComplex() {
+	ComplexPtr p = new Complex();
+	mpc_init2(p, Conversion::MAX_BINARY_DIGITS);
+	mpc_set_ui_ui(p, 0, 0, Conversion::defaultComplexRoundingMode());
+	itsComplexFactoryData.push_back(p);
+	return p;
 }
 
-quint64 MathEvaluator::safe_convert_u64b(mrReal val, bool& ok) {
-	return safe_convert<quint64>(val, ok);
+void MathEvaluator::clearComplexFactory() {
+	ComplexVector::size_type i, iend;
+	i = 0; iend = itsComplexFactoryData.size();
+	for (; i != iend; ++i) {
+		mpc_clear(itsComplexFactoryData[i]);
+		delete itsComplexFactoryData[i];
+	}
+	itsComplexFactoryData.clear();
 }
 
-template <class intT>
-intT MathEvaluator::safe_convert(mrReal val, bool& ok) {
-	intT retv;
-//	try {
-// 		retv = numeric_cast<intT>(val);
-// 		ok = true;
-// 	}
-// 	catch (bad_numeric_cast&) {
-// 		ok = false;
-// 	}
-	retv = val; ok = true;
+RealPtr MathEvaluator::newReal() {
+	RealPtr p = new Real();
+	mpfr_init2(p, Conversion::MAX_BINARY_DIGITS);
+	mpfr_set_ui(p, 0, Conversion::defaultRoundingMode());
+	itsRealFactoryData.push_back(p);
+	return p;
+}
+
+void MathEvaluator::clearRealFactory() {
+	RealVector::size_type i, iend;
+	i = 0; iend = itsRealFactoryData.size();
+	for (; i != iend; ++i) {
+		mpfr_clear(itsRealFactoryData[i]);
+		delete itsRealFactoryData[i];
+	}
+	itsRealFactoryData.clear();
+}
+
+void MathEvaluator::collectlexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err_type) {
+	LexerErrorPair p;
+	p.char_index = char_index;
+	p.err_type = err_type;
+	itsLexerErrorsCollection.push_back(p);
+}
+
+void MathEvaluator::
+SIUnit(MR_MATH_SI_PREFIXES si_prefix, ComplexPtr dest) {
+	assert(dest != 0);
+	mpfr_set_ui(mpc_imagref(dest), 0, Conversion::defaultRoundingMode());
+
+	switch (si_prefix) {
+		case MR_MATH_SI_PREFIX_YOTTA:
+			mpfr_set_str(mpc_realref(dest), "1e24", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_ZETTA:
+			mpfr_set_str(mpc_realref(dest), "1e21", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_EXA:
+			mpfr_set_str(mpc_realref(dest), "1e18", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_PETA:
+			mpfr_set_str(mpc_realref(dest), "1e15", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_TERA:
+			mpfr_set_str(mpc_realref(dest), "1e12", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_GIGA:
+			mpfr_set_str(mpc_realref(dest), "1e9", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_MEGA:
+			mpfr_set_str(mpc_realref(dest), "1e6", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_KILO:
+			mpfr_set_str(mpc_realref(dest), "1e3", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_HECTO:
+			mpfr_set_str(mpc_realref(dest), "1e2", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_DECA:
+			mpfr_set_str(mpc_realref(dest), "1e1", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_DECI:
+			mpfr_set_str(mpc_realref(dest), "1e-1", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_CENTI:
+			mpfr_set_str(mpc_realref(dest), "1e-2", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_MILLI:
+			mpfr_set_str(mpc_realref(dest), "1e-3", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_MICRO:
+			mpfr_set_str(mpc_realref(dest), "1e-6", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_NANO:
+			mpfr_set_str(mpc_realref(dest), "1e-9", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_PICO:
+			mpfr_set_str(mpc_realref(dest), "1e-12", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_FEMTO:
+			mpfr_set_str(mpc_realref(dest), "1e-15", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_ATTO:
+			mpfr_set_str(mpc_realref(dest), "1e-18", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_ZEPTO:
+			mpfr_set_str(mpc_realref(dest), "1e-21", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_YOCTO:
+			mpfr_set_str(mpc_realref(dest), "1e-24", 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_KIBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 10, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_MEBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 20, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_GIBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 30, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_TEBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 40, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_PEBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 50, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_EXBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 60, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_ZEBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 70, Conversion::defaultRoundingMode());
+			break;
+		case MR_MATH_SI_PREFIX_YOBI:
+			mpfr_set_ui_2exp(mpc_realref(dest), 1, 80, Conversion::defaultRoundingMode());
+			break;
+	}
+}
+
+ComplexPtr MathEvaluator::binaryOperator (MR_MATH_BINARY_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv) {
+	ComplexPtr retv = newComplex();
+	switch (which) {
+		case MR_PLUS:
+			mpc_add(retv, lv, rv, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_MINUS:
+			mpc_sub(retv, lv, rv, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_MULTI:
+			mpc_mul(retv, lv, rv, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_DIV:
+			mpc_div(retv, lv, rv, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_MOD:
+			mpfr_fmod(mpc_realref(retv), mpc_realref(lv), mpc_realref(rv), Conversion::defaultRoundingMode());
+			break;
+		case MR_POW:
+			mpc_pow(retv, lv, rv, Conversion::defaultComplexRoundingMode());
+			break;
+	}
 	return retv;
 }
 
-void MathEvaluator::numberToString(mrReal val, QString& retv, char baseTag) const {
-	QLocale loc = QLocale::c();
-	bool ok_flag;
-	quint64 tmpI64;
-	quint32 tmpI32;
-	quint16 tmpI16;
-	quint8 tmpI8;
-	QString bho_sign, bho_prefix;
-// 	if (val < 0) {
-// 		bho_sign = "-";
-// 	}
-//	mrReal absVal = abs(val);
-	mrReal absVal = val;
-	switch (baseTag) {
-		case 'b':
-			switch (itsSettings->calculationBitWidth()) {
-				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(64, '0');
-						}
-					} else {
-						retv = "64b int range error";
-					}
-					break;
-				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(32, '0');
-						}
-					} else {
-						retv = "32b int range error";
-					}
-					break;
-				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(16, '0');
-						}
-					} else {
-						retv = "16b int range error";
-					}
-					break;
-				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 2);
-						if (itsSettings->showLeadingZeroesBin()) {
-							retv = retv.rightJustified(8, '0');
-						}
-					} else {
-						retv = "8b int range error";
-					}
-					break;
-			}
-			if (itsSettings->showBasePrefix()) {
-				retv.insert(0, "0b");
-			}
-			retv.insert(0, bho_sign);
+ComplexPtr MathEvaluator::bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv) {
+	ComplexPtr retv = newComplex();
+
+	quint64 lv64, rv64;
+	quint32 lv32, rv32;
+	quint16 lv16, rv16;
+	quint8 lv8, rv8;
+
+	switch (itsSettings->calculationBitWidth()) {
+		case 64:
+			lv64 = Conversion::convert_u64b(mpc_realref(lv));
+			rv64 = Conversion::convert_u64b(mpc_realref(rv));
 			break;
-		case 'h':
-			switch (itsSettings->calculationBitWidth()) {
-				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(16, '0');
-						}
-					} else {
-						retv = "64b int range error";
-					}
-					break;
-				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(8, '0');
-						}
-					} else {
-						retv = "32b int range error";
-					}
-					break;
-				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(4, '0');
-						}
-					} else {
-						retv = "16b int range error";
-					}
-					break;
-				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 16).toUpper();
-						if (itsSettings->showLeadingZeroesHex()) {
-							retv = retv.rightJustified(2, '0');
-						}
-					} else {
-						retv = "8b int range error";
-					}
-					break;
-			}
-			if (itsSettings->showBasePrefix()) {
-				retv.insert(0, "0x");
-			}
-			retv.insert(0, bho_sign);
+		case 32:
+			lv32 = Conversion::convert_u32b(mpc_realref(lv));
+			rv32 = Conversion::convert_u32b(mpc_realref(rv));
 			break;
-		case 'o':
-			switch (itsSettings->calculationBitWidth()) {
-				case Settings::BW64:
-					tmpI64 = safe_convert_u64b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI64, 8);
-					} else {
-						retv = "64b int range error";
-					}
-					break;
-				case Settings::BW32:
-					tmpI32 = safe_convert_u32b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI32, 8);
-					} else {
-						retv = "32b int range error";
-					}
-					break;
-				case Settings::BW16:
-					tmpI16 = safe_convert_u16b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI16, 8);
-					} else {
-						retv = "16b int range error";
-					}
-					break;
-				case Settings::BW8:
-					tmpI8 = safe_convert_u8b(absVal, ok_flag);
-					if (ok_flag) {
-						retv += QString::number(tmpI8, 8);
-					} else {
-						retv = "8b int range error";
-					}
-					break;
-			}
-			if (itsSettings->showBasePrefix()) {
-				retv.insert(0, "0");
-			}
-			retv.insert(0, bho_sign);
+		case 16:
+			lv16 = Conversion::convert_u16b(mpc_realref(lv));
+			rv16 = Conversion::convert_u16b(mpc_realref(rv));
 			break;
-		case 'd':
-		default:
-			if (itsSettings->outputFormat() == Settings::AUTOMATIC) { 
-				retv = loc.toString(val, 'g', itsSettings->precision());
-			} else if (itsSettings->outputFormat() == Settings::SCIENTIFFIC) {
-				retv = loc.toString(val, 'e', itsSettings->precision());
-			} else if (itsSettings->outputFormat() == Settings::FIXED) {
-				retv = loc.toString(val, 'f', itsSettings->precision());		
-			}
-
-			// Post processing
-
-			// First, "saving" decimal point from modification.
-			// This is relatively safe because internally used 
-			// character for decimal point representation is 
-			// not likely to be used for that purpose in any 
-			// existing locale. 
-			retv.replace(loc.decimalPoint(), internalDecimalPoint());
-
-			// Post processing group separator. 
-			if (!itsSettings->outputDigitGrouping()) {
-				retv.remove(loc.groupSeparator());
-			} else {
-				retv.replace(loc.groupSeparator(), itsSettings->digitGroupingCharacterAsChar());
-			}
-
-			// Post processing decimal point. 
-			retv.replace(internalDecimalPoint(), itsSettings->decimalPointAsChar());
-
+		case 8:
+			lv8 = Conversion::convert_u8b(mpc_realref(lv));
+			rv8 = Conversion::convert_u8b(mpc_realref(rv));
 			break;
 	}
+
+	switch (which) {
+		// bitwise AND
+		case  MR_BITWISE_AND:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 & rv64);
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), lv32 & rv32, Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), lv16 & rv16, Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), lv8 & rv8, Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+		// bitwise OR
+		case  MR_BITWISE_OR:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 | rv64);
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), lv32 | rv32, Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), lv16 | rv16, Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), lv8 | rv8, Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+		// bitwise NAND
+		case  MR_BITWISE_NAND:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 & rv64));
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), ~(lv32 & rv32), Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), ~(lv16 & rv16), Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), ~(lv8 & rv8), Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+		// bitwise NOR
+		case  MR_BITWISE_NOR:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 | rv64));
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), ~(lv32 | rv32), Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), ~(lv16 | rv16), Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), ~(lv8 | rv8), Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+		// bitwise XOR
+		case  MR_BITWISE_XOR:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 ^ rv64);
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), lv32 ^ rv32, Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), lv16 ^ rv16, Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), lv8 ^ rv8, Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+		// bitwise XNOR
+		case  MR_BITWISE_XNOR:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), ~(lv64 ^ rv64));
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), ~(lv32 ^ rv32), Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), ~(lv16 ^ rv16), Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), ~(lv8 ^ rv8), Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+		// bitwise shift left
+		case  MR_BITWISE_SHL:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 << rv64);
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), lv32 << rv32, Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), lv16 << rv16, Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), lv8 << rv8, Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+		// bitwise shift right
+		case  MR_BITWISE_SHR:
+			switch (itsSettings->calculationBitWidth()) {
+				case 64:	
+					Conversion::mpfr_set_quint64(mpc_realref(retv), lv64 >> rv64);
+					break;
+				case 32:
+					mpfr_set_ui(mpc_realref(retv), lv32 >> rv32, Conversion::defaultRoundingMode());
+					break;
+				case 16:
+					mpfr_set_ui(mpc_realref(retv), lv16 >> rv16, Conversion::defaultRoundingMode());
+					break;
+				case 8:
+					mpfr_set_ui(mpc_realref(retv), lv8 >> rv8, Conversion::defaultRoundingMode());
+					break;
+			}
+			break;
+	}
+
+	return retv;
+}
+
+ComplexPtr MathEvaluator::
+unaryOperator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val) {
+	ComplexPtr retv = newComplex();
+
+	if (which == MR_BITWISE_NOT) {
+		switch (itsSettings->calculationBitWidth()) {
+			case 64:
+				quint64 tmpI64;
+				tmpI64 = Conversion::convert_u64b(mpc_realref(val));
+				tmpI64 = ~tmpI64;
+				Conversion::mpfr_set_quint64(mpc_realref(retv), tmpI64);
+				break;
+			case 32:
+				quint32 tmpI32;
+				tmpI32 = Conversion::convert_u32b(mpc_realref(val));
+				tmpI32 = ~tmpI32;
+				mpfr_set_ui(mpc_realref(retv), tmpI32, Conversion::defaultRoundingMode());
+				break;
+			case 16:
+				quint16 tmpI16;
+				tmpI16 = Conversion::convert_u16b(mpc_realref(val));
+				tmpI16 = ~tmpI16;
+				mpfr_set_ui(mpc_realref(retv), tmpI16, Conversion::defaultRoundingMode());
+				break;
+			case 8:
+				quint8 tmpI8;
+				tmpI8 = Conversion::convert_u8b(mpc_realref(val));
+				tmpI8 = ~tmpI8;
+				mpfr_set_ui(mpc_realref(retv), tmpI8, Conversion::defaultRoundingMode());
+				break;
+		}
+	} else if (which == MR_UNARY_MINUS) {
+		mpc_mul_si(retv, val, -1, Conversion::defaultComplexRoundingMode());
+	}
+	return retv;
+}
+
+ComplexPtr MathEvaluator::
+unaryFunction (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val) {
+	ComplexPtr retv = newComplex();
+
+	switch (which) {
+		case MR_FUN_SIN:
+			mpc_sin(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_COS:
+			mpc_cos(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_TAN:
+			mpc_tan(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_ASIN:
+			mpc_asin(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_ACOS:
+			mpc_acos(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_ATAN:
+			mpc_atan(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_SINH:
+			mpc_sinh(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_COSH:
+			mpc_cosh(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_TANH:
+			mpc_tanh(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_ASINH:
+			mpc_asinh(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_ACOSH:
+			mpc_acosh(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_ATANH:
+			mpc_atanh(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_EXP:
+			mpc_exp(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_LOG:
+			mpc_log(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_LOG10:
+			Complex logOf10;
+			mpc_init2(logOf10, Conversion::MAX_BINARY_DIGITS);
+			mpc_set_ui(logOf10, 10, Conversion::defaultComplexRoundingMode());
+			mpc_log(logOf10, logOf10, Conversion::defaultComplexRoundingMode());
+
+			mpc_log(retv, val, Conversion::defaultComplexRoundingMode());
+			mpc_div(retv, retv, logOf10, Conversion::defaultComplexRoundingMode());
+
+			mpc_clear(logOf10);
+			break;
+		case MR_FUN_SQRT:
+			mpc_sqrt(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_ABS:
+			mpc_abs(mpc_realref(retv), val, Conversion::defaultRoundingMode());
+			break;
+		case MR_FUN_RE:
+			mpc_set_fr(retv, mpc_realref(val), Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_IM:
+			mpfr_set(mpc_imagref(retv), mpc_imagref(val), Conversion::defaultRoundingMode());
+			break;
+		case MR_FUN_ARG:
+			mpc_arg(mpc_realref(retv), val, Conversion::defaultRoundingMode());
+			break;
+		case MR_FUN_CONJ:
+			mpc_conj(retv, val, Conversion::defaultComplexRoundingMode());
+			break;
+		case MR_FUN_DEG:
+			mpfr_set(mpc_realref(retv), mpc_realref(val), Conversion::defaultRoundingMode());
+			mpfr_const_pi(mpc_imagref(retv), Conversion::defaultRoundingMode()); // Temporarily, so we don't need to create another Real
+			mpfr_mul_ui(mpc_realref(retv), mpc_realref(retv), 180, Conversion::defaultRoundingMode());
+			mpfr_div(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_set_ui(mpc_imagref(retv), 360, Conversion::defaultRoundingMode()); // Temporarily, so we don't need to create another Real
+			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_set_ui(mpc_imagref(retv), 0, Conversion::defaultRoundingMode());
+			break;
+		case MR_FUN_RAD:
+			mpfr_set(mpc_realref(retv), mpc_realref(val), Conversion::defaultRoundingMode());
+			mpfr_const_pi(mpc_imagref(retv), Conversion::defaultRoundingMode()); // Temporarily, so we don't need to create another Real
+			mpfr_mul(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_div_ui(mpc_realref(retv), mpc_realref(retv), 180, Conversion::defaultRoundingMode());
+			mpfr_mul_ui(mpc_imagref(retv), mpc_imagref(retv), 2, Conversion::defaultRoundingMode());
+			mpfr_fmod(mpc_realref(retv), mpc_realref(retv), mpc_imagref(retv), Conversion::defaultRoundingMode());
+			mpfr_set_ui(mpc_imagref(retv), 0, Conversion::defaultRoundingMode());
+			break;
+		case MR_FUN_NORM:
+			mpc_norm(mpc_realref(retv), val, Conversion::defaultRoundingMode());
+			break;
+		case MR_FUN_POLAR:
+			RealPtr fn;
+			fn = newReal();
+			mpfr_cos(fn, mpc_imagref(val), Conversion::defaultRoundingMode());
+			mpfr_mul(mpc_realref(retv), mpc_realref(val), fn, Conversion::defaultRoundingMode());
+			mpfr_sin(fn, mpc_imagref(val), Conversion::defaultRoundingMode());
+			mpfr_mul(mpc_imagref(retv), mpc_realref(val), fn, Conversion::defaultRoundingMode());
+			break;
+	}
+	return retv;
+}
+
+ComplexPtr MathEvaluator::
+binaryFunction (MR_MATH_BINARY_FUNCTIONS which, ComplexConstPtr arg1, ComplexConstPtr arg2) {
+	ComplexPtr retv = newComplex();
+	switch (which) {
+		case MR_FUN2_ATAN2:
+			mpfr_atan2(mpc_realref(retv), mpc_realref(arg1), mpc_realref(arg2), Conversion::defaultRoundingMode());
+			break;
+	}
+	return retv;
 }
 
 } // mathy_resurrected

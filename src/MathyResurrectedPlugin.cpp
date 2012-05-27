@@ -22,21 +22,20 @@
 #include <QtCore>
 #include <QClipboard>
 #include "Settings.h"
+#include "OptionsDialog.h"
+#include "MathEvaluator.h"
 
 using namespace mathy_resurrected;
-
-MathyResurrectedPlugin* gmathyresurrectedInstance = NULL;
 
 MathyResurrectedPlugin::MathyResurrectedPlugin() {
 	HASH_MATHYRESURRECTED = qHash(QString("MathyResurrected"));
 	itsName = "MathyResurrected";
 	itsSettings = new Settings(this);
-	MathEvaluator* p = new MathEvaluator(itsSettings);
-	itsCalculator.reset(p);
+	itsCalculator = new MathEvaluator(itsSettings, this);
+	itsGUI = 0;
 }
 
 MathyResurrectedPlugin::~MathyResurrectedPlugin() {
-	gmathyresurrectedInstance = NULL;
 }
 
 void MathyResurrectedPlugin::getID(uint* id) {
@@ -48,12 +47,10 @@ void MathyResurrectedPlugin::getName(QString* str) {
 }
 
 void MathyResurrectedPlugin::init() {
-	if (gmathyresurrectedInstance == NULL)
-		gmathyresurrectedInstance = this;
-
+	// Read QSettings into our mathyresurrected::Settings
 	itsSettings->readSettings(*(this->settings));
- 	itsCalculator->changeEvaluatorSettings(itsSettings);
-	itsGUI.reset();
+	itsGUI->deleteLater();
+	itsGUI = 0;
 }
 
 void MathyResurrectedPlugin::getLabels(QList<InputData>* id) {
@@ -114,9 +111,8 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 
 void MathyResurrectedPlugin::doDialog(QWidget* parent, QWidget** newDlg) {
 	if (itsGUI == 0) {
-		OptionsDialog* p = new OptionsDialog(itsSettings, parent);
-		itsGUI.reset(p);
-		*newDlg = itsGUI.get();
+		itsGUI = new OptionsDialog(parent, itsSettings);
+		*newDlg = itsGUI;
 	}
 }
 
@@ -124,16 +120,14 @@ void MathyResurrectedPlugin::endDialog(bool accept) {
 	if (accept) {
 		itsSettings->writeSettings(*(this->settings));
 		init();
+	} else {
+		itsGUI->deleteLater();
+		itsGUI = 0;
 	}
-	itsGUI.reset();
 }
 
 QString MathyResurrectedPlugin::getIcon() {
-	return libPath + "/icons/mathyresurrected.png";
-}
-
-void MathyResurrectedPlugin::setPath(QString * path) {
-	libPath = *path;
+	return ":icons/mathyresurrected.png";
 }
 
 void MathyResurrectedPlugin::launchItem(QList<InputData>* /*inputData*/, CatItem* item) {
@@ -182,9 +176,6 @@ int MathyResurrectedPlugin::msg(int msgId, void* wParam, void* lParam) {
 		case MSG_END_DIALOG:
 			// This isn't called unless you return true to MSG_HAS_DIALOG
 			endDialog((bool) wParam);
-			break;
-		case MSG_PATH:
-			setPath((QString *) wParam);
 			break;
 
 		default:

@@ -21,14 +21,13 @@
 #ifndef MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
 #define MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
 
-#include <boost/smart_ptr/shared_ptr.hpp>
 #include <QString>
-#include "OptionsDialog.h"
-#include "MathEvaluator.h"
 #include "plugin_interface.h"
 
 namespace mathy_resurrected {
 	class Settings;
+	class MathEvaluator;
+	class OptionsDialog;
 }
 
 class MathyResurrectedPlugin : public QObject, public PluginInterface
@@ -37,13 +36,18 @@ class MathyResurrectedPlugin : public QObject, public PluginInterface
 	Q_INTERFACES(PluginInterface)
 
 public:
-
-	uint HASH_MATHYRESURRECTED;
-
 	MathyResurrectedPlugin();
 	virtual ~MathyResurrectedPlugin();
 
 	virtual int msg(int msgId, void* wParam = NULL, void* lParam = NULL); 
+
+private:
+	uint HASH_MATHYRESURRECTED;
+	mathy_resurrected::MathEvaluator *itsCalculator;
+	mathy_resurrected::OptionsDialog *itsGUI;
+	mathy_resurrected::Settings *itsSettings;
+	QString itsName;
+	QString libPath;
 
 	void getLabels(QList<InputData>*);
 	void getID(uint*);
@@ -54,16 +58,6 @@ public:
 	void endDialog(bool accept);
 	void init();
 	QString getIcon();
-	void setPath(QString* path);
-
-private:
-	boost::shared_ptr<mathy_resurrected::MathEvaluator> itsCalculator;
-	boost::shared_ptr<mathy_resurrected::OptionsDialog> itsGUI;
-	mathy_resurrected::Settings* itsSettings;
-	QString itsName;
-	QString libPath;
 };
-
-extern MathyResurrectedPlugin* gmathyresurrectedInstance;
 
 #endif // MATHY_REUSRECTED_MAIN_HEADER_INCLUDED

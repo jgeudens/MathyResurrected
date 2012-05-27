@@ -15,110 +15,103 @@
 * GNU General Public License for more details.
 * 
 * You should have received a copy of the GNU General Public License 
-* along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
-*/
+* along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>. */
 
-#ifndef MATHY_RESURRECTED_EVALUATOR
-#define MATHY_RESURRECTED_EVALUATOR
+#ifndef MATHY_RESURRECTED_EVALUATOR_INCLUDED
+#define MATHY_RESURRECTED_EVALUATOR_INCLUDED
 
 #include <QString>
-#include <boost/smart_ptr/shared_array.hpp>
-#include "math_bridge_API_types.h"
+#include <QObject>
+#include <vector>
+#include "MathTypes.h"
 
 namespace mathy_resurrected {
 
+class MathEvaluator;
 class Settings;
+
+MathEvaluator* getEvaluatorInstance();
 
 /*! Main class for mathematical expression evaluation. Can be used
 to validate expression string or to fully evaluate it. Internally 
-uses ANTLR generated lexer / parser for its job. 
-@note
-Current implementation relies on globally accessible factories and 
-variables for communication between this class and ANTLR generated 
-evaluator. Because of that, only single instance of MathEvaluator
-should exist at any time in program. If this is not ensured, evaluation
-will result in unspecified behavior. */
-class MathEvaluator : private Complex {
+uses ANTLR generated lexer / parser for its job. */
+class MathEvaluator : public QObject {
+
+	Q_OBJECT
+
 public:
-	MathEvaluator(const Settings* app_settings);
-	void changeEvaluatorSettings(const Settings* settings);
+	MathEvaluator(const Settings* app_settings, QObject* parent = 0);
+	virtual ~MathEvaluator();
 
-	/*! Sets expression to be evaluated. */
-	void setExpression (const QString& expression);
-	/*! Validates expression. Doesn't evaluate it. */
+	const Settings& settings() const;
+
+	const Real& Re() const;
+	const Real& Im() const;
+
+	const QString toString() const;
+	const QString toStringBin() const;
+	const QString toStringHex() const;
+	const QString toStringOct() const;
+
+	static void pi(ComplexPtr dest);
+	static void e(ComplexPtr dest);
+	void ans(ComplexPtr dest);
+
+	ComplexPtr newComplex();
+	RealPtr newReal();
+	void collectlexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err_type);
+
+	void SIUnit(MR_MATH_SI_PREFIXES si_prefix, ComplexPtr dest);
+	ComplexPtr binaryOperator (MR_MATH_BINARY_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv);
+	ComplexPtr bitwiseOperator (MR_MATH_BINARY_BITWISE_OPERATORS which, ComplexConstPtr lv, ComplexConstPtr rv);
+	ComplexPtr unaryOperator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val);
+	ComplexPtr unaryFunction (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val);
+	ComplexPtr binaryFunction (MR_MATH_BINARY_FUNCTIONS which, ComplexConstPtr arg1, ComplexConstPtr arg2);
+
+public Q_SLOTS:
+	void setExpression(const QString& expression);
 	bool validate ();
-	/*! Validates expression if it hasn't been validated and 
-	evaluates it. Returns true if expression is valid. Results
-	can be read using Re() and Im() methods. */
 	bool evaluate ();
-	/** Stores current state of calculation for future use by "ans" 
-	variable in expression. */
 	void storeAns();
-	const Complex& ans() const;
-
-	/*! Returns result of evaluation. If expression hasn't been evaluated, 
-	or is invalid, return value is unspecified. */
-	mrReal Re() const { return real; }
-	/*! Returns result of evaluation. If expression hasn't been evaluated, 
-	or is invalid, return value is unspecified. */
-	mrReal Im() const { return imag; }
-
-	QString toString() const;
-	QString toStringBin() const;
-	QString toStringHex() const;
-	QString toStringOct() const;
-
-	static qint8 safe_convert_8b(mrReal val, bool& ok);
-	static qint16 safe_convert_16b(mrReal val, bool& ok);
-	static qint32 safe_convert_32b(mrReal val, bool& ok);
-	static qint64 safe_convert_64b(mrReal val, bool& ok);
-	static quint8 safe_convert_u8b(mrReal val, bool& ok);
-	static quint16 safe_convert_u16b(mrReal val, bool& ok);
-	static quint32 safe_convert_u32b(mrReal val, bool& ok);
-	static quint64 safe_convert_u64b(mrReal val, bool& ok);
-
-#ifdef _DEBUG
-	void printLexerErrors() const;
-#endif // _DEBUG
-
-	/*! This should return same character that was used in grammar */
-	static QChar internalDecimalPoint() { return QChar('@'); }
-	/*! This should return same character that was used in grammar */
-	static QChar internalArgSeparator() { return QChar('#'); }
 
 private:
-	// Evaluation state variables
 	bool itsIsValidated;	/*!< true if expression has been validated */
 	bool itsIsValid;		/*!< true if expression is valid */
 	bool itsIsEvaluated;	/*!< true if expression has been evaluated */
 	QString itsErrStr;		/*!< Error string */
+	const Settings* itsSettings; /**< Evaluator settings. Non-owned pointer to const object. */
 
-	/** Evaluator settings. Non-owned pointer to const object. */
-	const Settings* itsSettings;
-
-	// Input expression variables
-	/*! Type to hold expression that will be passed to lexer and parser. */
-	typedef boost::shared_array < unsigned char > antlr8BitString_t;
-	/*! Expression as string. 
-		- Should be ASCII encoded. 
-		- Locale or application specific decimal point should be replaced with 
+	/** - Locale or application specific decimal point should be replaced with 
 		  internalDecimalPoint() before handing this string to lexer/parser
 		- Locale or application specific function argument separator should be 
 		  replaced with internalArgSeparator() before handing this string to 
 		  lexer/parser */
-	antlr8BitString_t itsExprString;
-	/*! Length of expression string in sizeof(char). */
-	unsigned int itsExprLen;
+	QString itsExprString; 
+	Complex itsValue; /**< Evaluation result */
+	Complex itsAns; /**< Result stored by last call to storeAns(). */
 
-	void numberToString(mrReal val, QString& retv, char baseTag) const;
-	void toString(char baseTag, QString& dest) const;
-	template <class intT>
-	static intT safe_convert(mrReal val, bool& ok);
-	
-	struct LexerParser;
-	friend struct LexerParser;
+	class LexerParser;
+	friend class LexerParser;
+
+	struct LexerErrorPair{
+		unsigned int char_index;
+		MR_LEXER_ERROR_TYPES err_type;
+	};
+	typedef std::vector<LexerErrorPair> LexerErrorsCollection;
+	typedef std::vector<ComplexPtr> ComplexVector;
+	typedef std::vector<RealPtr> RealVector;
+	ComplexVector itsComplexFactoryData; /*!< Data storage for factory produced objects. */
+	RealVector itsRealFactoryData; /*!< Data storage for factory produced objects. */
+	LexerErrorsCollection itsLexerErrorsCollection; /*!< Lexer errors collected here during lexing phase. */
+	void clearComplexFactory();
+	void clearRealFactory();
+
+#ifdef _DEBUG
+public:
+	void printLexerErrors() const;
+#endif // _DEBUG
 };
 
 } // mathy_resurrected
 
-#endif // MATHY_RESURRECTED_EVALUATOR
+#endif // MATHY_RESURRECTED_EVALUATOR_INCLUDED

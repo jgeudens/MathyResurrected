@@ -15,38 +15,43 @@
 * GNU General Public License for more details.
 * 
 * You should have received a copy of the GNU General Public License 
-* along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>.
-*/
+* along with MathyResurrected. If not, see <http://www.gnu.org/licenses/>. */
 
-/*! @file
-Wrapper API for C++ complex math. ANTLR curently generates parsers
-for C only so this API is used to comunicate ANTLR generated,
-C parser/lexer/evaluator with C++ std::complex */
+#ifndef MATHY_RESURRECTED_MATH_TYPES
+#define MATHY_RESURRECTED_MATH_TYPES
 
-#ifndef MATHY_RESURRECTED_MATH_BRIDGE
-#define MATHY_RESURRECTED_MATH_BRIDGE
-
-#include "math_bridge_API_types.h"
+#include <cstdio>
+#include <gmp.h>
+#include <mpfr.h>
+#include <mpc.h>
+#include <antlr3.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*! Returns pointer to new Complex. This pointer should never 
-be deleted directly, it is handled automatically. */
-ComplexPtr newMrComplex();
-void collectlexerError(ANTLR3_UINT32 char_index, MR_LEXER_ERROR_TYPES err_type);
-ComplexConstPtr getAns();
+/*! Multiple precision, floating point type */
+typedef mpfr_t Real;
+typedef mpfr_ptr RealPtr;
+typedef mpfr_srcptr RealConstPtr;
 
-/*! Return value of PI */
-mrReal mr_pi();
-/*! Return value of e */
-mrReal mr_e();
+/*! Multiple precision, complex number type */
+typedef mpc_t Complex;
+typedef mpc_ptr ComplexPtr;
+typedef mpc_srcptr ComplexConstPtr;
 
-/*! To avoid passing around ANTLR3_STRING as much as possible
-and to simplify implementation of SI unit conversion, this enum 
-is used. 
-@see si_calc */
+/** Recognized lexer errors */
+typedef enum {
+	LEX_ERR_MALFORMED_MANTISSA, LEX_ERR_MALFORMED_EXPONENT,
+	LEX_ERR_BAD_INPUT
+} MR_LEXER_ERROR_TYPES;
+
+/** Arithmetic binary operators */
+typedef enum {
+	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
+} MR_MATH_BINARY_OPERATORS;
+
+/** SI unit prefixes */
 typedef enum {
 	MR_MATH_SI_PREFIX_YOTTA, MR_MATH_SI_PREFIX_ZETTA, 
 	MR_MATH_SI_PREFIX_EXA, MR_MATH_SI_PREFIX_PETA, 
@@ -63,28 +68,21 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
-mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix);
 
-typedef enum {
-	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
-} MR_MATH_BINARY_OPERATORS;
-ComplexPtr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, 
-							   ComplexConstPtr lv, ComplexConstPtr rv);
-
+/** Logic binary operators */
 typedef enum {
 	MR_BITWISE_AND, MR_BITWISE_OR, 
 	MR_BITWISE_NAND, MR_BITWISE_NOR, 
 	MR_BITWISE_XOR, MR_BITWISE_XNOR,
 	MR_BITWISE_SHL, MR_BITWISE_SHR
 } MR_MATH_BINARY_BITWISE_OPERATORS;
-ComplexPtr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, 
-									   ComplexConstPtr lv, ComplexConstPtr rv);
 
+/** Unary operators */
 typedef enum {
-	MR_BITWISE_NOT
+	MR_BITWISE_NOT, MR_UNARY_MINUS
 } MR_MATH_UNARY_OPERATORS;
-ComplexPtr mr_unary_operator (MR_MATH_UNARY_OPERATORS which, ComplexConstPtr val);
 
+/** Functions with single argument. */
 typedef enum {
 	MR_FUN_SIN, MR_FUN_COS, MR_FUN_TAN, 
 	MR_FUN_ASIN, MR_FUN_ACOS, MR_FUN_ATAN, 
@@ -96,21 +94,14 @@ typedef enum {
 	MR_FUN_DEG, MR_FUN_RAD, 
 	MR_FUN_NORM, MR_FUN_POLAR
 } MR_MATH_UNARY_FUNCTIONS;
-ComplexPtr mr_unary_function (MR_MATH_UNARY_FUNCTIONS which, ComplexConstPtr val);
 
+/** Functions with two arguments. */
 typedef enum {
 	MR_FUN2_ATAN2
 } MR_MATH_BINARY_FUNCTIONS;
-ComplexPtr mr_binary_function (MR_MATH_BINARY_FUNCTIONS which, 
-								  ComplexConstPtr arg1, ComplexConstPtr arg2);
-
-mrReal strToReal(const pANTLR3_STRING str);
-mrReal strHexToReal(const pANTLR3_STRING str);
-mrReal strOctToReal(const pANTLR3_STRING str);
-mrReal strBinToReal(const pANTLR3_STRING str);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // MATHY_RESURRECTED_MATH_BRIDGE
+#endif // MATHY_RESURRECTED_MATH_TYPES

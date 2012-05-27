@@ -21,6 +21,7 @@
 #ifndef MATHY_RESURRECTED_GUI_OPTIONS
 #define MATHY_RESURRECTED_GUI_OPTIONS
 
+#include "mr_config.h"
 #include <QFrame>
 #include "ui_OptionsWidget.h"
 
@@ -33,14 +34,17 @@ class OptionsDialog : public QFrame, private Ui::MathyResurrectedOptions {
 	Q_OBJECT
 
 public:
-	/** Ctor. Throws invalid_srgument if @a settings is 0. 
-	@param [in] settings - Settings object that is used as container for dialog settings.
-	Dialog doesn't own this object, it only displays it and manipulates it according to user 
-	actions. */
-	OptionsDialog(Settings* settings, QWidget* parent = 0);
-	~OptionsDialog();
+	/**
+	@param [in] settings - Settings object that is used as container
+	for dialog settings. Dialog doesn't own this object, it only displays 
+	it and manipulates it according to user actions. */
+	OptionsDialog(QWidget* parent = 0, Settings* settings = 0);
+	virtual ~OptionsDialog();
 
-private slots:
+public Q_SLOTS: 
+	void setSettingsObject(Settings* settings);
+
+private Q_SLOTS:
 	void on_radioButtonDecSepSystem_clicked();
 	void on_radioButtonDecSepComa_clicked();
 	void on_radioButtonDecSepDot_clicked();
@@ -75,7 +79,7 @@ private slots:
 private:
 	Settings* itsSettings; // Non-owned pointer
 	void setupUiBySettings();
-	void setBaseOptionsEnabledState();
+	void setNumberBaseOptionsEnabledState();
 };
 
 } // namespace mathy_resurrected

@@ -1,9 +1,12 @@
+del *.cpp
 del *.c
 del *.h
 del *.tokens
 
-rem set CLASSPATH=%CLASSPATH%;antlr-3.2.jar
+java -jar antlr-3.2.jar ComplexLexer.g
+java -jar antlr-3.2.jar ComplexParser.g
+java -jar antlr-3.2.jar ComplexEval.g
 
-java org.antlr.Tool ComplexLexer.g
-java org.antlr.Tool ComplexParser.g
-java org.antlr.Tool ComplexEval.g
+ren ComplexLexer.c ComplexLexer.cpp
+ren ComplexParser.c ComplexParser.cpp
+ren ComplexEval.c ComplexEval.cpp

@@ -25,6 +25,11 @@ using namespace std;
 
 namespace mathy_resurrected {
 
+void OptionsDialog::setSettingsObject(Settings* settings) {
+	itsSettings = settings;
+	setupUiBySettings();
+}
+
 void OptionsDialog::on_radioButtonDecSepSystem_clicked() { 
 	itsSettings->setDecimalPoint(Settings::DEC_POINT_SYSTEM);
 	setupUiBySettings();	
@@ -101,29 +106,43 @@ void OptionsDialog::on_checkBoxDecOut_clicked(bool flag) {
 	itsSettings->setShowDecOutput(flag);
 }
 
-void OptionsDialog::on_checkBoxOctOut_clicked(bool flag) { 
-	itsSettings->setShowOctOutput(flag);
-	setBaseOptionsEnabledState();
-}
+void OptionsDialog::setNumberBaseOptionsEnabledState() {
+	bool showBin, showHex, showOct;
 
-void OptionsDialog::setBaseOptionsEnabledState() {
-	bool showOtherBases = 
-		itsSettings->showBinOutput() ||
-		itsSettings->showHexOutput() ||
+	showBin = itsSettings == 0 ? 
+		Settings::defaultShowBinOutput() :
+		itsSettings->showBinOutput();
+
+	showHex = itsSettings == 0 ? 
+		Settings::defaultShowHexOutput() :
+		itsSettings->showHexOutput();
+
+	showOct = itsSettings == 0 ? 
+		Settings::defaultShowOctOutput() :
 		itsSettings->showOctOutput();
+
+	bool showOtherBases = showBin || showHex || showOct;
+
 	groupBoxBW->setEnabled(showOtherBases);
-	checkBoxShowLeadingZerosHex->setEnabled(showOtherBases);
-	checkBoxShowLeadingZerosBin->setEnabled(showOtherBases);
+	checkBoxShowBasePrefix->setEnabled(showOtherBases);
+	checkBoxShowLeadingZerosOct->setEnabled(showOct);
+	checkBoxShowLeadingZerosHex->setEnabled(showHex);
+	checkBoxShowLeadingZerosBin->setEnabled(showBin);
 }
 
 void OptionsDialog::on_checkBoxHexOut_clicked(bool flag) { 
 	itsSettings->setShowHexOutput(flag);
-	setBaseOptionsEnabledState();
+	setNumberBaseOptionsEnabledState();
 }
 
 void OptionsDialog::on_checkBoxBinOut_clicked(bool flag) { 
 	itsSettings->setShowBinOutput(flag);
-	setBaseOptionsEnabledState();
+	setNumberBaseOptionsEnabledState();
+}
+
+void OptionsDialog::on_checkBoxOctOut_clicked(bool flag) { 
+	itsSettings->setShowOctOutput(flag);
+	setNumberBaseOptionsEnabledState();
 }
 
 void OptionsDialog::on_radioButtonBW8_clicked() { 
@@ -159,15 +178,16 @@ void OptionsDialog::on_checkBoxShowLeadingZerosBin_clicked(bool flag) {
 	itsSettings->setShowLeadingZeroesBin(flag);
 }
 
-OptionsDialog::
-OptionsDialog(Settings* settings, QWidget* parent) : 
+OptionsDialog::OptionsDialog(QWidget* parent, Settings* settings) : 
 	QFrame(parent), itsSettings(settings)
 {
-	if (settings == 0) {
-		throw invalid_argument("Settings pointer is NULL!");
-	}
 	setupUi(this);
 	setupUiBySettings();
+
+	// Setting version in About tab
+	QTextCursor cur = aboutText->document()->find("VERSION_STRING"); // Selects text
+	cur.deleteChar(); // deletes selected text
+	cur.insertText("v" + QString::fromAscii(MATHYRESURRECTED_VERSION_STRING));
 }
 
 OptionsDialog::~OptionsDialog() { 
@@ -175,100 +195,106 @@ OptionsDialog::~OptionsDialog() {
 }
 
 void OptionsDialog::setupUiBySettings() {
-	switch (itsSettings->decimalPoint()) {
-		case Settings::DEC_POINT_COMA:
-			radioButtonDecSepComa->setChecked(true);
-			radioButtonArgSeparatorComa->setEnabled(false);
-			break;
-		case Settings::DEC_POINT_DOT:
-			radioButtonDecSepDot->setChecked(true);
-			radioButtonArgSeparatorComa->setEnabled(true);
-			break;
-		case Settings::DEC_POINT_SYSTEM:
-		default:
-			radioButtonDecSepSystem->setChecked(true);
-			if (Settings::systemDecimalPoint() == ',') {
+	if (itsSettings != 0) {
+		setEnabled(true);
+		switch (itsSettings->decimalPoint()) {
+			case Settings::DEC_POINT_COMA:
+				radioButtonDecSepComa->setChecked(true);
 				radioButtonArgSeparatorComa->setEnabled(false);
-			} else {
+				break;
+			case Settings::DEC_POINT_DOT:
+				radioButtonDecSepDot->setChecked(true);
 				radioButtonArgSeparatorComa->setEnabled(true);
-			}
-			break;
-	}
+				break;
+			case Settings::DEC_POINT_SYSTEM:
+			default:
+				radioButtonDecSepSystem->setChecked(true);
+				if (Settings::systemDecimalPoint() == ',') {
+					radioButtonArgSeparatorComa->setEnabled(false);
+				} else {
+					radioButtonArgSeparatorComa->setEnabled(true);
+				}
+				break;
+		}
 
-	switch (itsSettings->functionArgSeparator()) {
-		case Settings::ARG_SEPARATOR_SEMICOLON:
-			radioButtonArgSeparatorSemiColon->setChecked(true);
-			break;
-		case Settings::ARG_SEPARATOR_COMA:
-			// Note that this case will never happen if decimal point 
-			// in settings is ','; Settings object ensures that.
-			radioButtonArgSeparatorComa->setChecked(true);
-			break;
-		case Settings::ARG_SEPARATOR_COLON:
-		default:
-			radioButtonArgSeparatorColon->setChecked(true);
-	}
+		switch (itsSettings->functionArgSeparator()) {
+			case Settings::ARG_SEPARATOR_SEMICOLON:
+				radioButtonArgSeparatorSemiColon->setChecked(true);
+				break;
+			case Settings::ARG_SEPARATOR_COMA:
+				// Note that this case will never happen if decimal point 
+				// in settings is ','; Settings object ensures that.
+				radioButtonArgSeparatorComa->setChecked(true);
+				break;
+			case Settings::ARG_SEPARATOR_COLON:
+			default:
+				radioButtonArgSeparatorColon->setChecked(true);
+		}
 
-	checkBoxInputMatching->setChecked(itsSettings->useSimpleInputMatching());
+		checkBoxInputMatching->setChecked(itsSettings->useSimpleInputMatching());
 
-	switch (itsSettings->outputFormat()) {
-		case Settings::AUTOMATIC:
-			radioButtonOutputDefault->setChecked(true);
-			break;
-		case Settings::SCIENTIFFIC:
-			radioButtonOutputScientiffic->setChecked(true);
-			break;
-		case Settings::FIXED:
-		default:
-			radioButtonOutputFixed->setChecked(true);
-	}
+		switch (itsSettings->outputFormat()) {
+			case Settings::AUTOMATIC:
+				radioButtonOutputDefault->setChecked(true);
+				break;
+			case Settings::SCIENTIFFIC:
+				radioButtonOutputScientiffic->setChecked(true);
+				break;
+			case Settings::FIXED:
+			default:
+				radioButtonOutputFixed->setChecked(true);
+		}
 
-	checkBoxShowGrouping->setChecked(itsSettings->outputDigitGrouping());
+		checkBoxShowGrouping->setChecked(itsSettings->outputDigitGrouping());
 
-	switch (itsSettings->digitGroupingCharacter()) {
-		case Settings::DIGIT_GROUPING_SYSTEM:
-			radioButtonThSepSys->setChecked(true);
-			break;
-		case Settings::DIGIT_GROUPING_COMA:
-			radioButtonThSepCom->setChecked(true);
-			break;
-		case Settings::DIGIT_GROUPING_DOT:
-		default:
-			radioButtonThSepDot->setChecked(true);
-	}
-	
-	spinBoxOutputPrecision->setValue(itsSettings->precision());
+		switch (itsSettings->digitGroupingCharacter()) {
+			case Settings::DIGIT_GROUPING_SYSTEM:
+				radioButtonThSepSys->setChecked(true);
+				break;
+			case Settings::DIGIT_GROUPING_COMA:
+				radioButtonThSepCom->setChecked(true);
+				break;
+			case Settings::DIGIT_GROUPING_DOT:
+			default:
+				radioButtonThSepDot->setChecked(true);
+		}
 
-	checkBoxZeroTreshold->setChecked(itsSettings->showSmallNumbersAsZero());
-	spinBoxZeroTreshold->setValue(itsSettings->zeroTresholdExp());
-	checkBoxUseEnterKey->setChecked(itsSettings->useEnterToCopy());
+		spinBoxOutputPrecision->setValue(itsSettings->precision());
 
-	checkBoxBinOut->setChecked(itsSettings->showBinOutput());
-	checkBoxDecOut->setChecked(itsSettings->showDecOutput());
-	checkBoxHexOut->setChecked(itsSettings->showHexOutput());
-	checkBoxOctOut->setChecked(itsSettings->showOctOutput());
+		checkBoxZeroTreshold->setChecked(itsSettings->showSmallNumbersAsZero());
+		spinBoxZeroTreshold->setValue(itsSettings->zeroTresholdExp());
+		checkBoxUseEnterKey->setChecked(itsSettings->useEnterToCopy());
 
-	checkBoxShowBasePrefix->setChecked(itsSettings->showBasePrefix());
+		checkBoxBinOut->setChecked(itsSettings->showBinOutput());
+		checkBoxDecOut->setChecked(itsSettings->showDecOutput());
+		checkBoxHexOut->setChecked(itsSettings->showHexOutput());
+		checkBoxOctOut->setChecked(itsSettings->showOctOutput());
 
-	checkBoxShowLeadingZerosHex->setChecked(itsSettings->showLeadingZeroesHex());
-	checkBoxShowLeadingZerosBin->setChecked(itsSettings->showLeadingZeroesBin());
+		checkBoxShowBasePrefix->setChecked(itsSettings->showBasePrefix());
 
-	setBaseOptionsEnabledState();
+		checkBoxShowLeadingZerosHex->setChecked(itsSettings->showLeadingZeroesHex());
+		checkBoxShowLeadingZerosOct->setChecked(itsSettings->showLeadingZeroesOct());
+		checkBoxShowLeadingZerosBin->setChecked(itsSettings->showLeadingZeroesBin());
 
-	switch (itsSettings->calculationBitWidth()) {
-		case Settings::BW64:
-			radioButtonBW64->setChecked(true);
-			break;
-		case Settings::BW32:
-			radioButtonBW32->setChecked(true);
-			break;
-		case Settings::BW16:
-			radioButtonBW16->setChecked(true);
-			break;
-		case Settings::BW8:
-		default:
-			radioButtonBW8->setChecked(true);
-			break;
+		setNumberBaseOptionsEnabledState();
+
+		switch (itsSettings->calculationBitWidth()) {
+			case Settings::BW64:
+				radioButtonBW64->setChecked(true);
+				break;
+			case Settings::BW32:
+				radioButtonBW32->setChecked(true);
+				break;
+			case Settings::BW16:
+				radioButtonBW16->setChecked(true);
+				break;
+			case Settings::BW8:
+			default:
+				radioButtonBW8->setChecked(true);
+				break;
+		}
+	} else {
+		setDisabled(true);
 	}
 }
 
