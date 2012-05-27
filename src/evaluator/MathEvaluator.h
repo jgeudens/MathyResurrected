@@ -29,6 +29,7 @@
 #include <boost/smart_ptr/shared_array.hpp>
 #include "MathyResurrectedExceptions.h"
 #include "math_bridge_API_types.h"
+#include "math_bridge_globals.h"
 
 namespace mathy_resurrected {
 
@@ -69,6 +70,7 @@ public:
 	/** Stores current state of calculation for future use by "ans" 
 	variable in expression. */
 	void storeAns();
+	const mrComplex_t& ans() const { return itsBAPI.ans; }
 
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
@@ -78,23 +80,9 @@ public:
 	mrNumeric_t Im() const { return imag; }
 
 	const QString& toString();
-	QString toStringBin();
-	QString toStringHex();
-	QString toStringOct();
-
-	/*! mrComplex_t factory method used by math bridge API 
-	@note Shouldn't be static in normal circumstances but there is no
-	other way to communicate with antlr generated code. Having
-	this static means every instance of evaluator uses and clears 
-	same factory storage. This could lead to disastrous consequences 
-	so this should be redesigned or there should be no more than one 
-	instance of evaluator in application. */
-	static mrComplex_ptr getNewBridgeComplex();
-	/*! @see getNewBridgeComplex */
-	static void addNewLexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err);
-	/*! Result of previous calculation.
-	@see getNewBridgeComplex */
-	static const mrComplex_t& Ans() { return itsAns; }
+	QString toStringBin() const;
+	QString toStringHex() const;
+	QString toStringOct() const;
 
 #ifdef _DEBUG
 	void printLexerErrors() const;
@@ -104,19 +92,14 @@ public:
 	static QChar internalDecimalPoint() { return QChar('@'); }
 
 private:
-	/*! true if expression has been validated */
-	bool itsIsValidated;
-	/*! true if expression is valid */
-	bool itsIsValid;
-	/*! true if expression has been evaluated */
-	bool itsIsEvaluated;
+	// Evaluation state variables
+	bool itsIsValidated;	/*!< true if expression has been validated */
+	bool itsIsValid;		/*!< true if expression is valid */
+	bool itsIsEvaluated;	/*!< true if expression has been evaluated */
+	QString itsResult;		/*!< Result as string, or error as string. Handled by toString methods. */
+	BridgeAPIGlobals itsBAPI;
 
-	/*! Result as string, or error as string. Handled by toString methods. */
-	QString itsResult;
-	/*! Result of previous calculation.
-	@see getNewBridgeComplex  */
-	static mrComplex_t itsAns;
-
+	// Input expression variables
 	/*! Type to hold expression that will be passed to lexer and parser. */
 	typedef boost::shared_array < unsigned char > antlr8BitString_t;
 	/*! Expression as string. 
@@ -137,31 +120,14 @@ private:
 	int itsPrecision;
 	bool itsShowGroupChar;
 	double itsZeroTreshold;
-	QChar itsGroupimgCharacter;
+	QChar itsGroupingCharacter;
 	bool itsShowBasePrefix;
-
-	QString m_tempExpr;
-	
 	/*! This should return same character that was used in grammar */
 	static QChar internalArgSeparator() { return QChar('#'); }
 
 	void numberToString(mrNumeric_t val, QString& retv, char baseTag) const;
-	void toString(char baseTag, QString& dest);
-
-	typedef std::vector < std::pair<unsigned int, MR_LEXER_ERROR_TYPES> > lexer_errors_collection_t;
-	/*! All lexer errors are collected here during lexing phase.
-	After that and before parser is invoked, this can be used 
-	to generate error message.
-	@todo All this data is currently ignored by MathEvaluator and
-	no detailed errors are produced (it is only checked if there are
-	errors or not and itsIsValid is set properly. 
-	@see getNewBridgeComplex */
-	static lexer_errors_collection_t lexerErrorsCollection;
-
-	/*! Data storage for factory produced objects. 
-	@see getNewBridgeComplex */
-	static std::vector< boost::shared_ptr<mrComplex_t> > mr_ComplexFactoryData;
-
+	void toString(char baseTag, QString& dest) const;
+	
 	struct LexerParser;
 	friend struct LexerParser;
 };

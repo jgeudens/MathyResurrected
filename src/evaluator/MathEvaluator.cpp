@@ -37,35 +37,15 @@ using namespace boost;
 
 namespace mathy_resurrected {
 
-MathEvaluator::lexer_errors_collection_t MathEvaluator::lexerErrorsCollection;
-std::vector< boost::shared_ptr< mrComplex_t > > MathEvaluator::mr_ComplexFactoryData;
-mrComplex_t MathEvaluator::itsAns;
-
-mrComplex_ptr MathEvaluator::getNewBridgeComplex() {
-	 mrComplex_ptr p = new mrComplex_t;
-	 p->real = 0; p->imag = 0;
-	 boost::shared_ptr< mrComplex_t > sp(p);
-	 mr_ComplexFactoryData.push_back(sp);
-	 return p;
-}
-
-void MathEvaluator::addNewLexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err) {
-	pair <unsigned int, MR_LEXER_ERROR_TYPES>p;
-	p.first = char_index;
-	p.second = err;
-	lexerErrorsCollection.push_back(p);
-}
-
 #ifdef _DEBUG
 void MathEvaluator::printLexerErrors() const {
-	MathEvaluator::lexer_errors_collection_t::const_iterator i, iend;
-	i = lexerErrorsCollection.begin();
-	iend = lexerErrorsCollection.end();
+	unsigned int i = 0;
+	unsigned int iend = itsBAPI.lexerErrorsCollection.size();
 
 	for (; i != iend; ++i) {
-		cout << "Char at: " << (*i).first;
+		cout << "Char at: " << itsBAPI.lexerErrorsCollection[i].char_index;
 		cout << " Error: ";
-		switch ((*i).second) {
+		switch (itsBAPI.lexerErrorsCollection[i].err_type) {
 			case LEX_ERR_MALFORMED_MANTISSA:
 				cout << "LEX_ERR_MALFORMED_MANTISSA";
 				break;
@@ -142,8 +122,6 @@ MathEvaluator::LexerParser::~LexerParser() {
 	if (tokenStream != NULL) { tokenStream->free (tokenStream); tokenStream = NULL; }
 	if (lexer != NULL) { lexer->free (lexer); lexer = NULL; }
 	if (inputStream != NULL) { inputStream->close (inputStream); inputStream = NULL; }
-	MathEvaluator::lexerErrorsCollection.clear();
-	MathEvaluator::mr_ComplexFactoryData.clear();
 }
 
 QString MathEvaluator::defaultDecimalPointTag() {
@@ -158,8 +136,9 @@ MathEvaluator::MathEvaluator(QSettings* app_settings) :
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false),
 	itsExprLen(0)
 {
+	init_bridge_API(&itsBAPI);
 	real = imag = 0;
-	itsAns.real = itsAns.imag = 0;
+	setAns(0, 0);
 	changeEvaluatorSettings(app_settings);
 }
 
@@ -171,7 +150,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsShowGroupChar = defaultShowDigitGrouping();
 		itsZeroTreshold = pow (10.0, defaultZeroTresholdExp());
 		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(defaultDecimalPointTag());
-		itsGroupimgCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
+		itsGroupingCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
@@ -181,7 +160,7 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 			app_settings->value(MathyResurrectedOptionsDialog::keyNameDecimalPoint(), "").toString()
 			);
 
-		itsGroupimgCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(
+		itsGroupingCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(
 			app_settings->value(MathyResurrectedOptionsDialog::keyNameGroupingChar(), "").toString()
 			);
 			
@@ -271,6 +250,9 @@ bool MathEvaluator::validate() {
 		}
 		itsIsValidated = true;
 	}
+
+	itsBAPI.complexFactoryData.clear();
+	itsBAPI.lexerErrorsCollection.clear();
 	return itsIsValid;
 }
 
@@ -315,11 +297,14 @@ bool MathEvaluator::evaluate() {
 		}
 		itsIsEvaluated = true;
 	}
+
+	itsBAPI.complexFactoryData.clear();
+	itsBAPI.lexerErrorsCollection.clear();
 	return itsIsValid;
 }
 
 void MathEvaluator::storeAns() {
-	itsAns.real = real; itsAns.imag = imag;
+	itsBAPI.ans.real = real; itsBAPI.ans.imag = imag;
 }
 
 const QString& MathEvaluator::toString() {
@@ -327,25 +312,25 @@ const QString& MathEvaluator::toString() {
 	return itsResult;
 }
 
-QString MathEvaluator::toStringBin() {
+QString MathEvaluator::toStringBin() const {
 	QString retv;
 	toString('b', retv);
 	return retv;
 }
 
-QString MathEvaluator::toStringHex() {
+QString MathEvaluator::toStringHex() const {
 	QString retv;
 	toString('h', retv);
 	return retv;
 }
 
-QString MathEvaluator::toStringOct() {
+QString MathEvaluator::toStringOct() const {
 	QString retv;
 	toString('o', retv);
 	return retv;
 }
 
-void MathEvaluator::toString(char baseTag, QString& dest) {
+void MathEvaluator::toString(char baseTag, QString& dest) const {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
 			QString sign;
@@ -389,24 +374,27 @@ void MathEvaluator::toString(char baseTag, QString& dest) {
 void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag) const {
 	QLocale loc = QLocale::c();
 
-	unsigned long tmp = numeric_cast<unsigned long>(val);
+	qlonglong tmp;
 	switch (baseTag) {
 		case 'b':
 			if (itsShowBasePrefix) {
 				retv = "0b";
 			}
+			tmp = numeric_cast<qlonglong>(val);
 			retv += QString::number(tmp, 2);
 			break;
 		case 'h':
 			if (itsShowBasePrefix) {
 				retv = "0x";
 			}
+			tmp = numeric_cast<qlonglong>(val);
 			retv += QString::number(tmp, 16).toUpper();
 			break;
 		case 'o':
 			if (itsShowBasePrefix) {
 				retv = "0";
 			}
+			tmp = numeric_cast<qlonglong>(val);
 			retv += QString::number(tmp, 8);
 			break;
 		case 'd':
@@ -432,7 +420,7 @@ void MathEvaluator::numberToString(mrNumeric_t val, QString& retv, char baseTag)
 			if (!itsShowGroupChar) {
 				retv.remove(loc.groupSeparator());
 			} else {
-				retv.replace(loc.groupSeparator(), itsGroupimgCharacter);
+				retv.replace(loc.groupSeparator(), itsGroupingCharacter);
 			}
 
 			// Postprocessing decimal point. 

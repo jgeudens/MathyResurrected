@@ -1,3 +1,8 @@
+v 0.1.3
+=======
+- Bug fix: Launchy would crash when entering large enough number and any base
+  output except decimal was turned on.
+
 v 0.1.2
 =======
 - added suport for binary, hexadecimal and octal numbers in input and output.

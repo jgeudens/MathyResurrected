@@ -1,6 +1,6 @@
 TARGET = mathyresurrected
 TEMPLATE = lib
-VERSION = 0.1.2
+VERSION = 0.1.3
 
 CONFIG += plugin \
 	warn_on \
@@ -68,6 +68,7 @@ HEADERS += $$PWD/src/MathyResurrectedOptionsDialog.h \
 	$$PWD/src/MathyResurrectedPlugin.h \
 	$$PWD/src/evaluator/MathEvaluator.h \
 	$$PWD/src/evaluator/MathyResurrectedExceptions.h \
+	$$PWD/src/evaluator/math_bridge_globals.h \
 	$$PWD/src/evaluator/math_bridge_API.h \
 	$$PWD/src/evaluator/math_bridge_API_types.h
 INCLUDEPATH += $$PWD/src \

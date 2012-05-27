@@ -22,29 +22,16 @@
 
 namespace mathy_resurrected {
 
-MathyResurrectedException::MathyResurrectedException() :
-	std::exception("MathyResurrectedException")
-{}
-
-MathyResurrectedException::
-MathyResurrectedException(const std::string& message) :
-	std::exception(message.c_str())
-{}
-
-NaN::NaN() :
-	MathyResurrectedException("")
-{}
-
 NumericConversionError::NumericConversionError(const std::string& expr) :
-	MathyResurrectedException(expr)
+	std::invalid_argument(expr)
 {}
 
 DomainError::DomainError() :
-MathyResurrectedException("")
+	std::invalid_argument("")
 {}
 
 IllegalOperand::IllegalOperand() :
-MathyResurrectedException("")
+	std::invalid_argument("")
 {}
 
 } // namespace mathy_resurrected
