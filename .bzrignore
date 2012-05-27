@@ -1,0 +1,10 @@
+Makefile
+Makefile.Debug
+Makefile.Release
+bin
+build
+mathyresurrected.ncb
+mathyresurrected.suo
+mathyresurrected.vcproj.TLaptop.Tomislav.user
+vc80.idb
+vc80.pdb

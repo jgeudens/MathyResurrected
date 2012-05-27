@@ -41,6 +41,8 @@ private slots:
 	void setOutputFormatScientiffic() { itsOutputFormat = 's'; }
 	void setOutputFormatFixed() { itsOutputFormat = 'f'; }
 	void setPrecision(int prec) { itsPrecision = prec;}
+	void setShowDigitGrouping(bool flag) { itsShowDigitGrouping = flag;}
+	void setUseEnterKey(bool flag) { itsUseEnterKey = flag;}
 	void setAllDefaults();
 
 public:
@@ -51,15 +53,22 @@ public:
 	static QString keyNameSimpleInputMatching() { return QString("MathyResurrected/SimpleInputMatching"); }
 	static QString keyNameOutputFormat() { return QString("MathyResurrected/OutputFormat"); }
 	static QString keyNamePrecision() { return QString("MathyResurrected/Precision"); }
-
+	static QString keyNameUseEnterKey() { return QString("MathyResurrected/CopyToClipboardWithEnterKey"); }
+	static QString keyNameShowDigitGrouping() { return QString("MathyResurrected/ShowDigitGroupChar"); }
+	
 	void writeSettings();
+
+	static bool defaultUseEnterKey() { return true; }
+	static bool defaultSimpleInputMatching() { return false; }
 
 private:
 	QChar itsArgSeparator;
 	QChar itsOutputFormat;
 	int itsPrecision;
 	bool itsSimpleInputFlag;
-
+	bool itsShowDigitGrouping;
+	bool itsUseEnterKey;
+	
 	void connectAll();
 	void setupUiByAppSettings();
 };

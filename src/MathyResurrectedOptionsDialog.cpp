@@ -36,6 +36,11 @@ void MathyResurrectedOptionsDialog::connectAll() {
 	connect(checkBox_InputMatching, 
 		SIGNAL(toggled(bool)), this, SLOT(setSimpleInputMatching(bool)));
 
+	connect(checkBox_ShowGrouping, 
+		SIGNAL(toggled(bool)), this, SLOT(setShowDigitGrouping(bool)));
+	connect(checkBox_UseEnterKey, 
+		SIGNAL(toggled(bool)), this, SLOT(setUseEnterKey(bool)));
+	
 	connect(radioButton_outputDefault, 
 		SIGNAL(clicked(bool)), this, SLOT(setOutputFormatDefault(void)));
 	connect(radioButton_outputScientiffic, 
@@ -54,7 +59,11 @@ void MathyResurrectedOptionsDialog::setAllDefaults()  {
 	itsArgSeparator = MathEvaluator::defaultArgSeparator();
 	itsOutputFormat = MathEvaluator::defaultOutputFormat();
 	itsPrecision = MathEvaluator::defaultOutputPrecision();
-	itsSimpleInputFlag = false;
+	
+	itsSimpleInputFlag = defaultSimpleInputMatching();
+	itsShowDigitGrouping = MathEvaluator::defaultShowDigitGrouping();
+	itsUseEnterKey = defaultUseEnterKey();
+	
 	setupUiByAppSettings();
 }
 
@@ -78,7 +87,9 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 	}
 
 	checkBox_InputMatching->setChecked(itsSimpleInputFlag);
-
+	checkBox_ShowGrouping->setChecked(itsShowDigitGrouping);
+	checkBox_UseEnterKey->setChecked(itsUseEnterKey);
+	
 	if (itsOutputFormat == 'd') {
 		radioButton_outputDefault->setChecked(true);
 	} else if (itsOutputFormat == 'f') {
@@ -104,7 +115,13 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 	itsPrecision = app_settings->value(
 		keyNamePrecision(), MathEvaluator::defaultOutputPrecision()).toInt();	
 	itsSimpleInputFlag = app_settings->value(
-		keyNameSimpleInputMatching(), false).toBool();
+		keyNameSimpleInputMatching(), defaultSimpleInputMatching()).toBool();
+
+	itsUseEnterKey = app_settings->value(
+		keyNameUseEnterKey(), defaultUseEnterKey()).toBool();
+	itsShowDigitGrouping = app_settings->value(
+		keyNameShowDigitGrouping(), MathEvaluator::defaultShowDigitGrouping()
+		).toBool();
 
 	setupUiByAppSettings();
 	connectAll();
@@ -121,6 +138,8 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameOutputFormat(), itsOutputFormat);
 	app_settings->setValue(keyNamePrecision(), itsPrecision);
 	app_settings->setValue(keyNameSimpleInputMatching(), itsSimpleInputFlag);
+	app_settings->setValue(keyNameUseEnterKey(), itsUseEnterKey);
+	app_settings->setValue(keyNameShowDigitGrouping(), itsShowDigitGrouping);
 }
 
 } // namespace mathy_resurrected

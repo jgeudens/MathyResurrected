@@ -1,124 +1,274 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
 	Name="mathyresurrected"
-	ProjectGUID="{A5244BA0-EBB8-338F-9A97-40969B2C4214}"
-	RootNamespace="mathyresurrected"
-	Keyword="Qt4VSv1.0"
-	>
+	ProjectGUID="{D51C7605-B227-3581-A999-00FE56444336}"
+	Keyword="Qt4VSv1.0">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)bin\debug\"
-			IntermediateDirectory="$(SolutionDir)build\debug\"
-			ConfigurationType="0"
-			UseOfMFC="0"
+			OutputDirectory="."
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
+			ConfigurationType="1"
+			IntermediateDirectory="build\debug\"
+			UseOfMfc="0">
 			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="qmake &amp;&amp; nmake debug"
-				ReBuildCommandLine="qmake &amp;&amp; nmake /f Makefile.Debug distclean &amp;&amp; qmake &amp;&amp; nmake debug"
-				CleanCommandLine="qmake &amp;&amp; nmake /f Makefile.Debug clean"
-				Output=""
-				PreprocessorDefinitions=""
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;c:\MSVC2005\qt4.6.0\include\QtCore&quot;,&quot;c:\MSVC2005\qt4.6.0\include\QtGui&quot;,&quot;c:\MSVC2005\qt4.6.0\include&quot;,&quot;build\generated&quot;,&quot;src&quot;,&quot;src\evaluator&quot;,&quot;src\pluginAPI&quot;,&quot;src\antlr&quot;,&quot;c:\MSVC2005\qt4.6.0\include\ActiveQt&quot;,&quot;build\generated&quot;,&quot;build\generated&quot;,c:\MSVC2005\qt4.6.0\mkspecs\win32-msvc2005"
+				AdditionalOptions="-Zm200 -w34100 -w34189 -w34100 -w34189"
+				AssemblerListingLocation="build\debug\"
+				BufferSecurityCheck="false"
+				DebugInformationFormat="3"
+				ExceptionHandling="1"
+				GeneratePreprocessedFile="0"
+				ObjectFile="build\debug\"
+				Optimization ="4"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_PLUGIN,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"
+				ProgramDataBaseFileName=".\"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="true"
+				SuppressStartupBanner="true"
+				TreatWChar_tAsBuiltInType="false"
+				WarningLevel="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="c:\MSVC2005\qt4.6.0\lib\qtmaind.lib shell32.lib antlr3c.lib c:\MSVC2005\qt4.6.0\lib\QtGuid4.lib c:\MSVC2005\qt4.6.0\lib\QtCored4.lib"
+				AdditionalLibraryDirectories="c:\MSVC2005\qt4.6.0\lib"
+				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot; &quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
+				GenerateDebugInformation="true"
+				IgnoreImportLibrary="true"
+				LinkTimeCodeGeneration="0"
+				OutputFile="bin\debug\mathyresurrected.exe"
+				ProgramDatabaseFile=""
+				SubSystem="2"
+				SuppressStartupBanner="true"
+				Version="0.10"/>
+			<Tool
+				Name="VCMIDLTool"
+				DefaultCharType="0"
+				EnableErrorChecks="1"
+				WarningLevel="0"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_PLUGIN,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,_DEBUG"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)bin\release\"
-			IntermediateDirectory="$(SolutionDir)build\release\"
-			ConfigurationType="0"
-			UseOfMFC="0"
+			OutputDirectory="."
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
+			ConfigurationType="1"
+			IntermediateDirectory="build\release\"
+			UseOfMfc="0">
 			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="qmake &amp;&amp; nmake release"
-				ReBuildCommandLine="qmake &amp;&amp; nmake /f Makefile.Release distclean &amp;&amp; qmake &amp;&amp; nmake release"
-				CleanCommandLine="qmake &amp;&amp; nmake /f Makefile.Release clean"
-				Output=""
-				PreprocessorDefinitions=""
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;c:\MSVC2005\qt4.6.0\include\QtCore&quot;,&quot;c:\MSVC2005\qt4.6.0\include\QtGui&quot;,&quot;c:\MSVC2005\qt4.6.0\include&quot;,&quot;build\generated&quot;,&quot;src&quot;,&quot;src\evaluator&quot;,&quot;src\pluginAPI&quot;,&quot;src\antlr&quot;,&quot;c:\MSVC2005\qt4.6.0\include\ActiveQt&quot;,&quot;build\generated&quot;,&quot;build\generated&quot;,c:\MSVC2005\qt4.6.0\mkspecs\win32-msvc2005"
+				AdditionalOptions="-Zm200 -w34100 -w34189 -w34100 -w34189"
+				AssemblerListingLocation="build\release\"
+				BufferSecurityCheck="false"
+				DebugInformationFormat="0"
+				ExceptionHandling="1"
+				GeneratePreprocessedFile="0"
+				ObjectFile="build\release\"
+				Optimization ="2"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_PLUGIN,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT,NDEBUG"
+				ProgramDataBaseFileName=".\"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="true"
+				SuppressStartupBanner="true"
+				TreatWChar_tAsBuiltInType="false"
+				WarningLevel="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="c:\MSVC2005\qt4.6.0\lib\qtmain.lib shell32.lib antlr3c.lib c:\MSVC2005\qt4.6.0\lib\QtGui4.lib c:\MSVC2005\qt4.6.0\lib\QtCore4.lib"
+				AdditionalLibraryDirectories="c:\MSVC2005\qt4.6.0\lib"
+				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot; &quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
+				GenerateDebugInformation="false"
+				IgnoreImportLibrary="true"
+				LinkIncremental="1"
+				LinkTimeCodeGeneration="0"
+				OutputFile="bin\release\mathyresurrected.exe"
+				ProgramDatabaseFile=""
+				SubSystem="2"
+				SuppressStartupBanner="true"
+				Version="0.10"/>
+			<Tool
+				Name="VCMIDLTool"
+				DefaultCharType="0"
+				EnableErrorChecks="1"
+				WarningLevel="0"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_PLUGIN,QT_GUI_LIB,QT_CORE_LIB,QT_THREAD_SUPPORT"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
-			>
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath="src\evaluator\math_bridge_API.cpp"
-				>
-			</File>
+				RelativePath="src\antlr\ComplexEval.c"/>
 			<File
-				RelativePath="src\evaluator\MathEvaluator.cpp"
-				>
-			</File>
+				RelativePath="src\antlr\ComplexLexer.c"/>
 			<File
-				RelativePath="src\evaluator\MathyResurrectedExceptions.cpp"
-				>
-			</File>
+				RelativePath="src\antlr\ComplexParser.c"/>
 			<File
-				RelativePath="src\MathyResurrectedOptionsDialog.cpp"
-				>
-			</File>
+				RelativePath="src\evaluator\MathEvaluator.cpp"/>
 			<File
-				RelativePath="src\MathyResurrectedPlugin.cpp"
-				>
-			</File>
+				RelativePath="src\evaluator\MathyResurrectedExceptions.cpp"/>
+			<File
+				RelativePath="src\MathyResurrectedOptionsDialog.cpp"/>
+			<File
+				RelativePath="src\MathyResurrectedPlugin.cpp"/>
+			<File
+				RelativePath="src\evaluator\math_bridge_API.cpp"/>
+			<File
+				RelativePath="src\pluginAPI\plugin_interface.cpp"/>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath="src\evaluator\math_bridge_API.h"
-				>
+				RelativePath="src\antlr\ComplexEval.h"/>
+			<File
+				RelativePath="src\antlr\ComplexLexer.h"/>
+			<File
+				RelativePath="src\antlr\ComplexParser.h"/>
+			<File
+				RelativePath="src\evaluator\MathEvaluator.h"/>
+			<File
+				RelativePath="src\evaluator\MathyResurrectedExceptions.h"/>
+			<File
+				RelativePath="src\MathyResurrectedOptionsDialog.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\MSVC2005\qt4.6.0\bin\moc.exe;src\MathyResurrectedOptionsDialog.h"
+						CommandLine="C:\MSVC2005\qt4.6.0\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_PLUGIN -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I&quot;c:\MSVC2005\qt4.6.0\include\QtCore&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\QtGui&quot; -I&quot;c:\MSVC2005\qt4.6.0\include&quot; -I&quot;build\generated&quot; -I&quot;src&quot; -I&quot;src\evaluator&quot; -I&quot;src\pluginAPI&quot; -I&quot;src\antlr&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\ActiveQt&quot; -I&quot;build\generated&quot; -I&quot;build\generated&quot; -Ic:\MSVC2005\qt4.6.0\mkspecs\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 src\MathyResurrectedOptionsDialog.h -o d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedOptionsDialog.cpp"
+						Description="MOC src\MathyResurrectedOptionsDialog.h"
+						Outputs="d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedOptionsDialog.cpp"
+						Path="c:\MSVC2005\qt4.6.0\bin"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\MSVC2005\qt4.6.0\bin\moc.exe;src\MathyResurrectedOptionsDialog.h"
+						CommandLine="C:\MSVC2005\qt4.6.0\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_PLUGIN -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I&quot;c:\MSVC2005\qt4.6.0\include\QtCore&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\QtGui&quot; -I&quot;c:\MSVC2005\qt4.6.0\include&quot; -I&quot;build\generated&quot; -I&quot;src&quot; -I&quot;src\evaluator&quot; -I&quot;src\pluginAPI&quot; -I&quot;src\antlr&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\ActiveQt&quot; -I&quot;build\generated&quot; -I&quot;build\generated&quot; -Ic:\MSVC2005\qt4.6.0\mkspecs\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 src\MathyResurrectedOptionsDialog.h -o d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedOptionsDialog.cpp"
+						Description="MOC src\MathyResurrectedOptionsDialog.h"
+						Outputs="d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedOptionsDialog.cpp"
+						Path="c:\MSVC2005\qt4.6.0\bin"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="src\evaluator\math_bridge_API_types.h"
-				>
+				RelativePath="src\MathyResurrectedPlugin.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\MSVC2005\qt4.6.0\bin\moc.exe;src\MathyResurrectedPlugin.h"
+						CommandLine="C:\MSVC2005\qt4.6.0\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_PLUGIN -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I&quot;c:\MSVC2005\qt4.6.0\include\QtCore&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\QtGui&quot; -I&quot;c:\MSVC2005\qt4.6.0\include&quot; -I&quot;build\generated&quot; -I&quot;src&quot; -I&quot;src\evaluator&quot; -I&quot;src\pluginAPI&quot; -I&quot;src\antlr&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\ActiveQt&quot; -I&quot;build\generated&quot; -I&quot;build\generated&quot; -Ic:\MSVC2005\qt4.6.0\mkspecs\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 src\MathyResurrectedPlugin.h -o d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedPlugin.cpp"
+						Description="MOC src\MathyResurrectedPlugin.h"
+						Outputs="d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedPlugin.cpp"
+						Path="c:\MSVC2005\qt4.6.0\bin"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\MSVC2005\qt4.6.0\bin\moc.exe;src\MathyResurrectedPlugin.h"
+						CommandLine="C:\MSVC2005\qt4.6.0\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_PLUGIN -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -I&quot;c:\MSVC2005\qt4.6.0\include\QtCore&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\QtGui&quot; -I&quot;c:\MSVC2005\qt4.6.0\include&quot; -I&quot;build\generated&quot; -I&quot;src&quot; -I&quot;src\evaluator&quot; -I&quot;src\pluginAPI&quot; -I&quot;src\antlr&quot; -I&quot;c:\MSVC2005\qt4.6.0\include\ActiveQt&quot; -I&quot;build\generated&quot; -I&quot;build\generated&quot; -Ic:\MSVC2005\qt4.6.0\mkspecs\win32-msvc2005 -D_MSC_VER=1400 -DWIN32 src\MathyResurrectedPlugin.h -o d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedPlugin.cpp"
+						Description="MOC src\MathyResurrectedPlugin.h"
+						Outputs="d:\Projects\MathyResurrected\build\generated\moc_MathyResurrectedPlugin.cpp"
+						Path="c:\MSVC2005\qt4.6.0\bin"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="src\evaluator\MathEvaluator.h"
-				>
+				RelativePath="src\pluginAPI\catalog.h"/>
+			<File
+				RelativePath="src\evaluator\math_bridge_API.h"/>
+			<File
+				RelativePath="src\evaluator\math_bridge_API_types.h"/>
+			<File
+				RelativePath="src\pluginAPI\plugin_interface.h"/>
+		</Filter>
+		<Filter
+			Name="Generated Files"
+			Filter="cpp;c;cxx;moc;h;def;odl;idl;res;"
+			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}">
+			<File
+				RelativePath="d:\Projects\MathyResurrected\build\debug\mathyresurrected_resource.res">
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"/>
 			</File>
 			<File
-				RelativePath="src\evaluator\MathyResurrectedExceptions.h"
-				>
+				RelativePath="d:\Projects\MathyResurrected\build\release\mathyresurrected_resource.res">
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"/>
 			</File>
 			<File
-				RelativePath="src\MathyResurrectedOptionsDialog.h"
-				>
-			</File>
+				RelativePath="build\generated\moc_MathyResurrectedOptionsDialog.cpp"/>
 			<File
-				RelativePath="src\MathyResurrectedPlugin.h"
-				>
+				RelativePath="build\generated\moc_MathyResurrectedPlugin.cpp"/>
+			<File
+				RelativePath="build\generated\ui_OptionsWidget.h"/>
+		</Filter>
+		<Filter
+			Name="Form Files"
+			Filter="ui"
+			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
+			ParseFiles="false">
+			<File
+				RelativePath="ui\OptionsWidget.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\MSVC2005\qt4.6.0\bin\uic.exe;ui\OptionsWidget.ui"
+						CommandLine="C:\MSVC2005\qt4.6.0\bin\uic.exe ui\OptionsWidget.ui -o d:\Projects\MathyResurrected\build\generated\ui_OptionsWidget.h"
+						Description="UIC ui\OptionsWidget.ui"
+						Outputs="d:\Projects\MathyResurrected\build\generated\ui_OptionsWidget.h"
+						Path="c:\MSVC2005\qt4.6.0\bin"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						AdditionalDependencies="C:\MSVC2005\qt4.6.0\bin\uic.exe;ui\OptionsWidget.ui"
+						CommandLine="C:\MSVC2005\qt4.6.0\bin\uic.exe ui\OptionsWidget.ui -o d:\Projects\MathyResurrected\build\generated\ui_OptionsWidget.h"
+						Description="UIC ui\OptionsWidget.ui"
+						Outputs="d:\Projects\MathyResurrected\build\generated\ui_OptionsWidget.h"
+						Path="c:\MSVC2005\qt4.6.0\bin"/>
+				</FileConfiguration>
 			</File>
 		</Filter>
+		<File
+			RelativePath="d:\Projects\MathyResurrected\mathyresurrected_resource.rc"/>
 	</Files>
 	<Globals>
 	</Globals>

@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>452</width>
-    <height>200</height>
+    <width>460</width>
+    <height>230</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,132 +20,132 @@
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
   </property>
-  <layout class="QFormLayout" name="formLayout_4">
-   <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QGroupBox" name="groupBox_4">
-         <property name="title">
-          <string>Input</string>
-         </property>
-         <layout class="QFormLayout" name="formLayout_3">
-          <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_6">
-            <property name="title">
-             <string>Function arguments separator</string>
-            </property>
-            <layout class="QFormLayout" name="formLayout">
-             <item row="0" column="0">
-              <widget class="QRadioButton" name="radioButton_ArgSeparatorColon">
-               <property name="toolTip">
-                <string>For functions with multiple arguments.</string>
-               </property>
-               <property name="statusTip">
-                <string>For functions with multiple arguments.</string>
-               </property>
-               <property name="whatsThis">
-                <string>For functions with multiple arguments.</string>
-               </property>
-               <property name="text">
-                <string>Colon</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButton_ArgSeparatorSemiColon">
-               <property name="toolTip">
-                <string>For functions with multiple arguments.</string>
-               </property>
-               <property name="statusTip">
-                <string>For functions with multiple arguments.</string>
-               </property>
-               <property name="whatsThis">
-                <string>For functions with multiple arguments.</string>
-               </property>
-               <property name="text">
-                <string>Semicolon</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButton_ArgSeparatorComa">
-               <property name="toolTip">
-                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+      <widget class="QGroupBox" name="groupBox_4">
+       <property name="title">
+        <string>Input</string>
+       </property>
+       <layout class="QFormLayout" name="formLayout_3">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="title">
+           <string>Function arguments separator</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="radioButton_ArgSeparatorColon">
+             <property name="toolTip">
+              <string>For functions with multiple arguments.</string>
+             </property>
+             <property name="statusTip">
+              <string>For functions with multiple arguments.</string>
+             </property>
+             <property name="whatsThis">
+              <string>For functions with multiple arguments.</string>
+             </property>
+             <property name="text">
+              <string>Colon</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="radioButton_ArgSeparatorSemiColon">
+             <property name="toolTip">
+              <string>For functions with multiple arguments.</string>
+             </property>
+             <property name="statusTip">
+              <string>For functions with multiple arguments.</string>
+             </property>
+             <property name="whatsThis">
+              <string>For functions with multiple arguments.</string>
+             </property>
+             <property name="text">
+              <string>Semicolon</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QRadioButton" name="radioButton_ArgSeparatorComa">
+             <property name="toolTip">
+              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;For functions with multiple arguments.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;Disabled on systems where &lt;span style=&quot; font-weight:600;&quot;&gt;','&lt;/span&gt; is decimal&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;separator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="statusTip">
-                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;\n&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;\np, li { white-space: pre-wrap; }\n&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;\n&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;For functions with multiple arguments.&lt;/p&gt;\n&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;Disabled on systems where &lt;span style=&quot; font-weight:600;&quot;&gt;','&lt;/span&gt; is decimal&lt;/p&gt;\n&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;separator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="whatsThis">
-                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+             </property>
+             <property name="statusTip">
+              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;\n&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;\np, li { white-space: pre-wrap; }\n&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;\n&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;For functions with multiple arguments.&lt;/p&gt;\n&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;Disabled on systems where &lt;span style=&quot; font-weight:600;&quot;&gt;','&lt;/span&gt; is decimal&lt;/p&gt;\n&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;separator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;For functions with multiple arguments.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;Disabled on systems where &lt;span style=&quot; font-weight:600;&quot;&gt;','&lt;/span&gt; is decimal&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;separator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="text">
-                <string>Coma</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="checkBox_InputMatching">
-            <property name="toolTip">
-             <string>Only input starting with '=' is accepted.</string>
-            </property>
-            <property name="statusTip">
-             <string>Only input starting with '=' is accepted.</string>
-            </property>
-            <property name="whatsThis">
-             <string>Only input starting with '=' is accepted.</string>
-            </property>
-            <property name="text">
-             <string>Simple input matching</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+             </property>
+             <property name="text">
+              <string>Coma</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_InputMatching">
+          <property name="toolTip">
+           <string>Only input starting with '=' is accepted.</string>
+          </property>
+          <property name="statusTip">
+           <string>Only input starting with '=' is accepted.</string>
+          </property>
+          <property name="whatsThis">
+           <string>Only input starting with '=' is accepted.</string>
+          </property>
+          <property name="text">
+           <string>Simple input matching</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="title">
-          <string>Output</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0" rowspan="2">
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="title">
+        <string>Output</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
            <widget class="QGroupBox" name="groupBox">
             <property name="title">
              <string>Number format</string>
@@ -205,96 +205,138 @@ p, li { white-space: pre-wrap; }
             </layout>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Precision:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QSpinBox" name="spinBox_OutputPrecision">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
-            </property>
-            <property name="statusTip">
-             <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
-            </property>
-            <property name="whatsThis">
-             <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
-            </property>
-            <property name="minimum">
-             <number>0</number>
-            </property>
-            <property name="maximum">
-             <number>6</number>
-            </property>
-            <property name="value">
-             <number>2</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" colspan="2">
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Precision:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_OutputPrecision">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
+                </property>
+                <property name="statusTip">
+                 <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
+                </property>
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>6</number>
+                </property>
+                <property name="value">
+                 <number>2</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </item>
          </layout>
-         <zorder>groupBox</zorder>
-         <zorder>label</zorder>
-         <zorder>spinBox_OutputPrecision</zorder>
-         <zorder>verticalSpacer_3</zorder>
-        </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_UseEnterKey">
+          <property name="toolTip">
+           <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
+          </property>
+          <property name="statusTip">
+           <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
+          </property>
+          <property name="whatsThis">
+           <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
+          </property>
+          <property name="text">
+           <string>Use Enter key to Copy result to Clipboard</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_ShowGrouping">
+          <property name="toolTip">
+           <string>Show digit grouping character in output?</string>
+          </property>
+          <property name="statusTip">
+           <string>Show digit grouping character in output?</string>
+          </property>
+          <property name="whatsThis">
+           <string>Show digit grouping character in output?</string>
+          </property>
+          <property name="text">
+           <string>Show digit grouping character</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>138</width>
+           <height>17</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>138</width>
-             <height>17</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_setDefaults">
-           <property name="text">
-            <string>Defaults</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QPushButton" name="pushButton_setDefaults">
+         <property name="text">
+          <string>Defaults</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
