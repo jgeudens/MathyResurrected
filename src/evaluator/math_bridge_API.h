@@ -73,6 +73,9 @@ mrComplex_ptr mr_modulo (mrComplex_ptr lv, mrComplex_ptr rv);
 mrNumeric_t si_calc(mrNumeric_t multipl, MR_MATH_SI_PREFIXES si_prefix);
 
 mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING str);
+mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING str);
+mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING str);
+mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING str);
 
 mrComplex_ptr mr_sin(mrComplex_ptr x);
 mrComplex_ptr mr_cos(mrComplex_ptr x);

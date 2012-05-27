@@ -68,7 +68,27 @@ void MathyResurrectedPlugin::init() {
 			MathyResurrectedOptionsDialog::keyNameUseEnterKey(), 
 			MathyResurrectedOptionsDialog::defaultUseEnterKey()
 		).toBool();
+	
+	itsShowDec = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowDec(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowDec()
+		).toBool();
 
+	itsShowBin = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowBin(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowBin()
+		).toBool();
+
+	itsShowHex = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowHex(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowHex()
+		).toBool();
+
+	itsShowOct = sett->value(
+		MathyResurrectedOptionsDialog::keyNameOutputShowOct(), 
+		MathyResurrectedOptionsDialog::defaultOutputShowOct()
+		).toBool();
+	
 	itsGUI.reset();
 }
 
@@ -99,10 +119,32 @@ void MathyResurrectedPlugin::getLabels(QList<InputData>* id) {
 void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* results) {
 	if (id->last().hasLabel(HASH_MATHYRESURRECTED)) {
 		itsCalculator->evaluate();
-		QString result = itsCalculator->toString();
 
-		results->push_front(CatItem(result + ".math", 
-			result, HASH_MATHYRESURRECTED, getIcon()));
+		QString result;
+
+		if (itsShowDec) {
+			result = itsCalculator->toString();
+			results->push_back(CatItem(result + ".math.dec", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
+		}
+
+		if (itsShowOct) {
+			result = itsCalculator->toStringOct();
+			results->push_back(CatItem(result + ".math.oct", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
+		}
+
+		if (itsShowBin) {
+			result = itsCalculator->toStringBin();
+			results->push_back(CatItem(result + ".math.bin", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
+		}
+
+		if (itsShowHex) {
+			result = itsCalculator->toStringHex();
+			results->push_back(CatItem(result + ".math.hex", 
+				result, HASH_MATHYRESURRECTED, getIcon()));
+		}
 	}
 }
 
@@ -122,7 +164,7 @@ void MathyResurrectedPlugin::endDialog(bool accept) {
 }
 
 QString MathyResurrectedPlugin::getIcon() {
-	return libPath + "/icons/mathyresurrected.ico";
+	return libPath + "/icons/mathyresurrected.png";
 }
 
 void MathyResurrectedPlugin::setPath(QString * path) {

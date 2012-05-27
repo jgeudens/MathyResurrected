@@ -51,6 +51,11 @@ private slots:
 	void setUseEnterKey(bool flag) { itsUseEnterKey = flag;}
 	void setZeroTresholdExp(int treshold) { itsZeroTresholdExp = treshold; }
 	void setShouldUseZeroTreshold(bool flag) { itsZeroTresholdFlag = flag; }
+	void setOutputBaseDec(bool flag) { itsShowDec = flag; }
+	void setOutputBaseHex(bool flag) { itsShowHex = flag; }
+	void setOutputBaseOct(bool flag) { itsShowOct = flag; }
+	void setOutputBaseBin(bool flag) { itsShowBin = flag; }
+	void setOutputBasePrefix(bool flag) { itsShowBasePrefix = flag; }
 	void setAllDefaults();
 
 public:
@@ -67,6 +72,11 @@ public:
 	static QString keyNameZeroTresholdExp() { return QString("MathyResurrected/ZeroTresholdExponent"); }
 	static QString keyNameDecimalPoint() { return QString("MathyResurrected/DecimalPoint"); }
 	static QString keyNameGroupingChar() { return QString("MathyResurrected/ThousandSeparator"); }
+	static QString keyNameOutputShowDec() { return QString("MathyResurrected/OutputDecimal"); }
+	static QString keyNameOutputShowBin() { return QString("MathyResurrected/OutputHexadecimal"); }
+	static QString keyNameOutputShowHex() { return QString("MathyResurrected/OutputOctal"); }
+	static QString keyNameOutputShowOct() { return QString("MathyResurrected/OutputBinary"); }
+	static QString keyNameShowBasePrefix() { return QString("MathyResurrected/OutputBaseShowPrefix"); }
 	
 	void writeSettings();
 
@@ -76,6 +86,11 @@ public:
 	static QChar digitGroupTag2Char (const QString& tag);
 	static QString systemDecPointTag() { return QString("sys"); }
 	static QString systemGroupingCharTag() { return QString("sys"); }
+	static bool defaultOutputShowDec() { return true; }
+	static bool defaultOutputShowBin() { return false; }
+	static bool defaultOutputShowHex() { return false; }
+	static bool defaultOutputShowOct() { return false; }
+	static bool defaultShowBasePrefix() { return true; }
 
 private:
 	QChar itsArgSeparator;
@@ -88,6 +103,11 @@ private:
 	int itsZeroTresholdExp;
 	QString itsDecPointTag;
 	QString itsThousandsSepTag;
+	bool itsShowDec;
+	bool itsShowBin;
+	bool itsShowHex;
+	bool itsShowOct;
+	bool itsShowBasePrefix;
 	
 	void connectAll();
 	void setupUiByAppSettings();

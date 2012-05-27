@@ -24,6 +24,7 @@
 #include <boost/math/complex.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/dynamic_bitset.hpp>
 #include <string>
 #include "MathyResurrectedExceptions.h"
 #include "math_bridge_API.h"
@@ -557,5 +558,65 @@ mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
 		throw NumericConversionError("Range error: " + str);
 	}
  
+	return retv;
+}
+
+mrNumeric_t parse_hex_mrNumeric_t (pANTLR3_STRING strin) {
+	ANTLR3_UINT32 len = strin->len;
+	string str;
+	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
+		str += static_cast<char>(strin->charAt(strin, i));;
+	}
+
+	mrNumeric_t retv;
+
+	std::stringstream convertor;
+	convertor << str;
+	unsigned long int result;
+	if (!(convertor >> std::hex >> result) || !convertor.eof()) {
+		throw NumericConversionError("Range error: " + str);
+	}
+
+	retv = result;
+	return retv;
+}
+
+mrNumeric_t parse_oct_mrNumeric_t (pANTLR3_STRING strin) {
+	ANTLR3_UINT32 len = strin->len;
+	string str;
+	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
+		str += static_cast<char>(strin->charAt(strin, i));;
+	}
+
+	mrNumeric_t retv;
+
+	std::stringstream convertor;
+	convertor << str;
+	long int result;
+	if (!(convertor >> std::oct >> result) || !convertor.eof()) {
+		throw NumericConversionError("Range error: " + str);
+	}
+
+	retv = result;
+	return retv;
+}
+
+mrNumeric_t parse_bin_mrNumeric_t (pANTLR3_STRING strin) {
+	ANTLR3_UINT32 len = strin->len;
+	dynamic_bitset<> set (len - 2);
+	for (ANTLR3_UINT32 i = 2; i < len; ++i) { // Skipping "0b"
+		char digit = static_cast<char>(strin->charAt(strin, i));
+
+		if (digit == '0') {
+			set[i-2] = 0;
+		} else {
+			set[i-2] = 1;
+		}
+	}
+
+	mrNumeric_t retv;
+	long int result;
+	result = set.to_ulong();
+	retv = result;
 	return retv;
 }

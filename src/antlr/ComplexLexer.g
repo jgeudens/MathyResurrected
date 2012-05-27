@@ -12,6 +12,9 @@ tokens {
   FUNCTION;
   ATOM;
   UNARY;
+  BIN;
+  HEX;
+  OCT;
 }
 
 @lexer::includes {
@@ -104,19 +107,24 @@ CONSTANTS_ANS : 'ans';
 
 COMPLEX_UNIT  : 'i' | 'j';
 
+HEX_NUMBER : '0' ('x'|'X') HEX_DIGIT+ ;
+
+fragment
+HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+OCTAL_NUMBER : '0' ('0'..'7')+ ;
+
+BINARY_NUMBER : '0' ('b'|'B') ('0'..'1')+ ;
+
 FLOAT_NUMBER  
 	: FLOAT_MANTISSA EXPONENT?
 	;
 
-fragment DEC_DIGIT
-    : '0'..'9' 
-    ;
-
 fragment FLOAT_MANTISSA
-    : DEC_DIGIT+ 
+    : ('0'..'9')+ 
 	    ( DECIMAL_POINT
 	    	(
-	    		DEC_DIGIT+
+	    		('0'..'9')+
 	    		|
 	    		{ 
 					$type = LEXER_ERROR;
@@ -125,7 +133,7 @@ fragment FLOAT_MANTISSA
 	    	)
 	    )? 
 	| DECIMAL_POINT (
-		DEC_DIGIT+
+		('0'..'9')+
 		|
 		{ 
 			$type = LEXER_ERROR;
@@ -136,7 +144,7 @@ fragment FLOAT_MANTISSA
 
 fragment EXPONENT
     : ('e' | 'E') (PLUS | MINUS)? (
-		DEC_DIGIT+
+		('0'..'9')+
 		|   
 		{ 
 			$type = LEXER_ERROR;

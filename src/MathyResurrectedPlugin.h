@@ -22,6 +22,7 @@
 #define MATHY_REUSRECTED_MAIN_HEADER_INCLUDED
 
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <QString>
 #include "MathyResurrectedOptionsDialog.h"
 #include "MathEvaluator.h"
 #include "plugin_interface.h"
@@ -59,6 +60,11 @@ private:
 
 	bool itsSimpleMatching;
 	bool itsUseEnterKey;
+	
+	bool itsShowDec;
+	bool itsShowBin;
+	bool itsShowHex;
+	bool itsShowOct;
 };
 
 extern MathyResurrectedPlugin* gmathyresurrectedInstance;
