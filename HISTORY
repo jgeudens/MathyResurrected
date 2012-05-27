@@ -1,3 +1,8 @@
+v 0.1.4
+=======
+- Bugfix: binary input was not correctly converted in calculation producing
+  eroneous calculation result.
+
 v 0.1.3
 =======
 - Bug fix: Launchy would crash when entering large enough number and any base

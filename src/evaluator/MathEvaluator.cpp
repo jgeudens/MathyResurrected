@@ -239,7 +239,7 @@ bool MathEvaluator::validate() {
 			printLexerErrors();
 #endif // _DEBUG
 			// Currently just counting errors. In the future we could 
-			// could use collection of lexer errors provided by bridge API
+			// use collection of lexer errors provided by bridge API
 			// to analyze things before invoking parser.
 			if (lpr.parser->pParser->rec->state->errorCount > 0) {
 				itsIsValid = false;
