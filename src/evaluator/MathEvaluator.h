@@ -59,6 +59,8 @@ public:
 	static int defaultZeroTresholdExp() { return -15; }
 	static bool defaultShouldUseZeroTreshold() { return true; }
 	static unsigned char defaultBitWidth() { return 8; }
+	static bool defaultShowLeadingZeroesHex() { return true; }
+	static bool defaultShowLeadingZeroesBin() { return false; }
 
 	/*! Sets expression to be evaluated. */
 	void setExpression (const QString& expression);
@@ -133,6 +135,8 @@ private:
 	QChar itsGroupingCharacter;
 	bool itsShowBasePrefix;
 	unsigned char itsBitWidth;
+	bool itsShowLeadZeroesHex;
+	bool itsShowLeadZeroesBin;
 	/*! This should return same character that was used in grammar */
 	static QChar internalArgSeparator() { return QChar('#'); }
 

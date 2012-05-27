@@ -1,3 +1,9 @@
+v 0.1.6
+=======
++ Added bitwise operators: AND, OR, XOR, bit shift left and right
++ Adeed bit shift functions: shr(x,y) and shl(x,y)
++ Added option to show leading zeroes in hex and binary output.
+
 v 0.1.5
 =======
 + Implemented bitwise functions: AND, OR, XOR, NAND, NOR, XNOR

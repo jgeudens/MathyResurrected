@@ -64,7 +64,7 @@ typedef enum {
 	MR_MATH_SI_PREFIX_PEBI, MR_MATH_SI_PREFIX_EXBI, 
 	MR_MATH_SI_PREFIX_ZEBI, MR_MATH_SI_PREFIX_YOBI
 } MR_MATH_SI_PREFIXES;
-mrReal si_calc(mrReal multipl, MR_MATH_SI_PREFIXES si_prefix);
+mrReal si_ref(MR_MATH_SI_PREFIXES si_prefix);
 
 typedef enum {
 	MR_PLUS, MR_MINUS, MR_MULTI, MR_DIV, MR_MOD, MR_POW
@@ -74,7 +74,8 @@ mrComplex_ptr mr_binary_operator (MR_MATH_BINARY_OPERATORS which, mrComplex_ptr 
 typedef enum {
 	MR_BITWISE_AND, MR_BITWISE_OR, 
 	MR_BITWISE_NAND, MR_BITWISE_NOR, 
-	MR_BITWISE_XOR, MR_BITWISE_XNOR
+	MR_BITWISE_XOR, MR_BITWISE_XNOR,
+	MR_BITWISE_SHL, MR_BITWISE_SHR
 } MR_MATH_BINARY_BITWISE_OPERATORS;
 mrComplex_ptr mr_binary_bitwise_operator (MR_MATH_BINARY_BITWISE_OPERATORS which, mrComplex_ptr lv, mrComplex_ptr rv);
 

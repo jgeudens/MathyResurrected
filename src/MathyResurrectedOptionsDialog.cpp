@@ -95,16 +95,22 @@ void MathyResurrectedOptionsDialog::on_checkBoxDecOut_clicked(bool flag) {
 void MathyResurrectedOptionsDialog::on_checkBoxHexOut_clicked(bool flag) { 
 	itsShowHex = flag; 
 	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosHex->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosBin->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
 void MathyResurrectedOptionsDialog::on_checkBoxOctOut_clicked(bool flag) { 
 	itsShowOct = flag; 
 	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosHex->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosBin->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
 void MathyResurrectedOptionsDialog::on_checkBoxBinOut_clicked(bool flag) { 
 	itsShowBin = flag; 
 	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosHex->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosBin->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
 void MathyResurrectedOptionsDialog::on_pushButtonSetDefaults_clicked()  {
@@ -127,6 +133,9 @@ void MathyResurrectedOptionsDialog::on_pushButtonSetDefaults_clicked()  {
 	itsShowBasePrefix = defaultShowBasePrefix();
 
 	itsBWidth = MathEvaluator::defaultBitWidth();
+
+	itsShowLeadZeroesBin = MathEvaluator::defaultShowLeadingZeroesBin();
+	itsShowLeadZeroesHex = MathEvaluator::defaultShowLeadingZeroesHex();
 	
 	setupUiByAppSettings();
 }
@@ -198,7 +207,12 @@ void MathyResurrectedOptionsDialog::setupUiByAppSettings() {
 		radioButtonBW64->setChecked(true);
 	} 
 
+	checkBoxShowLeadingZerosHex->setChecked(itsShowLeadZeroesHex);
+	checkBoxShowLeadingZerosBin->setChecked(itsShowLeadZeroesBin);
+
 	groupBoxBW->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosHex->setEnabled(itsShowBin || itsShowHex || itsShowOct);
+	checkBoxShowLeadingZerosBin->setEnabled(itsShowBin || itsShowHex || itsShowOct);
 }
 
 MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) : 
@@ -253,6 +267,14 @@ MathyResurrectedOptionsDialog::MathyResurrectedOptionsDialog(QWidget* parent) :
 
 		itsBWidth = app_settings->value(
 			keyNameBitWidth(), MathEvaluator::defaultBitWidth()).toInt();
+
+		itsShowLeadZeroesHex = app_settings->value(
+			keyNameShowLeadingZeroesHex(), 
+			MathEvaluator::defaultShowLeadingZeroesHex()).toBool();
+
+		itsShowLeadZeroesBin = app_settings->value(
+			keyNameShowLeadingZeroesBin(), 
+			MathEvaluator::defaultShowLeadingZeroesBin()).toBool();
 	} else {
 		on_pushButtonSetDefaults_clicked();
 	}
@@ -287,6 +309,8 @@ void MathyResurrectedOptionsDialog::writeSettings() {
 	app_settings->setValue(keyNameOutputShowOct(), itsShowOct);
 	app_settings->setValue(keyNameShowBasePrefix(), itsShowBasePrefix);
 	app_settings->setValue(keyNameBitWidth(), itsBWidth);
+	app_settings->setValue(keyNameShowLeadingZeroesHex(), itsShowLeadZeroesHex);
+	app_settings->setValue(keyNameShowLeadingZeroesBin(), itsShowLeadZeroesBin);
 }
 
 } // namespace mathy_resurrected

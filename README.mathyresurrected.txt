@@ -87,24 +87,41 @@ separator following are examples of supported numeric input:
 
     The following operators are available:
 
-    Unary
-    =====
+    Unary operators
+    ===============
     Op        Name                Example
-    +        plus                +4, +i
-    -        minus               -4, -i
+     +        plus                 +4, +i
+     -        minus                -4, -i
 
-    Binary
-    ======
+    Binary operators
+    ================
     Op        Name                Example
-    +        plus                6+4, 1+2
-    -        minus               -4, 2-i
-    *        multiply            6*4, 1*2
-    /        divide              4/4, 2/i
-    ^        to the power of     4^4, 2^i
-    %        modulo              456%45
-                NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
+     +        plus                 6+4, 1+2
+     -        minus                -4, 2-i
+     *        multiply             6*4, 1*2
+     /        divide               4/4, 2/i
+     ^        to the power of      4^4, 2^i
+     %        modulo               456%45
+              NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
 
     ()        brackets
+
+    Bitwise operators (unary and binary)
+    ====================================
+
+    These operators operate on unsigned integer, real part of operands.
+This means that for any two complex numbers x and y, and binary bitwise
+operator op
+
+                x op y = UInt{Re{x}} op UInt{Re{y}}
+
+    symbol        name
+       &         and
+       |         or
+       ×         xor
+       ~         not
+	  >>         bit shift right
+      <<         bit shift left
 
 ===========================================================================
                        SI and binary unit prefixes
@@ -249,17 +266,17 @@ Miscellaneous functions
 Bitwise functions
 =================
 
-	All these functions are implemented to work with real part of expression only.
+    All these functions are implemented to work with real part of expression only.
 This means that for any function f from this group, f(x) = f(Re(x)) no matter what
-the value of Im{x} is. 
+the value of Im{x} is.
 
-	and(x,y)	- bitwise and
-	or(x,y)		- bitwse or
-	not(x)		- bitwise not
-	nand(x,y)	- bitwise nand: not(x and y)
-	nor(x,y)	- bitwise nor:	not(x or y)
-	xor(x,y)	- bitwise exclusive or 
-	xnor(x,y)	- bitwise xnor: not(x xor y)
+    and(x,y)    - bitwise and
+    or(x,y)     - bitwse or
+    not(x)      - bitwise not
+    nand(x,y)   - bitwise nand: not(x and y)
+    nor(x,y)    - bitwise nor: not(x or y)
+    xor(x,y)    - bitwise exclusive or
+    xnor(x,y)   - bitwise xnor: not(x xor y)
 
 ===========================================================================
                              Variables
@@ -297,9 +314,9 @@ use constant alone instead of multiplying it with one, ie. 34+e, pi+25,
                     Binary, hexadecimal and octal numbers
 ===========================================================================
 
-    All these bases are supported in input, but only as unsigned integers. 
-If present in output (which is configurable) these numbers represent 
-cut-off value of actual calculation which is done with floats. 
+    All these bases are supported in input, but only as unsigned integers.
+If present in output (which is configurable) these numbers represent
+cut-off value of actual calculation which is done with floats.
 
 When in input, numbers must be prefixed with their base prefix:
 
