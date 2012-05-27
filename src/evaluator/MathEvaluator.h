@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2009
+* Copyright (C) 2009, 2010
 * Tomislav Adamic <tomislav.adamic@gmail.com>
 * 
 * This file is part of MathyResurrected - Launchy advanced calculator plugin
@@ -34,7 +34,13 @@ namespace mathy_resurrected {
 
 /*! Main class for mathematical expression evaluation. Can be used
 to validate expression string or to fully evaluate it. Internally 
-uses ANTLR generated lexer / parser for its job. */
+uses ANTLR generated lexer / parser for its job. 
+@note
+Current implementation relies on globally accessible factories and 
+variables for communication between this class and ANTLR generated 
+evaluator. Because of that, it only single instance of MathEvaluator
+should exist at any time in program. If this is not ensured, evaluation
+will result in unspecified behavior. */
 class MathEvaluator : private mrComplex_t {
 public:
 	MathEvaluator(QSettings* app_settings = 0);
@@ -42,10 +48,17 @@ public:
 	// Input / output settings
 	void changeEvaluatorSettings(QSettings* app_settings = 0);
 	static QChar systemDecimalPoint() { return QLocale::system().decimalPoint(); }
-	static QChar defaultArgSeparator() { return QChar(':'); }
-	static QChar defaultOutputFormat() { return QChar('f'); }
+	static QChar systemThousandSep() { return QLocale::system().groupSeparator(); }
+
+	static QChar defaultArgSeparator() { return QChar(':'); } // Must never be '.' or ',' 
+	static QString defaultDecimalPointTag();
+	static QString defaultGroupingCharTag();
+	//itsGroupimgCharacter
+	static QChar defaultOutputFormat() { return QChar('d'); }
 	static int defaultOutputPrecision() { return 2; }
 	static bool defaultShowDigitGrouping() { return true; }
+	static int defaultZeroTresholdExp() { return -15; }
+	static bool defaultShouldUseZeroTreshold() { return true; }
 
 	/*! Sets expression to be evaluated. */
 	void setExpression (const QString& expression);
@@ -56,6 +69,8 @@ public:
 	can be read using Re() and Im() methods. */
 	bool evaluate ();
 
+	void storeAns();
+
 	/*! Returns result of evaluation. If expression hasn't been evaluated, 
 	or is invalid, return value is unspecified. */
 	mrNumeric_t Re() const { return real; }
@@ -65,13 +80,22 @@ public:
 
 	const QString& toString();
 
-	/*! mrComplex_t factory method used my math bridge API */
+	/*! mrComplex_t factory method used my math bridge API 
+	@note Shouldn't be static in normal circumstances but there is no
+	other way to communicate with antlr generated code.*/
 	static mrComplex_ptr getNewBridgeComplex();
+	/*! @note Shouldn't be static in normal circumstances but there is no
+	other way to communicate with antlr generated code. */
 	static void addNewLexerError(unsigned int char_index, MR_LEXER_ERROR_TYPES err);
+	/*! Result of previous calculation. */
+	static const mrComplex_t& Ans() { return itsAns; }
 
 #ifdef _DEBUG
 	void printLexerErrors() const;
 #endif // _DEBUG
+
+	/*! This should return same character that was used in grammar */
+	static QChar internalDecimalPoint() { return QChar('@'); }
 
 private:
 	/*! true if expression has been validated */
@@ -83,6 +107,10 @@ private:
 
 	/*! Result as string, or error as string. Handled by toString methods. */
 	QString itsResult;
+	/*! Result of previous calculation.
+	@note Shouldn't be static in normal circumstances but there is no
+	other way to communicate with antlr generated code. */
+	static mrComplex_t itsAns;
 
 	/*! Type to hold expression that will be passed to lexer and parser. */
 	typedef boost::shared_array < unsigned char > antlr8BitString_t;
@@ -99,15 +127,18 @@ private:
 
 	// Input / output settings
 	QChar itsArgSeparator;
+	QChar itsDecimalPoint;
 	QChar itsOutputFormat;
 	int itsPrecision;
 	bool itsShowGroupChar;
+	double itsZeroTreshold;
+	QChar itsGroupimgCharacter;
+
+	QString m_tempExpr;
 	
 	/*! This should return same character that was used in grammar */
-	QChar internalDecimalPoint() const;
-	/*! This should return same character that was used in grammar */
-	QChar internalArgSeparator() const;
-	
+	static QChar internalArgSeparator() { return QChar('#'); }
+
 	void numberToString(mrNumeric_t val, QString& retv) const;
 
 	typedef std::vector < std::pair<unsigned int, MR_LEXER_ERROR_TYPES> > lexer_errors_collection_t;

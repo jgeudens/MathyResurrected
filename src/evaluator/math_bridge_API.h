@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2009
+* Copyright (C) 2009, 2010
 * Tomislav Adamic <tomislav.adamic@gmail.com>
 * 
 * This file is part of MathyResurrected - Launchy advanced calculator plugin
@@ -57,6 +57,8 @@ typedef enum {
 mrNumeric_t mr_pi();
 /*! Return value of e */
 mrNumeric_t mr_e();
+/*! Return value of previous calculation */
+mrComplex_ptr mr_ans();
 
 /*! Returns pointer to new mrComplex_t. This pointer should never 
 be deleted directly, it is handled automatically. */

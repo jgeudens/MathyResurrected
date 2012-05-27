@@ -168,15 +168,18 @@ funct_ref2 returns [mrComplex_ptr compl_retv]
 	;
 
 constant_ref returns [mrComplex_ptr compl_retv]
-@init { 
-	$compl_retv = newMrComplex(); 
-	$compl_retv->imag=0.0; 
-}
 	: ^(CONSTANT_REF CONSTANTS_PI) {
+		$compl_retv = newMrComplex(); 
+		$compl_retv->imag=0.0; 
 		$compl_retv->real = mr_pi();
     	}
 	| ^(CONSTANT_REF CONSTANTS_E) {
+		$compl_retv = newMrComplex(); 
+		$compl_retv->imag=0.0; 
 		$compl_retv->real = mr_e();
+    	}
+    | ^(CONSTANT_REF CONSTANTS_ANS) {
+		$compl_retv = mr_ans();
     	}
     	;
 

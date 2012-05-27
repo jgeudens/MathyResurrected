@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2009
+* Copyright (C) 2009, 2010
 * Tomislav Adamic <tomislav.adamic@gmail.com>
 *
 * This file is part of MathyResurrected - Launchy advanced calculator plugin
@@ -55,6 +55,13 @@ mrNumeric_t mr_pi() {
 mrNumeric_t mr_e() {
 	static const mrNumeric_t eVal = exp((mrNumeric_t)(1.0));
 	return eVal;
+}
+
+mrComplex_ptr mr_ans() {
+	mrComplex_ptr retv = newMrComplex();
+	retv->real = MathEvaluator::Ans().real;
+	retv->imag = MathEvaluator::Ans().imag;
+	return retv;
 }
 
 typedef const mrComplex_t* const mrComplex_const_ptr;
@@ -527,14 +534,22 @@ mrNumeric_t parse_mrNumeric_t (pANTLR3_STRING strin) {
 	This replacement will occur somewhere high in application so that
 	parser and lexer will always get clear string expressions in which
 	decimal separator will always be '.' */
+
+	char removeCh = MathEvaluator::internalDecimalPoint().toAscii();
+	char current;
 	for (ANTLR3_UINT32 i = 0; i < len; ++i) {
-		str += static_cast<char>(strin->charAt(strin, i));
+		current = static_cast<char>(strin->charAt(strin, i));
+		if (current == removeCh) {
+			str += '.';
+		} else {
+			str += current;
+		}
 	}
 
 	mrNumeric_t retv;
 	try {
 		retv = numeric_cast<mrNumeric_t>(lexical_cast<mrNumeric_t, string>(str));
-	} 
+	}
 	catch (bad_lexical_cast&) {
 		throw NumericConversionError("Range error: " + str);
 	}

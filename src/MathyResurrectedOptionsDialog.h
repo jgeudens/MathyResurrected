@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2009
+* Copyright (C) 2009, 2010
 * Tomislav Adamic <tomislav.adamic@gmail.com>
 * 
 * This file is part of MathyResurrected - Launchy advanced calculator plugin
@@ -35,7 +35,13 @@ class MathyResurrectedOptionsDialog : public QFrame, private Ui::MathyResurrecte
 private slots:
 	void setFunArgSeparatorColon() { itsArgSeparator = ':'; }
 	void setFunArgSeparatorSemicolon() { itsArgSeparator = ';'; }
-	void setFunArgSeparatorComa() { itsArgSeparator = ','; }
+	void setFunArgSeparatorComa();
+	void setDecPointDot();
+	void setDecPointSystem();
+	void setDecPointComa();
+	void setThousandSepDot() { itsThousandsSepTag = "dot"; }
+	void setThousandSepSystem() { itsThousandsSepTag = "sys"; }
+	void setThousandSepComa() { itsThousandsSepTag = "com"; }
 	void setSimpleInputMatching(bool flag) { itsSimpleInputFlag = flag; }
 	void setOutputFormatDefault() { itsOutputFormat = 'd'; }
 	void setOutputFormatScientiffic() { itsOutputFormat = 's'; }
@@ -43,6 +49,8 @@ private slots:
 	void setPrecision(int prec) { itsPrecision = prec;}
 	void setShowDigitGrouping(bool flag) { itsShowDigitGrouping = flag;}
 	void setUseEnterKey(bool flag) { itsUseEnterKey = flag;}
+	void setZeroTresholdExp(int treshold) { itsZeroTresholdExp = treshold; }
+	void setShouldUseZeroTreshold(bool flag) { itsZeroTresholdFlag = flag; }
 	void setAllDefaults();
 
 public:
@@ -55,11 +63,19 @@ public:
 	static QString keyNamePrecision() { return QString("MathyResurrected/Precision"); }
 	static QString keyNameUseEnterKey() { return QString("MathyResurrected/CopyToClipboardWithEnterKey"); }
 	static QString keyNameShowDigitGrouping() { return QString("MathyResurrected/ShowDigitGroupChar"); }
+	static QString keyNameShouldUseZeroTreshold() { return QString("MathyResurrected/ShouldUseZeroTreshold"); }
+	static QString keyNameZeroTresholdExp() { return QString("MathyResurrected/ZeroTresholdExponent"); }
+	static QString keyNameDecimalPoint() { return QString("MathyResurrected/DecimalPoint"); }
+	static QString keyNameGroupingChar() { return QString("MathyResurrected/ThousandSeparator"); }
 	
 	void writeSettings();
 
 	static bool defaultUseEnterKey() { return true; }
 	static bool defaultSimpleInputMatching() { return false; }
+	static QChar decPointTag2Char(const QString& tag);
+	static QChar digitGroupTag2Char (const QString& tag);
+	static QString systemDecPointTag() { return QString("sys"); }
+	static QString systemGroupingCharTag() { return QString("sys"); }
 
 private:
 	QChar itsArgSeparator;
@@ -68,6 +84,10 @@ private:
 	bool itsSimpleInputFlag;
 	bool itsShowDigitGrouping;
 	bool itsUseEnterKey;
+	bool itsZeroTresholdFlag;
+	int itsZeroTresholdExp;
+	QString itsDecPointTag;
+	QString itsThousandsSepTag;
 	
 	void connectAll();
 	void setupUiByAppSettings();

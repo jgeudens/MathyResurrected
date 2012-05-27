@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2009
+* Copyright (C) 2009, 2010
 * Tomislav Adamic <tomislav.adamic@gmail.com>
 * 
 * This file is part of MathyResurrected - Launchy advanced calculator plugin
@@ -58,21 +58,7 @@ void MathyResurrectedPlugin::init() {
 
 	QSettings* sett = *(this->settings);
 
-	QChar argSep = sett->value(
-		MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
-		MathEvaluator::defaultArgSeparator()
-	).toChar();
-
-	QChar decPoint = MathEvaluator::systemDecimalPoint();
-
-	// If this is first time ever that user launches MathyResurrected, there are
-	// no settings set up for the plugin. Because of that, we must try to guess 
-	// settings vital for MathEvaluator before we initialize it.
-	if (decPoint == ',' && argSep == ',') {
-		sett->setValue(MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
-			MathEvaluator::defaultArgSeparator());
-	}
-	itsCalculator->changeEvaluatorSettings(*settings);
+ 	itsCalculator->changeEvaluatorSettings(sett);
 
 	itsSimpleMatching = sett->value(
 			MathyResurrectedOptionsDialog::keyNameSimpleInputMatching(),
@@ -115,7 +101,7 @@ void MathyResurrectedPlugin::getResults(QList<InputData>* id, QList<CatItem>* re
 		itsCalculator->evaluate();
 		QString result = itsCalculator->toString();
 
-		results->push_front(CatItem(result + ".mathyresurrected", 
+		results->push_front(CatItem(result + ".math", 
 			result, HASH_MATHYRESURRECTED, getIcon()));
 	}
 }
@@ -135,8 +121,7 @@ void MathyResurrectedPlugin::endDialog(bool accept) {
 	itsGUI.reset();
 }
 
-QString MathyResurrectedPlugin::getIcon()
-{
+QString MathyResurrectedPlugin::getIcon() {
 	return libPath + "/icons/mathyresurrected.ico";
 }
 
@@ -149,6 +134,7 @@ void MathyResurrectedPlugin::launchItem(QList<InputData>* inputData, CatItem* it
 		QClipboard *clipboard = QApplication::clipboard();
 		clipboard->setText(item->shortName);
 	}
+	itsCalculator->storeAns();
 }	
 
 int MathyResurrectedPlugin::msg(int msgId, void* wParam, void* lParam) {

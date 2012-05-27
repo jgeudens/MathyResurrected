@@ -1,6 +1,6 @@
 TARGET = mathyresurrected
 TEMPLATE = lib
-VERSION = 0.1.0
+VERSION = 0.1.1
 
 CONFIG += plugin \
 	warn_on \
@@ -19,6 +19,8 @@ unix {
 win32 {
 	CONFIG -= embed_manifest_dll
 	LIBS += shell32.lib
+	
+	QMAKE_DISTCLEAN += *.ncb *.user *.suo
 }
 
 DISTFILES += $$PWD/AUTHORS \

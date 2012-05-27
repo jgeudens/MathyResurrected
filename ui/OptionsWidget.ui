@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>460</width>
-    <height>230</height>
+    <width>516</width>
+    <height>305</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,16 +20,68 @@
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_4">
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="1" column="1">
+    <widget class="QPushButton" name="pushButton_setDefaults">
+     <property name="text">
+      <string>Defaults</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <layout class="QFormLayout" name="formLayout_3">
+     <item row="0" column="0">
       <widget class="QGroupBox" name="groupBox_4">
        <property name="title">
         <string>Input</string>
        </property>
-       <layout class="QFormLayout" name="formLayout_3">
+       <layout class="QFormLayout" name="formLayout_4">
         <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>Decimal separator</string>
+          </property>
+          <layout class="QFormLayout" name="formLayout_8">
+           <property name="fieldGrowthPolicy">
+            <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+           </property>
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="radioButton_DecSepSystem">
+             <property name="toolTip">
+              <string>Use system settings</string>
+             </property>
+             <property name="text">
+              <string>System default</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="radioButton_DecSepComa">
+             <property name="toolTip">
+              <string>Use coma (',')</string>
+             </property>
+             <property name="text">
+              <string>Coma</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QRadioButton" name="radioButton_DecSepDot">
+             <property name="toolTip">
+              <string>Use dot ('.')</string>
+             </property>
+             <property name="text">
+              <string>Dot</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0">
          <widget class="QGroupBox" name="groupBox_6">
           <property name="title">
            <string>Function arguments separator</string>
@@ -101,7 +153,7 @@ p, li { white-space: pre-wrap; }
           </layout>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QCheckBox" name="checkBox_InputMatching">
           <property name="toolTip">
            <string>Only input starting with '=' is accepted.</string>
@@ -120,230 +172,283 @@ p, li { white-space: pre-wrap; }
        </layout>
       </widget>
      </item>
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
+     <item row="0" column="1">
       <widget class="QGroupBox" name="groupBox_5">
        <property name="title">
         <string>Output</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QGroupBox" name="groupBox">
-            <property name="title">
-             <string>Number format</string>
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Number format</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QRadioButton" name="radioButton_outputDefault">
+             <property name="toolTip">
+              <string>Automatically chose output number format, but don't output more than &quot;Precision&quot; decimals.</string>
+             </property>
+             <property name="statusTip">
+              <string>Default output format.</string>
+             </property>
+             <property name="whatsThis">
+              <string>Automatically chose output number format, but don't output more than &quot;Precision&quot; decimals.</string>
+             </property>
+             <property name="text">
+              <string>default</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_outputScientiffic">
+             <property name="toolTip">
+              <string>Output is always scientific and has &quot;Precision&quot; number of decimals.</string>
+             </property>
+             <property name="statusTip">
+              <string>Scientific output format.</string>
+             </property>
+             <property name="whatsThis">
+              <string>Output is always scientific and has &quot;Precision&quot; number of decimals.</string>
+             </property>
+             <property name="text">
+              <string>scientiffic</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_OutputFixed">
+             <property name="toolTip">
+              <string>Output is always decimal and has &quot;Precision&quot; number of decimals.</string>
+             </property>
+             <property name="statusTip">
+              <string>Fixed output format.</string>
+             </property>
+             <property name="whatsThis">
+              <string>Output is always decimal and has &quot;Precision&quot; number of decimals.</string>
+             </property>
+             <property name="text">
+              <string>fixed</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="checkBox_ShowGrouping">
+          <property name="toolTip">
+           <string>Should thousand separator be shown in output.</string>
+          </property>
+          <property name="title">
+           <string>Show digit grouping character</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QRadioButton" name="radioButton_ThSepSys">
+             <property name="toolTip">
+              <string>Use system default thousand separator.</string>
+             </property>
+             <property name="text">
+              <string>System default</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_ThSepCom">
+             <property name="toolTip">
+              <string>Use ',' thousand separator.</string>
+             </property>
+             <property name="text">
+              <string>Coma</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_ThSepDot">
+             <property name="toolTip">
+              <string>Use '.' as thousand separator.</string>
+             </property>
+             <property name="text">
+              <string>Dot</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Precision:</string>
             </property>
-            <layout class="QFormLayout" name="formLayout_2">
-             <item row="0" column="0">
-              <widget class="QRadioButton" name="radioButton_outputDefault">
-               <property name="toolTip">
-                <string>Automatically chose output number format, but don't output more than &quot;Precision&quot; decimals.</string>
-               </property>
-               <property name="statusTip">
-                <string>Default output format.</string>
-               </property>
-               <property name="whatsThis">
-                <string>Automatically chose output number format, but don't output more than &quot;Precision&quot; decimals.</string>
-               </property>
-               <property name="text">
-                <string>default</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QRadioButton" name="radioButton_outputScientiffic">
-               <property name="toolTip">
-                <string>Output is always scientific and has &quot;Precision&quot; number of decimals.</string>
-               </property>
-               <property name="statusTip">
-                <string>Scientific output format.</string>
-               </property>
-               <property name="whatsThis">
-                <string>Output is always scientific and has &quot;Precision&quot; number of decimals.</string>
-               </property>
-               <property name="text">
-                <string>scientiffic</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QRadioButton" name="radioButton_OutputFixed">
-               <property name="toolTip">
-                <string>Output is always decimal and has &quot;Precision&quot; number of decimals.</string>
-               </property>
-               <property name="statusTip">
-                <string>Fixed output format.</string>
-               </property>
-               <property name="whatsThis">
-                <string>Output is always decimal and has &quot;Precision&quot; number of decimals.</string>
-               </property>
-               <property name="text">
-                <string>fixed</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <spacer name="verticalSpacer_3">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>Precision:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="spinBox_OutputPrecision">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>50</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>50</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="toolTip">
-                 <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
-                </property>
-                <property name="statusTip">
-                 <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
-                </property>
-                <property name="whatsThis">
-                 <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
-                </property>
-                <property name="minimum">
-                 <number>0</number>
-                </property>
-                <property name="maximum">
-                 <number>6</number>
-                </property>
-                <property name="value">
-                 <number>2</number>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="spinBox_OutputPrecision">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>55</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
+            </property>
+            <property name="statusTip">
+             <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Sets the maximal number of digits for &quot;default&quot; or minimal number of decimals for &quot;fixed&quot; and &quot;scientific&quot; output formats.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>6</number>
+            </property>
+            <property name="value">
+             <number>2</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="checkBox_ZeroTreshold">
+            <property name="toolTip">
+             <string>Enable or disable diplaying small enough numbers as zero.</string>
+            </property>
+            <property name="text">
+             <string>Small numbers as zero</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spinBox_zeroTreshold">
+            <property name="minimumSize">
+             <size>
+              <width>55</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Numbers smaller than this will be displayed as zeroes. </string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="suffix">
+             <string/>
+            </property>
+            <property name="prefix">
+             <string>1e</string>
+            </property>
+            <property name="minimum">
+             <number>-200</number>
+            </property>
+            <property name="maximum">
+             <number>-3</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>-15</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QCheckBox" name="checkBox_UseEnterKey">
+            <property name="toolTip">
+             <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
+            </property>
+            <property name="statusTip">
+             <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
+            </property>
+            <property name="whatsThis">
+             <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
+            </property>
+            <property name="text">
+             <string>Use Enter key to Copy result to Clipboard</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_UseEnterKey">
-          <property name="toolTip">
-           <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
-          </property>
-          <property name="statusTip">
-           <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
-          </property>
-          <property name="whatsThis">
-           <string>If this option is enabled, pressing enter key will copy calculation result to clipboard.</string>
-          </property>
-          <property name="text">
-           <string>Use Enter key to Copy result to Clipboard</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_ShowGrouping">
-          <property name="toolTip">
-           <string>Show digit grouping character in output?</string>
-          </property>
-          <property name="statusTip">
-           <string>Show digit grouping character in output?</string>
-          </property>
-          <property name="whatsThis">
-           <string>Show digit grouping character in output?</string>
-          </property>
-          <property name="text">
-           <string>Show digit grouping character</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
        </layout>
+       <zorder>groupBox</zorder>
+       <zorder>checkBox_ShowGrouping</zorder>
+       <zorder></zorder>
       </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>138</width>
-           <height>17</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_setDefaults">
-         <property name="text">
-          <string>Defaults</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </item>
     </layout>
    </item>
+   <item row="1" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>412</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
+  <zorder>pushButton_setDefaults</zorder>
+  <zorder></zorder>
+  <zorder>horizontalSpacer</zorder>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>checkBox_ZeroTreshold</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>spinBox_zeroTreshold</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>349</x>
+     <y>157</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>410</x>
+     <y>159</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

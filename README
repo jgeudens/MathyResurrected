@@ -70,7 +70,7 @@ separator following are examples of supported numeric input:
     12E+12        =      12*10^12+0i
     12e-12        =      12*10^(-12)+0i
     12.12         =      12.12+0i
-    12.12E12      =      12.12*10^12+0i
+    12.12E12      =      12.12*10^12+0i 
     .12           =      0.12+0i
     -.12e-2       =      -0.12*10(-2)+0i
     12+3i         =      12+3i
@@ -101,7 +101,7 @@ separator following are examples of supported numeric input:
     /        divide              4/4, 2/i
     ^        to the power of     4^4, 2^i
     %        modulo              456%45        
-                                 NOTE: a%b=Re(a)%Reb) if (Im{a}!=0 || Im{b}!=0)
+                                 NOTE: a%b=Re(a)%Re(b) if (Im{a}!=0 || Im{b}!=0)
     
     ()        brackets
     
@@ -260,10 +260,11 @@ doing it, but that may cahnge in the future.
                               Constants 
 ===========================================================================
 
-There are 2 predefined constants:
+There are three predefined constants:
 
     pi    = 3.14159265...
     e     = 2.71828183...
+	ans   = result of previous calculation.
     
 Constants are case sensitive.
 

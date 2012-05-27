@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2009
+* Copyright (C) 2009, 2010
 * Tomislav Adamic <tomislav.adamic@gmail.com>
 * 
 * This file is part of MathyResurrected - Launchy advanced calculator plugin
@@ -39,6 +39,7 @@ namespace mathy_resurrected {
 
 MathEvaluator::lexer_errors_collection_t MathEvaluator::lexerErrorsCollection;
 std::vector< boost::shared_ptr< mrComplex_t > > MathEvaluator::mr_ComplexFactoryData;
+mrComplex_t MathEvaluator::itsAns;
 
 mrComplex_ptr MathEvaluator::getNewBridgeComplex() {
 	 mrComplex_ptr p = new mrComplex_t;
@@ -145,11 +146,20 @@ MathEvaluator::LexerParser::~LexerParser() {
 	MathEvaluator::mr_ComplexFactoryData.clear();
 }
 
+QString MathEvaluator::defaultDecimalPointTag() {
+	return MathyResurrectedOptionsDialog::systemDecPointTag(); 
+}
+
+QString MathEvaluator::defaultGroupingCharTag()  {
+	return MathyResurrectedOptionsDialog::systemGroupingCharTag(); 
+}
+
 MathEvaluator::MathEvaluator(QSettings* app_settings) : 
  	itsIsValid(false), itsIsValidated(false), itsIsEvaluated(false),
 	itsExprLen(0)
 {
 	real = imag = 0;
+	itsAns.real = itsAns.imag = 0;
 	changeEvaluatorSettings(app_settings);
 }
 
@@ -159,10 +169,21 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsOutputFormat = defaultOutputFormat();
 		itsPrecision = defaultOutputPrecision();
 		itsShowGroupChar = defaultShowDigitGrouping();
+		itsZeroTreshold = pow (10.0, defaultZeroTresholdExp());
+		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(defaultDecimalPointTag());
+		itsGroupimgCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(defaultGroupingCharTag());
 	} else {
 		itsArgSeparator = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameArgSeparator(), 
 			defaultArgSeparator()).toChar();
+
+		itsDecimalPoint = MathyResurrectedOptionsDialog::decPointTag2Char(
+			app_settings->value(MathyResurrectedOptionsDialog::keyNameDecimalPoint(), "").toString()
+			);
+
+		itsGroupimgCharacter = MathyResurrectedOptionsDialog::digitGroupTag2Char(
+			app_settings->value(MathyResurrectedOptionsDialog::keyNameGroupingChar(), "").toString()
+			);
 			
 		itsOutputFormat = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameOutputFormat(),
@@ -175,23 +196,27 @@ void MathEvaluator::changeEvaluatorSettings(QSettings* app_settings) {
 		itsShowGroupChar = app_settings->value(
 			MathyResurrectedOptionsDialog::keyNameShowDigitGrouping(), 
 			defaultShowDigitGrouping()).toBool();
+
+		bool shouldUse = app_settings->value(
+			MathyResurrectedOptionsDialog::keyNameShouldUseZeroTreshold(), 
+			defaultShouldUseZeroTreshold()).toBool();
+
+		if (shouldUse) {
+			itsZeroTreshold = app_settings->value(
+				MathyResurrectedOptionsDialog::keyNameZeroTresholdExp(), 
+				defaultZeroTresholdExp()).toInt();
+			itsZeroTreshold = pow (10.0, itsZeroTreshold);
+		} else {
+			itsZeroTreshold = 0;
+		}
 	}
 
-	if (itsArgSeparator == systemDecimalPoint()) {
-		throw std::runtime_error("Function argument separator can't be same as system decimal separator!");
+	if (itsArgSeparator == itsDecimalPoint) {
+		itsArgSeparator = defaultArgSeparator();
 	}
 
 	// Update result string if output format has changed. 
 	toString();
-}
-
-/*! This should return same character that was used in grammar */
-inline QChar MathEvaluator::internalDecimalPoint() const { 
-	return QChar('.'); 
-}
-/*! This should return same character that was used in grammar */
-inline QChar MathEvaluator::internalArgSeparator() const { 
-	return QChar('#'); 
 }
 
 void MathEvaluator::setExpression(const QString& expression) {
@@ -203,16 +228,9 @@ void MathEvaluator::setExpression(const QString& expression) {
 
 	QString tmp_expr = expression;
 
-	QChar intern = internalDecimalPoint();
-	QChar sysDecP = systemDecimalPoint(); 
-	if (intern != sysDecP) {
-		tmp_expr.replace(sysDecP, intern);
-	}
-
-	intern = internalArgSeparator();
-	if (intern != itsArgSeparator) {
-		tmp_expr.replace(itsArgSeparator, intern);
-	}
+	// Preprocessing expression...
+	tmp_expr.replace(itsDecimalPoint, internalDecimalPoint());
+	tmp_expr.replace(itsArgSeparator, internalArgSeparator());
 
 	QByteArray tmp = tmp_expr.toAscii();
 	int iend = tmp.length();
@@ -234,12 +252,12 @@ bool MathEvaluator::validate() {
 
 		if (!lpr.malloc_error) {
 			lpr.expressionAST = lpr.parser->prog(lpr.parser);
-			/*! Currently just counting errors. In the future we could 
-			could use collection of lexer errors provided by bridge API
-			to analyze things before invoking parser. */
 #ifdef _DEBUG
 			printLexerErrors();
 #endif // _DEBUG
+			// Currently just counting errors. In the future we could 
+			// could use collection of lexer errors provided by bridge API
+			// to analyze things before invoking parser.
 			if (lpr.parser->pParser->rec->state->errorCount > 0) {
 				itsIsValid = false;
 				itsResult = "Malformed expression";
@@ -296,6 +314,10 @@ bool MathEvaluator::evaluate() {
 	return itsIsValid;
 }
 
+void MathEvaluator::storeAns() {
+	itsAns.real = real; itsAns.imag = imag;
+}
+
 const QString& MathEvaluator::toString() {
 	if (itsIsValid) {
 		if (itsIsEvaluated) {
@@ -303,18 +325,28 @@ const QString& MathEvaluator::toString() {
 			QString re_str, im_str;
 			bool add_i = false;
 
-			if ((boost::math::fpclassify)(imag) != FP_ZERO) {
-				if (imag > 0) {
+			// If number is close enough to zero, we make it zero 
+			// explicitly (but for display purposes only)
+			mrNumeric_t im_disp = imag, re_disp = real;
+			if (abs(im_disp) < abs(itsZeroTreshold)) {
+				im_disp = 0;
+			}
+			if (abs(re_disp) < abs(itsZeroTreshold)) {
+				re_disp = 0;
+			}
+
+			if ((boost::math::fpclassify)(im_disp) != FP_ZERO) {
+				if (im_disp > 0) {
 					sign = " + ";
 				} else { // if (imag < 0) {
 					sign = " - ";
 				}
 
-				mrNumeric_t tmp = abs(imag);
+				mrNumeric_t tmp = abs(im_disp);
 				numberToString(tmp, im_str);
 				add_i = true;
 			}
-			numberToString(real, re_str);
+			numberToString(re_disp, re_str);
 			itsResult = re_str;
 			if (add_i) {
 				itsResult +=  sign + im_str + "i";
@@ -330,7 +362,7 @@ const QString& MathEvaluator::toString() {
 }
 
 void MathEvaluator::numberToString(mrNumeric_t val, QString& retv) const {
-	QLocale loc = QLocale::system();
+	QLocale loc = QLocale::c();
 
 	if (itsOutputFormat == 'd') { 
 		retv = loc.toString(val, 'g', itsPrecision);
@@ -339,10 +371,25 @@ void MathEvaluator::numberToString(mrNumeric_t val, QString& retv) const {
 	} else if (itsOutputFormat == 'f') {
 		retv = loc.toString(val, 'f', itsPrecision);		
 	}
+	
+	// Post processing
+	
+	// First, "saving" decimal point from modification.
+	// This is relatively safe because internally used 
+	// character for decimal point representation is 
+	// not likely to be used for that purpose in any 
+	// existing locale. 
+	retv.replace(loc.decimalPoint(), internalDecimalPoint());
 
+	// Post processing group separator. 
 	if (!itsShowGroupChar) {
 		retv.remove(loc.groupSeparator());
+	} else {
+		retv.replace(loc.groupSeparator(), itsGroupimgCharacter);
 	}
+
+	// Postprocessing decimal point. 
+	retv.replace(internalDecimalPoint(), itsDecimalPoint);
 }
 
 } // mathy_resurrected
